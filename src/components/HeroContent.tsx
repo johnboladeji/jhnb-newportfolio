@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import ScrambleText from "./ScrambleText";
 import TypewriterBio from "./TypewriterBio";
 import RollText from "./RollText";
@@ -15,6 +16,8 @@ interface HeroContentProps {
 
 export default function HeroContent({ onViewProjects, onViewAbout }: HeroContentProps) {
   const [wordIndex, setWordIndex] = useState(0);
+  // Mobile "View more" stays hidden until the bio's sign-off has finished typing
+  const [bioTyped, setBioTyped] = useState(false);
 
   useEffect(() => {
     const id = window.setInterval(() => setWordIndex((i) => (i + 1) % WORDS.length), ROTATE_MS);
@@ -85,10 +88,15 @@ export default function HeroContent({ onViewProjects, onViewAbout }: HeroContent
       </div>
 
       <div ref={bioRef} className="pointer-events-auto mt-4 sm:mt-6 lg:mt-0 lg:w-[19rem] lg:self-end xl:w-[22rem]">
-        <TypewriterBio />
-        {/* Below md the bio is clamped; this opens the full story in the About Me panel */}
+        <TypewriterBio onTyped={() => setBioTyped(true)} />
+        {/* Below md the bio is clamped; this opens the full story in the About Me panel. It keeps its space
+            (visibility, not display) so the photo below doesn't jump, and fades up once the sign-off is typed. */}
         <div className="mt-3 flex justify-center md:hidden">
-          <button
+          <motion.button
+            initial={false}
+            animate={bioTyped ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+            transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+            style={{ visibility: bioTyped ? "visible" : "hidden" }}
             type="button"
             onClick={onViewAbout}
             aria-haspopup="dialog"
@@ -97,7 +105,7 @@ export default function HeroContent({ onViewProjects, onViewAbout }: HeroContent
           >
             <RollText text={hero.viewMoreLabel} />
             <ArrowRight size={12} aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5" />
-          </button>
+          </motion.button>
         </div>
       </div>
     </main>

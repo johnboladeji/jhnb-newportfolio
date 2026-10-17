@@ -25,6 +25,10 @@ function toWords(text: string, start: number) {
 
 const bioWords = toWords(BIO, 0);
 const signoffWords = toWords(SIGNOFF, bioWords.next).words;
+// The sign-off's last character finishes appearing at this point in each typing cycle
+const signoffChars = signoffWords.flat();
+const LAST_INDEX = signoffChars.length ? signoffChars[signoffChars.length - 1].i : 0;
+const TYPED_MS = Math.round((LAST_INDEX * CHAR_DELAY + CHAR_DURATION) * 1000);
 
 function Typed({ words }: { words: { ch: string; i: number }[][] }) {
   return (
@@ -48,9 +52,26 @@ function Typed({ words }: { words: { ch: string; i: number }[][] }) {
   );
 }
 
-export default function TypewriterBio() {
+interface TypewriterBioProps {
+  /** Called once, when "— Just Hold No Bounds." has finished typing for the first time (immediately under reduced motion) */
+  onTyped?: () => void;
+}
+
+export default function TypewriterBio({ onTyped }: TypewriterBioProps) {
   const [cycle, setCycle] = useState(0);
   const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (!onTyped) return;
+    if (reduceMotion) {
+      onTyped();
+      return;
+    }
+    const id = window.setTimeout(onTyped, TYPED_MS);
+    return () => window.clearTimeout(id);
+    // Fire for the first typing pass only; later replays don't hide anything again
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduceMotion]);
 
   useEffect(() => {
     if (reduceMotion) return;
