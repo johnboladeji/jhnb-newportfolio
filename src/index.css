@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Anton", "Impact", "Arial Black", sans-serif;
+  --font-sans: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+
+  /* JHNB brand palette */
+  --color-base: #150600;      /* background (dark mode) */
+  --color-primary: #983a28;   /* brand fills: buttons, logo mark, headline word */
+  --color-secondary: #4e1d09; /* drawer panel, particle field */
+  --color-tertiary: #ffd0a1;  /* small accent text, hovers, focus, energy lines */
+  --color-cream: #f1e6ce;     /* text and outlines (replaces white) */
+
+  --animate-marquee: marquee 40s linear infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* the landing page is a single 100vh screen; the drawer scrolls internally */
+  background: #150600;
+  color: #f1e6ce;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #983a28;
+  color: #f1e6ce;
+}
+
+/* Outlined headline: 1px on mobile, thicker on larger breakpoints */
+.text-stroke {
+  color: transparent;
+  -webkit-text-stroke: 1px #f1e6ce;
+}
+@media (min-width: 768px) {
+  .text-stroke { -webkit-text-stroke-width: 1.5px; }
+}
+@media (min-width: 1280px) {
+  .text-stroke { -webkit-text-stroke-width: 2px; }
+}
+
+.text-stroke-faint {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(241, 230, 206, 0.15);
+}
+
+/* "View Me" caption: holds, then rolls forward one copy-width; faster while hovered */
+@keyframes view-me-roll {
+  0%, 65% { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+.view-me-roll {
+  animation: view-me-roll 3.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.group:hover .view-me-roll,
+.group:focus-visible .view-me-roll {
+  animation-duration: 1.2s;
+}
+
+/* ---- Interaction FX (see InteractionFX.tsx / RollText.tsx) ------------------------------------------ */
+
+/* Cursor follower: peach dot + trailing ring. Hidden until a mouse moves; never on touch. */
+.fx-cursor-dot,
+.fx-cursor-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 70;
+  pointer-events: none;
+  border-radius: 9999px;
+  opacity: 0;
+  transition: opacity 0.3s ease, width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 0.3s ease, border-color 0.3s ease;
+  will-change: transform;
+}
+.fx-cursor-dot { width: 6px; height: 6px; background: #ffd0a1; }
+.fx-cursor-ring { width: 34px; height: 34px; border: 1px solid rgba(255, 208, 161, 0.55); }
+.fx-cursor-on .fx-cursor-dot,
+.fx-cursor-on .fx-cursor-ring { opacity: 1; }
+.fx-cursor-ring.is-active { width: 64px; height: 64px; background: rgba(255, 208, 161, 0.1); border-color: #ffd0a1; }
+.fx-cursor-ring.is-pressed { width: 26px; height: 26px; background: rgba(255, 208, 161, 0.25); }
+
+/* Magnetic elements spring back smoothly after the pointer leaves */
+[data-magnetic] { transition-property: translate, color, background-color, border-color, opacity, transform, scale; transition-duration: 0.35s; transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+/* Spotlight: a soft light that follows the pointer inside buttons */
+.fx-spotlight { position: relative; isolation: isolate; overflow: hidden; }
+.fx-spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(90px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.45), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.fx-spotlight:hover::after { opacity: 0.6; }
+
+/* Click burst: a ring expands from the click point */
+.fx-burst {
+  position: fixed;
+  z-index: 70;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 9999px;
+  border: 1.5px solid #ffd0a1;
+  pointer-events: none;
+  animation: fx-burst 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+@keyframes fx-burst {
+  from { transform: scale(1); opacity: 0.9; }
+  to { transform: scale(7); opacity: 0; }
+}
+
+/* Letter roll: each letter slides up and a copy rolls in from below, staggered */
+.fx-roll-char { display: inline-flex; flex-direction: column; height: 1lh; overflow: hidden; vertical-align: top; }
+.fx-roll-char > span { display: block; transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1); transition-delay: calc(var(--i) * 18ms); }
+.group:hover .fx-roll-char > span,
+.group:focus-visible .fx-roll-char > span { transform: translateY(-100%); }
+
+/* Visible keyboard focus everywhere */
+:focus-visible {
+  outline: 2px solid #ffd0a1;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee { animation-play-state: paused; }
+  .view-me-roll { animation: none; }
+  .fx-cursor-dot, .fx-cursor-ring, .fx-burst { display: none; }
+  .group:hover .fx-roll-char > span { transform: none; }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+  }
+}

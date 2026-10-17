@@ -1,0 +1,30 @@
+# Dependencies and build output
+node_modules
+dist
+*.tsbuildinfo
+
+# Environment variables and secrets: never commit these (.env.example is the safe template)
+.env
+.env.*
+!.env.example
+*.local
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor, OS and local tool files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+desktop.ini
+.claude/
+
+# Original, unedited photos: not used by the site (the cut-outs are hero-1/2.webp); kept local only
+public/hero/
