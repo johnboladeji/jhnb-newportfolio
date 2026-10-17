@@ -67,8 +67,9 @@ export default function HeroContent({ onViewProjects, onViewAbout }: HeroContent
           />
         </h1>
 
-        {/* Wraps to two lines at lg so it stays clear of the centred photo; one line from xl */}
-        <p className="mt-8 hidden max-w-[16rem] font-mono text-[11px] uppercase leading-relaxed tracking-[0.08em] text-tertiary lg:block xl:max-w-none">
+        {/* Always one line. Its size scales with the viewport (10.5px at 1024 → 15px from ~1430) so it never
+            reaches the photo's face; a dark halo keeps it legible where it crosses the raised hand in photo 2. */}
+        <p className="mt-8 hidden whitespace-nowrap font-mono text-[clamp(10.5px,1.05vw,15px)] font-medium uppercase leading-relaxed tracking-[0.04em] text-tertiary [text-shadow:0_1px_10px_rgba(21,6,0,0.95)] lg:block">
           {hero.tagline}
         </p>
 
