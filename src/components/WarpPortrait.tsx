@@ -10,6 +10,7 @@ import type { PortraitRig } from "../content";
  *   - Eyes lead, the head follows, the hand lags most (different spring rates) — reads as natural attention.
  *   - When the pointer is idle (or on touch screens) the eyes make small random saccades and the figure blinks.
  *   - The black-and-white + warm multiply tone is done in the shader, so it follows the warped silhouette exactly.
+ *   - Hovering with a mouse opens a soft lens around the cursor that drops the warm tone to pure black & white.
  *   - Reduced motion: one static, un-warped frame. No WebGL: falls back to a plain <img> with the same look.
  */
 
@@ -54,6 +55,9 @@ uniform vec2 uWrist;
 uniform float uHandAngle;
 uniform vec2 uHandShift;
 uniform vec3 uTone;
+uniform vec2 uLens;      // hover lens centre (image px)
+uniform float uLensR;    // lens radius (image px)
+uniform float uLensAmt;  // 0 = off, 1 = full black & white inside the lens
 
 mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }
 
@@ -88,6 +92,10 @@ void main() {
   float g = dot(t.rgb, vec3(0.299, 0.587, 0.114)) * 0.9;   // grayscale + brightness .9
   g = clamp((g - 0.5) * 1.25 + 0.5, 0.0, 1.0);              // contrast 1.25
   vec3 c = g * uTone;                                        // multiply tone
+  // Hover lens: inside a soft circle around the cursor the warm tone drops away to pure black & white.
+  // Measured in on-screen (un-warped) pixels so it sits exactly under the cursor while the figure moves.
+  float lens = (1.0 - smoothstep(0.55, 1.0, length(p - uLens) / uLensR)) * uLensAmt;
+  c = mix(c, vec3(g), lens);
   gl_FragColor = vec4(c * t.a, t.a);                         // premultiplied
 }
 `;
@@ -149,6 +157,9 @@ export default function WarpPortrait({ src, rig, alt, onError, className = "" }:
       uHandAngle: { value: 0 },
       uHandShift: { value: v2() },
       uTone: { value: new THREE.Vector3(...TONE) },
+      uLens: { value: v2(-9999, -9999) },
+      uLensR: { value: 200 },
+      uLensAmt: { value: 0 },
     };
     if (rig) {
       uniforms.uHead.value.set(...rig.head);
@@ -176,6 +187,7 @@ export default function WarpPortrait({ src, rig, alt, onError, className = "" }:
     let nextSaccade = 0;
     let nextBlink = performance.now() + 2500 + Math.random() * 3000;
     let blinkStart = -1;
+    const lens = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, over: false };
 
     const onPointer = (e: PointerEvent) => {
       if (!rig || !texture) return;
@@ -187,8 +199,23 @@ export default function WarpPortrait({ src, rig, alt, onError, className = "" }:
       target.nx = Math.max(-1, Math.min(1, (e.clientX - hx) / (window.innerWidth * 0.45)));
       target.ny = Math.max(-1, Math.min(1, (e.clientY - hy) / (window.innerHeight * 0.45)));
       lastMove = performance.now();
+      // Hover lens: only for a mouse that is over the photo
+      const over = e.pointerType === "mouse" && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      lens.over = over;
+      if (over) {
+        lens.tx = (e.clientX - r.left) / sx;
+        lens.ty = (e.clientY - r.top) / sx;
+        if (lens.amt < 0.01) {
+          lens.x = lens.tx; // appear where the cursor is, rather than sliding in from the last spot
+          lens.y = lens.ty;
+        }
+      }
+    };
+    const onLeave = () => {
+      lens.over = false;
     };
     window.addEventListener("pointermove", onPointer, { passive: true });
+    document.documentElement.addEventListener("pointerleave", onLeave);
 
     const render = () => renderer.render(scene, camera);
 
@@ -213,6 +240,13 @@ export default function WarpPortrait({ src, rig, alt, onError, className = "" }:
       cur.headY += (target.ny - cur.headY) * ease(RATE.head);
       cur.handX += (target.nx - cur.handX) * ease(RATE.hand);
       cur.handY += (target.ny - cur.handY) * ease(RATE.hand);
+
+      // Lens follows the cursor with a slight glide and fades in/out
+      lens.x += (lens.tx - lens.x) * ease(18);
+      lens.y += (lens.ty - lens.y) * ease(18);
+      lens.amt += ((lens.over ? 1 : 0) - lens.amt) * ease(lens.over ? 9 : 5);
+      uniforms.uLens.value.set(lens.x, lens.y);
+      uniforms.uLensAmt.value = lens.amt;
 
       if (rig) {
         const breathe = Math.sin(now / 1600) * 0.004; // barely-there sway so the figure never looks frozen
@@ -251,6 +285,7 @@ export default function WarpPortrait({ src, rig, alt, onError, className = "" }:
         const img = tex.image as HTMLImageElement;
         uniforms.uTex.value = tex;
         uniforms.uSize.value.set(img.naturalWidth, img.naturalHeight);
+        uniforms.uLensR.value = img.naturalWidth * 0.26;
         // Drawing buffer = image size: gives the canvas the photo's intrinsic aspect ratio for CSS (h-full w-auto)
         renderer.setPixelRatio(1);
         renderer.setSize(img.naturalWidth, img.naturalHeight, false);
@@ -267,6 +302,7 @@ export default function WarpPortrait({ src, rig, alt, onError, className = "" }:
       disposed = true;
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onPointer);
+      document.documentElement.removeEventListener("pointerleave", onLeave);
       texture?.dispose();
       geometry.dispose();
       material.dispose();
