@@ -224,8 +224,377 @@ export const posts = [
   { title: "Designing fintech for Nigerian and American users", date: "TODO", url: "#" },
 ];
 
-/** Writing → Content Design (UX writing / content design samples). TODO: add pieces; empty shows "coming soon". */
-export const contentDesign: { title: string; meta: string; url: string }[] = [];
+/* ---- Writing → Content Design (rendered by ContentDesign.tsx) ------------------------------------------- */
+/* Inline markup in any text: **bold**, *italic*, {variable}. Images live in public/writing/. */
+
+export type WritingBlock =
+  | { kind: "p"; text: string }
+  | { kind: "h"; text: string }
+  /** Toggle between whole versions (e.g. first draft ⇄ final), each a list of labelled lines */
+  | { kind: "versions"; versions: { label: string; rows: { label: string; text: string; count?: string }[] }[] }
+  /** Row-by-row before → after, shown as a redline (or either side alone) */
+  | { kind: "redline"; beforeLabel: string; afterLabel: string; rows: { label: string; before: string; after: string }[] }
+  /** The same message for different markets, switchable */
+  | { kind: "markets"; markets: { code: string; name: string; rows: { label: string; text: string }[] }[] }
+  /** A chat transcript per version, replayed as messages arrive */
+  | { kind: "chat"; versions: { label: string; messages: { from: "bot" | "buyer"; text: string }[] }[] }
+  /** A quoted piece of copy, with phrases to mark up */
+  | { kind: "specimen"; label: string; text: string; marks?: string[] }
+  | { kind: "terms"; rows: { use: string; instead: string[]; why: string }[] }
+  /** Numbered decisions or trade-offs */
+  | { kind: "decisions"; head: [string, string]; rows: { title: string; text: string }[] }
+  /** Before/after screenshots with a draggable divider (images must share a size) */
+  | { kind: "compare"; before: { src: string; alt: string; label: string }; after: { src: string; alt: string; label: string }; caption: string }
+  | { kind: "shots"; items: { src: string; alt: string; label: string; final?: boolean }[]; caption: string }
+  /** Strings with their character counts, side by side */
+  | { kind: "chars"; items: { lang: string; text: string }[]; note: string }
+  /** Survey results as rows of dots */
+  | { kind: "dots"; total: number; items: { n: number; label: string }[]; note: string }
+  /** Policy text before/after with readability scores */
+  | {
+      kind: "readability";
+      before: { title: string; text: string };
+      after: { title: string; text: string }[];
+      measures: { label: string; before: number; after: number; max: number; better: "lower" | "higher" | "none" }[];
+    }
+  /** "What I learned": a pull quote that lights up as you read */
+  | { kind: "quote"; text: string };
+
+export interface WritingSample {
+  id: string;
+  /** Tab label */
+  short: string;
+  kicker: string;
+  topic: string;
+  status: "Concept" | "Spec" | "Product" | "Shipped";
+  title: string;
+  /** One line for the index card */
+  summary: string;
+  /** Project, date, and context */
+  snapshot: string;
+  blocks: WritingBlock[];
+}
+
+export const writing = {
+  /** The struck-out first draft above the typed headline */
+  draft: "I write UX copy.",
+  headline: "I write interface words for people the product wasn't first built for.",
+  intro: [
+    "I'm Nigerian, I spent six years as a brand and creative lead for companies in Nigeria and the UK, and I now live in New Mexico. Working across those places made me notice how often a product assumes one kind of reader. \"Try again\" is good advice on a failed transfer in Chicago. In Lagos it can cost someone their money twice.",
+    "I'm finishing an M.A. in Linguistics, Rhetoric, and Composition at New Mexico Highlands University in December 2026. My thesis is about UX writing in Nigerian and American fintech, and how the words on a screen carry cultural meaning. I also teach first-year writing and work in the university's Writing Center, so most of my week goes to helping people say what they mean to a particular reader. And I build, in Figma and in React Native and Next.js, so I know what happens to a string after it leaves the doc.",
+    "Below are three case studies and two shorter pieces. Two come from products I'm building, Caira and NexusCore, and the Caira copy is now live in the app. The rest are concept projects I set for myself. I've kept my first draft in each one, because the changes are the interesting part.",
+  ],
+  glance: [
+    { n: 3, label: "Case studies" },
+    { n: 2, label: "Quick samples" },
+    { n: 1, label: "Shipped in a live app" },
+  ],
+  pdf: "/John-B-Oladeji-Content-Design-Writing-Samples.pdf",
+  howIWork: {
+    title: "How I work",
+    habits: [
+      { title: "Start with the reader's first question.", text: "Like \"Where's my money?\" or \"Why wasn't my ad approved?\"" },
+      { title: "Use their words, not the system's.", text: "That's how \"care recipient\" became \"Mummy\" and \"lifetime budget\" became \"total budget.\"" },
+      { title: "Don't let copy promise what the product can't back up.", text: "A variable sits where a real number should go until someone confirms it." },
+      { title: "Keep the first drafts.", text: "Showing what I changed is more useful than pretending I got it right the first time." },
+    ],
+    feedback:
+      "Feedback is a normal part of my week. Between the Writing Center and teaching first-year composition, I give and take critique on writing all the time, and I'm used to revising fast.",
+  },
+  samples: [
+    {
+      id: "ads",
+      short: "Ads",
+      kicker: "Case study 01",
+      topic: "Ads and monetization",
+      status: "Concept",
+      title: "A first ad, without the ad jargon",
+      summary: "Labels, buttons, helper text, and system messages for an ad flow, plus a terminology list",
+      snapshot: "Concept project, September 2026. Loop is a short-video app I made up for this brief.",
+      blocks: [
+        { kind: "p", text: "On Loop, small-business owners can turn one of their videos into an ad. In my scenario, a lot of them quit at the budget step, and most ads that get turned down never come back. I rewrote the budget step and the three system messages around it, then wrote a terminology list to keep the words consistent." },
+        { kind: "p", text: "The person I had in mind runs a bakery in Houston and sets up the ad between orders. She knows her customers well. She doesn't know what \"bid strategy\" means, and she's uneasy about spending money on something she doesn't understand." },
+        {
+          kind: "versions",
+          versions: [
+            {
+              label: "First draft",
+              rows: [
+                { label: "Label", text: "Budget type: Daily budget / Lifetime budget" },
+                { label: "Helper text", text: "Select a budget optimization strategy for your campaign's delivery." },
+                { label: "Field", text: "Bid strategy: Lowest cost / Cost cap" },
+                { label: "Button", text: "Submit" },
+                { label: "After submitting", text: "Ad submitted. Status: Pending review." },
+                { label: "Ad turned down", text: "Ad rejected. Violation of Advertising Policy 4.2." },
+                { label: "Budget spent", text: "Campaign budget depleted. Delivery halted." },
+              ],
+            },
+            {
+              label: "Final",
+              rows: [
+                { label: "Label", text: "How do you want to spend?", count: "25" },
+                { label: "Option", text: "**Daily budget.** Spend up to this amount each day.", count: "12 + 33" },
+                { label: "Option", text: "**Total budget.** Spend this amount over the whole run of your ad.", count: "12 + 48" },
+                { label: "Amount helper", text: "You can change or pause this anytime.", count: "37" },
+                { label: "Bid strategy", text: "Moved under \"Advanced settings (optional)\"" },
+                { label: "Button", text: "Submit for review", count: "17" },
+                { label: "After submitting", text: "Your ad is in review. We'll let you know when it's approved.", count: "60" },
+                { label: "Ad turned down", text: "**Your ad wasn't approved.** The video uses a song that isn't cleared for ads. Pick a sound from the ads music library and resubmit. The rest of your ad is saved. Buttons: Edit ad, See ad policies", count: "Title 23" },
+                { label: "Budget spent", text: "**Today's budget is used up.** Your ad will start showing again tomorrow. Buttons: Raise budget, OK", count: "25 + 42" },
+              ],
+            },
+          ],
+        },
+        { kind: "h", text: "What bothered me" },
+        { kind: "p", text: "\"Lifetime budget\" was the first thing to go. The lifetime of what? The ad, the account, the business? \"Optimization strategy\" and \"bid strategy\" are terms for people who run ads for a living, and she isn't one of them." },
+        { kind: "p", text: "\"Submit\" doesn't tell her the ad goes to review before anyone sees it. \"Rejected\" with a policy number gives her a code instead of a reason, and nothing to do next. And \"depleted\" and \"halted\" sound like something broke, when spending the budget is the whole point." },
+        { kind: "h", text: "Second pass" },
+        { kind: "p", text: "I went back through every string with the terminology list open beside it and caught two words I'd stopped seeing: \"pending\" and \"rejected.\" I also checked the button in Spanish, since short interface text tends to grow in translation." },
+        { kind: "chars", items: [{ lang: "English", text: "Submit for review" }, { lang: "Spanish", text: "Enviar a revisión" }], note: "Both 17 characters, so it fits as is." },
+        {
+          kind: "compare",
+          before: { src: "/writing/ad-budget-draft.webp", alt: "Budget step, first draft: Budget type with Daily and Lifetime budget, a bid strategy menu, and a Submit button", label: "First draft" },
+          after: { src: "/writing/ad-budget-final.webp", alt: "Budget step, final: How do you want to spend, with Daily and Total budget options that explain themselves, and Submit for review", label: "Final" },
+          caption: "The budget step, first draft and final. Same layout, different words. Drag to compare.",
+        },
+        {
+          kind: "shots",
+          items: [
+            { src: "/writing/ad-in-review.webp", alt: "Ads list with an In review status and the message: Your ad is in review. We will let you know when it is approved.", label: "In review" },
+            { src: "/writing/ad-not-approved.webp", alt: "Ad details with a Not approved status and a message explaining the song is not cleared for ads, with Edit ad and See ad policies", label: "Not approved" },
+            { src: "/writing/ad-budget-used.webp", alt: "Bottom sheet: Today's budget is used up. Your ad will start showing again tomorrow. Raise budget or OK", label: "Budget used up" },
+          ],
+          caption: "The three system messages in the final version. Concept screens I designed for this sample.",
+        },
+        { kind: "p", text: "For screen readers, each option's helper text is tied to its label, so \"Daily budget: Spend up to this amount each day\" is read as one item. When an ad isn't approved, focus moves to the message title so it gets announced, and no status depends on colour alone." },
+        { kind: "h", text: "The terminology list" },
+        {
+          kind: "terms",
+          rows: [
+            { use: "ad", instead: ["creative", "promotion"], why: "One word for one thing, everywhere" },
+            { use: "in review", instead: ["pending"], why: "Says what's happening and who's doing it" },
+            { use: "not approved", instead: ["rejected", "violation"], why: "Describes the ad, not the person" },
+            { use: "total budget", instead: ["lifetime budget"], why: "Plain, and it pairs with \"daily budget\"" },
+            { use: "used up", instead: ["depleted", "exhausted"], why: "Neutral. The budget did its job" },
+            { use: "paused", instead: ["stopped", "halted"], why: "Only when the advertiser chose to pause" },
+          ],
+        },
+        { kind: "h", text: "What I'd need to agree with the team" },
+        {
+          kind: "decisions",
+          head: ["Decision", "What it costs"],
+          rows: [
+            { title: "Hide bid strategy under \"Advanced settings\"", text: "Experts need one more tap, but beginners stop seeing a term they can't use. PM and engineering would have to sign off." },
+            { title: "Say exactly why an ad wasn't approved", text: "Policy and engineering have to pass the real reason into the message instead of a code." },
+            { title: "Don't promise a review time", text: "I'd add a {review_time} variable only once the team commits to a real number." },
+          ],
+        },
+        { kind: "h", text: "What I'd test" },
+        { kind: "p", text: "I'd show ten small-business owners either the first draft or the final, five each, and ask them to explain \"daily budget\" and \"total budget\" in their own words. For the not-approved message I'd run a cloze test, blanking every sixth word and asking people to fill the gaps. An average of 60% or better usually means readers understand the text. I'd also just ask each person what they'd do next." },
+        { kind: "quote", text: "The words I trusted least were the ones I'd written on autopilot. I only noticed \"pending\" because the terminology list made me look at it again." },
+      ],
+    },
+    {
+      id: "transfer",
+      short: "Errors",
+      kicker: "Case study 02",
+      topic: "Error messages",
+      status: "Spec",
+      title: "When a transfer fails",
+      summary: "One error message written two ways, for Nigeria and the US",
+      snapshot: "Spec scenario based on my thesis research, September 2026.",
+      blocks: [
+        { kind: "p", text: "A money app works in Nigeria and the US. A bank transfer fails, and the team has shipped one error message for both markets. I wrote two, because the person reading it in Lagos is worried about something different from the person reading it in Chicago." },
+        { kind: "p", text: "In Nigeria, many people have watched money leave their account on a failed transfer and then waited for a \"reversal.\" So their first question is whether the money is gone. For the US version I assumed the money hadn't moved, which makes the question simpler: can I try again?" },
+        {
+          kind: "specimen",
+          label: "The message that shipped",
+          text: "**Transaction failed.** Error code 91: Issuer or switch inoperative. Please try again later.",
+          marks: ["Error code 91: Issuer or switch inoperative.", "Please try again later."],
+        },
+        { kind: "h", text: "What's wrong with it" },
+        { kind: "p", text: "It never says where the money is, and that's the first thing both readers want to know. \"Issuer or switch inoperative\" is a log message, not a sentence. \"Try again\" is risky too: if the first attempt was debited, a second one can take the money twice. And nobody is named, so the reader can't tell whether the bank, the app, or they did something wrong." },
+        { kind: "h", text: "Two versions" },
+        {
+          kind: "markets",
+          markets: [
+            {
+              code: "NG",
+              name: "Nigeria",
+              rows: [
+                { label: "Headline", text: "Your transfer to Chidi Okafor didn't go through" },
+                { label: "First line", text: "If ₦25,000 left your account, it will come back automatically within {reversal_time}. You don't need to do anything." },
+                { label: "Guidance", text: "Please wait before sending again, so the money isn't taken twice." },
+                { label: "Buttons", text: "Check status, Talk to us" },
+              ],
+            },
+            {
+              code: "US",
+              name: "United States",
+              rows: [
+                { label: "Headline", text: "Your transfer to Jordan Lee didn't go through" },
+                { label: "First line", text: "Your money hasn't moved. $250.00 is still in your checking account." },
+                { label: "Guidance", text: "You can try again now." },
+                { label: "Buttons", text: "Try again, Get help" },
+              ],
+            },
+          ],
+        },
+        { kind: "h", text: "Why they're different" },
+        { kind: "p", text: "The Nigerian version opens with the reversal, because that's the fear, and it asks people to wait before sending again. The US version can be shorter. The money never moved, so it goes straight to the fix. Both name the recipient, since people are sending money to someone they know." },
+        { kind: "p", text: "{reversal_time} is a variable on purpose. I don't know the real window, and a number in an error message is a promise. Product and compliance would fill it in before this ships." },
+        { kind: "h", text: "What I'd test" },
+        { kind: "p", text: "Whether Nigerian users believe \"You don't need to do anything,\" or call support anyway. Support tickets after this error are the number I'd watch." },
+        { kind: "quote", text: "The same error can need opposite advice. \"Try again\" helps in one market and can cost someone money in the other." },
+      ],
+    },
+    {
+      id: "abeg",
+      short: "Chat",
+      kicker: "Case study 03",
+      topic: "Conversation design",
+      status: "Product",
+      title: "A sales chat that understands \"abeg\"",
+      summary: "Conversation design for a WhatsApp sales assistant",
+      snapshot: "A product I'm building. Copy written for this portfolio, September 2026.",
+      blocks: [
+        { kind: "p", text: "NexusCore is an AI assistant I'm building that answers WhatsApp sales chats for small businesses in Nigeria. For this sample I used a made-up fabric shop in Aba called Adaeze Fabrics, with made-up prices." },
+        { kind: "p", text: "The buyer is on their phone, has just seen a post, and wants a price. They might write in Nigerian English, Pidgin, or both in one message. They think they're talking to a person, and they expect to haggle." },
+        {
+          kind: "chat",
+          versions: [
+            {
+              label: "First draft",
+              messages: [
+                { from: "bot", text: "Hello! I am NexusCore AI Assistant. How may I assist you today? Please select an option: 1. Browse products 2. Check order status 3. Speak to agent" },
+                { from: "buyer", text: "abeg how much for the blue ankara wey you post yesterday" },
+                { from: "bot", text: "I'm sorry, I didn't understand that. Please select an option from 1 to 3." },
+              ],
+            },
+            {
+              label: "Final",
+              messages: [
+                { from: "bot", text: "Hi, welcome to Adaeze Fabrics. I'm the shop's assistant, and I'm an AI. Ask me about prices, sizes, or delivery. Adaeze can join the chat anytime." },
+                { from: "buyer", text: "abeg how much for the blue ankara wey you post yesterday" },
+                { from: "bot", text: "The blue Ankara (6 yards) is ₦18,500. We have 4 left. Should we deliver it, or will you pick it up in Aba?" },
+                { from: "buyer", text: "deliver to Enugu" },
+                { from: "bot", text: "Delivery to Enugu is ₦3,000, so your total is ₦21,500. Here's your payment link: [link]. Once you pay, Adaeze will confirm your order right here." },
+                { from: "buyer", text: "fit reduce am?" },
+                { from: "bot", text: "I can't change prices, but I'll ask Adaeze for you now. She'll reply in this chat." },
+              ],
+            },
+          ],
+        },
+        { kind: "h", text: "What was wrong" },
+        { kind: "p", text: "The buyer thinks they're messaging Adaeze Fabrics, and the bot opens by introducing my software. Then it offers a numbered menu, which isn't how anyone uses WhatsApp. When the buyer asked in Pidgin, the bot didn't understand and told them to pick a number, so the failure landed on the buyer. And \"speak to agent\" is call-centre language for a shop run by one woman." },
+        { kind: "h", text: "The decisions behind it" },
+        {
+          kind: "decisions",
+          head: ["Decision", "Why"],
+          rows: [
+            { title: "Say \"I'm an AI\" in the first message", text: "Buyers expect a person. Being upfront now protects the shop's trust later." },
+            { title: "Understand Pidgin, reply in plain Nigerian English", text: "A bot that copies Pidgin can come across as mocking. I'd test this rather than assume it." },
+            { title: "Hand haggling to the owner", text: "Haggling is part of the sale. A flat \"no\" from a bot ends it." },
+            { title: "One question per message", text: "Short turns suit a phone and a buyer who's half paying attention." },
+            { title: "Give the full total before the payment link", text: "Nobody likes a surprise at the payment step." },
+          ],
+        },
+        { kind: "h", text: "What I'd test" },
+        { kind: "p", text: "How many chats reach the payment link, and whether buyers who see \"I'm an AI\" leave sooner. With shop owners' agreement, I'd also try a version that replies in Pidgin." },
+        { kind: "quote", text: "Some problems aren't about wording. Haggling needed a handoff to the owner, and no amount of polishing would have made the bot's \"no\" work." },
+      ],
+    },
+    {
+      id: "onboarding",
+      short: "Onboarding",
+      kicker: "Quick sample A",
+      topic: "Onboarding copy",
+      status: "Shipped",
+      title: "Onboarding that speaks like family",
+      summary: "Real onboarding copy, shipped in the live app and shaped by a user survey",
+      snapshot: "A product I'm building. Both the before and the after come from the live app. The new copy shipped in October 2026, informed by a small survey I ran in July 2026.",
+      blocks: [
+        { kind: "p", text: "Caira helps families coordinate care for someone they love. Its splash screens already had the voice I wanted (\"Close to home, from anywhere\"), so I left them alone. The trouble was in the first two setup screens: guidance hidden inside the fields, a label people could misread, and a lot of questions before the app had earned any trust." },
+        { kind: "p", text: "In July I sent a short discovery survey to people helping care for a parent. Six people answered, and one early tester sent separate feedback. That's a small group, so I read it as direction rather than proof." },
+        {
+          kind: "dots",
+          total: 6,
+          items: [
+            { n: 5, label: "share care with siblings or other relatives, which is why the circle and its name matter so much" },
+            { n: 4, label: "keep up mainly by phone or video call; one said they could only guess how their parent was doing from the sound of their voice" },
+            { n: 6, label: "live in Nigeria, just in a different town or state from their parent" },
+          ],
+          note: "Six survey respondents, July 2026",
+        },
+        { kind: "p", text: "When I asked what would make them trust an app with this, the answers were words like integrity and legitimate. So the setup form had to feel careful, not nosy." },
+        { kind: "p", text: "The survey also checked an assumption of mine. I'd been thinking of Caira as a product for families abroad, but all six respondents live in Nigeria. The splash line \"across cities or oceans\" already covers both groups, so it stayed." },
+        {
+          kind: "redline",
+          beforeLabel: "Before",
+          afterLabel: "After (shipped)",
+          rows: [
+            { label: "Choose a path", before: "No — Create a circle. Start a new care circle for your loved one. / Yes — I have an invite code. Join a circle you've been invited to. Emoji icons and a separate Continue button.", after: "Start a new circle. For someone you're caring for. / Join with an invite code. If someone in your family invited you. Real icons, and tapping a card moves you on." },
+            { label: "Form heading", before: "About the circle. Who is this care circle for?", after: "Who is this circle for?" },
+            { label: "Their name", before: "A hint inside the field only: e.g. Mama Adeyemi", after: "Below the field: *Use what the family calls them, like Mama, Baba, or Aunty Funke.*" },
+            { label: "Their email", before: "A hint inside the field only: If they'll use the app", after: "Under \"Add more details (optional),\" with the hint below the field: *Only if they'll use Caira themselves.*" },
+            { label: "Family name", before: "Family name (e.g. Adeyemi Family)", after: "Name your circle. *This is how your circle will appear in the app.*" },
+            { label: "Privacy", before: "Nothing", after: "*Only people you invite can see this circle.*" },
+            { label: "Language", before: "English, next to a greyed-out \"More coming soon\" chip", after: "Removed until a second language ships" },
+            { label: "Create circle", before: "Greyed out, with no reason given", after: "Greyed out, with *Add their name and your relationship to continue* underneath" },
+          ],
+        },
+        {
+          kind: "compare",
+          before: { src: "/writing/caira-path-before.webp", alt: "Old Caira screen with No, create a circle and Yes, I have an invite code, using emoji", label: "Before" },
+          after: { src: "/writing/caira-path-after.webp", alt: "Shipped Caira screen with Start a new circle and Join with an invite code, using icons", label: "After, shipped" },
+          caption: "Choosing a path in the live Caira app. Drag to compare.",
+        },
+        {
+          kind: "shots",
+          items: [
+            { src: "/writing/caira-form-before.webp", alt: "Old About the circle form with every hint inside its field and a language row", label: "Before" },
+            { src: "/writing/caira-form-after.webp", alt: "Shipped Who is this circle for form with hints below the fields and a privacy note", label: "After, shipped", final: true },
+          ],
+          caption: "The create-circle form in the live Caira app.",
+        },
+        { kind: "p", text: "The biggest change is where the help lives. A hint inside a field disappears the moment you start typing, and screen readers don't reliably announce it, so every hint moved below its field. \"Family name\" reads like a surname, so it became \"Name your circle.\" Email, phone, and location went behind an optional expander, which takes the form from six text fields down to three before anything is saved. And the \"No —\" and \"Yes —\" choices now lead with the action, so nobody has to translate yes or no into what happens next." },
+        { kind: "p", text: "One line changed on the way to release. I'd drafted \"Everyone you invite will see this\" under the circle name, but I couldn't confirm the app works exactly that way, so the shipped helper only says what's certain. The privacy line went in the same way: only after checking that invited members really are the only people who can see a circle." },
+        { kind: "p", text: "The splash screens are next. I want \"Close to home, from anywhere\" to open the carousel instead of closing it, and the Skip button needs a backing so it stays readable over the photos." },
+      ],
+    },
+    {
+      id: "policy",
+      short: "Policy",
+      kicker: "Quick sample B",
+      topic: "Plain language",
+      status: "Concept",
+      title: "A policy page students will read",
+      summary: "Plain language, with a measured readability change",
+      snapshot: "Concept project, September 2026. Modelled on common writing-center policies, not my university's actual one.",
+      blocks: [
+        { kind: "p", text: "A lot of booking policies open with the penalty. For a first-generation student who's already nervous about their writing, that's the first thing they read. I rewrote it to start with what happens in a session." },
+        {
+          kind: "readability",
+          before: {
+            title: "Appointment Policy.",
+            text: "Students are required to schedule appointments a minimum of 24 hours in advance via the online scheduling system. Failure to appear for a scheduled appointment without prior cancellation will result in a no-show being recorded. Students accumulating three (3) no-shows within a single academic semester will have their scheduling privileges suspended for the remainder of said semester. Tutors are not responsible for proofreading or editing student work.",
+          },
+          after: [
+            { title: "Book a session", text: "Sessions are free and last 45 minutes. Book at least a day ahead. Bring your assignment prompt and whatever you have, even just notes." },
+            { title: "What we will do together", text: "We will work on your ideas, your structure, and the patterns in your writing. We won't edit your paper for you. We will show you how to find and fix errors yourself." },
+            { title: "If you can't make it", text: "Cancel in the app, even at the last minute. It frees the slot for another student. If you miss 3 sessions in a semester without cancelling, you can still come to drop-in hours for the rest of that semester." },
+          ],
+          measures: [
+            { label: "Words", before: 69, after: 108, max: 120, better: "none" },
+            { label: "Flesch-Kincaid grade", before: 13.9, after: 3.5, max: 16, better: "lower" },
+            { label: "Flesch reading ease (higher is easier)", before: 26, after: 86, max: 100, better: "higher" },
+          ],
+        },
+        { kind: "p", text: "I scored both versions with the textstat Python library, counting headings as sentences, so anyone can rerun the numbers. The new version is longer because it answers what the old one skipped: what to bring and what happens in the session. The line I'm happiest with is the last one. \"Scheduling privileges suspended\" became \"you can still come to drop-in hours.\" Same rule, but the student keeps a way back in." },
+      ],
+    },
+  ] as WritingSample[],
+};
 
 export const about = {
   /** Sticky headline under the "About Me" title, typed continuously */

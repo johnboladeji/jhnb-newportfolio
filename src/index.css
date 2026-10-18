@@ -4,6 +4,7 @@
   --font-display: "Anton", "Impact", "Arial Black", sans-serif;
   --font-sans: "Space Grotesk", "Inter", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  --font-serif: "Newsreader", Georgia, serif; /* editorial italics (Content Design) */
 
   /* JHNB brand palette */
   --color-base: #150600;      /* background (dark mode) */

@@ -25,6 +25,7 @@ Change it there; no component edits needed.
 | `jhnb-icon.png` | Header logo, a 144px copy of `JHNB IDENTITY ICON wt BG.png`. Added. |
 | `jhnb-wordmark.png` | 600px-wide copy of the wordmark. Not currently used. |
 | `favicon.png` | Browser tab and home-screen icon. Added. |
+| `writing/`, `John-B-Oladeji-Content-Design-Writing-Samples.pdf` | Content Design screenshots and the downloadable samples PDF. Added. |
 | `work/caira/` | Caira case-study screens (`screen-*.webp`, status bars cropped) and logos. Added. |
 
 
@@ -60,6 +61,7 @@ src/
     FooterMarquee.tsx          outlined infinite marquee + © / email line (z-30)
     InfoDrawer.tsx             spring side panel: menu, projects, about, writing, resume, contact (z-50)
     Works.tsx                  Selected Works list, covers, case-study view
+    ContentDesign.tsx          Writing ▸ Content Design samples (content: `writing` in content.ts)
     CairaStudy.tsx             Caira's rich case study + cover (content: `cairaStudy` in content.ts)
 ```
 

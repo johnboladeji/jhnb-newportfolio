@@ -1,11 +1,12 @@
 import { lazy, Suspense, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowUpRight, ChevronDown, Download, LayoutGrid, Maximize2, Menu, Minimize2, X } from "lucide-react";
-import { contact, contentDesign, menu, posts, projects, resume, worksHeadline } from "../content";
+import { contact, menu, posts, projects, resume, worksHeadline } from "../content";
 import RollText from "./RollText";
 import DrawerPortraits from "./DrawerPortraits";
 import AboutSection from "./AboutSection";
 import TypeLoop from "./TypeLoop";
+import ContentDesignSection from "./ContentDesign";
 // Physics capsules (matter-js) load only when Let's Work opens, keeping the engine out of the first page load
 const SkillCapsules = lazy(() => import("./SkillCapsules"));
 import { CaseStudy, WorksList } from "./Works";
@@ -51,7 +52,7 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
   const canExpand = view !== "menu";
   const isFull = full && canExpand;
   // About and Projects share a layout: pinned header, own inner scroller, full width (no max-width) in full screen
-  const pinned = view === "about" || view === "projects";
+  const pinned = view === "about" || view === "projects" || view === "contentDesign";
   const [wide, setWide] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
@@ -211,7 +212,7 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
                     />
                   </header>
                 )}
-                {view !== "about" && view !== "projects" && (
+                {view !== "about" && view !== "projects" && view !== "contentDesign" && (
                   <h2
                     id="drawer-title"
                     className={view === "menu" ? "sr-only" : "mb-8 font-display text-5xl uppercase text-cream sm:text-6xl"}
@@ -248,7 +249,7 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
                     {view === "caseStudy" && (
                       <CaseStudy slug={caseSlug} onOpen={setCaseSlug} onLetsWork={() => onNavigate("contact")} scrollRef={scrollRef} />
                     )}
-                    {view === "contentDesign" && <ContentDesignView />}
+                    {view === "contentDesign" && <ContentDesignSection full={isFull} />}
                     {view === "articles" && <ArticlesView />}
                     {view === "about" && <AboutSection full={isFull} onLetsWork={() => onNavigate("contact")} />}
                     {view === "resume" && <ResumeView />}
@@ -379,26 +380,6 @@ function Row({ children }: { children: ReactNode }) {
 /** External links open in a new tab; #anchors and site paths stay in place. */
 function linkProps(url: string) {
   return /^https?:\/\//.test(url) ? { href: url, target: "_blank", rel: "noopener noreferrer" } : { href: url };
-}
-
-function ContentDesignView() {
-  if (contentDesign.length === 0) {
-    return <p className="max-w-prose text-[16px] leading-relaxed text-cream/85">Content design samples are on the way.</p>;
-  }
-  return (
-    <ul>
-      {contentDesign.map((p) => (
-        <Row key={p.title}>
-          <a {...linkProps(p.url)} className="group block">
-            <span className="block text-xl font-medium text-cream underline-offset-4 decoration-2 transition-colors group-hover:text-tertiary group-hover:underline group-active:text-cream group-active:decoration-primary">
-              {p.title}
-            </span>
-            <span className="mt-1 block font-mono text-xs text-cream/70">{p.meta}</span>
-          </a>
-        </Row>
-      ))}
-    </ul>
-  );
 }
 
 function ArticlesView() {
