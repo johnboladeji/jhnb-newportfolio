@@ -102,13 +102,117 @@ export const menu = [
 
 export const marquee = "JHNB - JUST HOLD NO BOUNDS // JHNB - JUST HOLD NO BOUNDS // ";
 
-/** `meta` is the small label on the right: your role, a year, or a status. */
-export const projects = [
-  { name: "Caira", type: "Eldercare coordination app for diaspora families", meta: "Founder", url: "https://cairacare.com" },
-  { name: "Unelo", type: "AI translation and interpretation app", meta: "Founder", url: "#" }, // TODO: link
-  { name: "NexusCore", type: "AI WhatsApp sales assistant for Nigerian small businesses", meta: "Founder", url: "#" }, // TODO: link
-  { name: "CARF", type: "Culturally Attentive Rhetorical Framework for UX writing", meta: "M.A. thesis", url: "#" }, // TODO: link
-  { name: "TokenForge", type: "Dev & Design bootcamp capstone", meta: "Capstone", url: "#" }, // TODO: link
+export interface Project {
+  slug: string;
+  name: string;
+  /** One-line description shown in the list */
+  type: string;
+  role: string;
+  year: string;
+  /** Live link, or "" when there isn't one yet */
+  url: string;
+  /** Optional real cover (e.g. "/work/caira.webp"); without it a branded cover is generated */
+  cover?: string;
+  /** Cover glyph and accent for the generated cover */
+  icon: "heart-handshake" | "cpu" | "truck" | "languages" | "book-open" | "graduation-cap";
+  accent: "coral" | "amber" | "peach";
+  tags: string[];
+  /** Case study (only facts from the CV / site; fill the TODOs with real details) */
+  summary: string;
+  did: string[];
+  outcome?: string;
+}
+
+/** Selected Works, in display order. Each opens a case study in the drawer. */
+export const projects: Project[] = [
+  {
+    slug: "caira",
+    name: "Caira",
+    type: "Eldercare coordination for diaspora families",
+    role: "Founder & Product Lead",
+    year: "2024 — Today",
+    url: "https://cairacare.com",
+    icon: "heart-handshake",
+    accent: "coral",
+    tags: ["Product strategy", "Brand identity", "User research", "Mobile app", "Backend"],
+    summary: "A platform for families coordinating the care of ageing loved ones across borders.",
+    did: [
+      "Led the venture end to end: brand identity, user research, product design, and full-stack development of the mobile app and backend.",
+      "Designed the coordination model: shared tasks, check-ins and cross-border care-support workflows for globally dispersed families.",
+    ],
+    // TODO: add an outcome (users, pilots, launches) and a real cover at public/work/caira.webp
+  },
+  {
+    slug: "nexuscore",
+    name: "NexusCore",
+    type: "AI-powered sales & payments for Nigerian SMBs",
+    role: "Full-Stack Product Lead",
+    year: "2025 — Today",
+    url: "", // TODO: link
+    icon: "cpu",
+    accent: "amber",
+    tags: ["AI", "Fintech", "WhatsApp", "Payments"],
+    summary: "An AI-powered financial platform for the Nigerian small businesses the formal economy overlooks.",
+    did: [
+      "Built a WhatsApp-based AI sales assistant integrated with automated payment routing, for merchants operating outside the formal banking economy.",
+    ],
+  },
+  {
+    slug: "mova",
+    name: "MOVA",
+    type: "Last-mile logistics marketplace for Lagos",
+    role: "Design Engineer",
+    year: "In development",
+    url: "",
+    icon: "truck",
+    accent: "peach",
+    tags: ["Logistics", "Marketplace", "Design engineering"],
+    summary: "A coordinated fulfilment platform for last-mile delivery in Lagos.",
+    did: ["Designing the platform that connects vendors, delivery riders and customers in one coordinated flow."],
+  },
+  {
+    slug: "carf",
+    name: "CARF",
+    type: "Culturally Attentive Rhetorical Framework",
+    role: "M.A. thesis · Researcher",
+    year: "2025 — 2026",
+    url: "", // TODO: link to the thesis or a write-up
+    icon: "book-open",
+    accent: "amber",
+    tags: ["Research", "UX writing", "Fintech", "CTDA", "Value Sensitive Design"],
+    summary:
+      "Decolonizing the Interface: a rhetorical framework for culturally attentive UX writing in Nigerian and American fintech platforms.",
+    did: [
+      "Combines Critical Technocultural Discourse Analysis with Value Sensitive Design to examine how fintech interfaces encode cultural assumptions across national contexts.",
+      "Moves from that analysis toward more just, human-centred design that teams can apply to interface language and microcopy.",
+    ],
+  },
+  {
+    slug: "unelo",
+    name: "Unelo",
+    type: "AI translation and interpretation app",
+    role: "Founder",
+    year: "", // TODO: year
+    url: "", // TODO: link
+    icon: "languages",
+    accent: "coral",
+    tags: ["AI", "Language", "Mobile app"],
+    summary: "An AI translation and interpretation app.",
+    did: [], // TODO: what you did on Unelo
+  },
+  {
+    slug: "tokenforge",
+    name: "TokenForge",
+    type: "Dev & Design Academy capstone",
+    role: "Capstone project",
+    year: "2025 — 2026",
+    url: "", // TODO: link
+    icon: "graduation-cap",
+    accent: "peach",
+    tags: ["UI/UX", "AI-assisted MVP", "Product thinking"],
+    summary: "Capstone for the Dev & Design Academy programme in UI/UX design, AI-assisted MVP development and product thinking.",
+    did: [], // TODO: what TokenForge is and what you built
+  },
 ];
 
 /** Writing → Articles. TODO: replace with your real articles, or remove items. */
@@ -228,6 +332,26 @@ export const socials = [
   { label: "Instagram", icon: "instagram", url: "https://instagram.com/" },
   { label: "Google Scholar", icon: "scholar", url: "https://scholar.google.com/" },
 ] as const;
+
+/** Let's Work → skill capsules that rain down and pile up (drag to fling). Order sets the drop order. */
+export const skills = [
+  "Product Design",
+  "Design Engineering",
+  "UX Writing",
+  "Design Systems",
+  "User Research",
+  "Culturally Attentive UX",
+  "Brand Identity",
+  "React Native",
+  "Next.js",
+  "TypeScript",
+  "Prototyping",
+  "Content Strategy",
+  "Fintech",
+  "AI-Assisted Building",
+  "Packaging Design",
+  "Value Sensitive Design",
+];
 
 export const contact = {
   /** Enquiries go here when no form endpoint is set (opens the visitor's email app). */

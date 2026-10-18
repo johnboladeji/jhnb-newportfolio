@@ -109,7 +109,11 @@ The application relies on a single-view React `App.tsx` utilizing a layered z-in
 *   **Structure**: 
     *   Top bar (no fill, a hairline bottom border, fixed above the scrolling content) with a close button, a full-screen toggle on content views, and a dynamic back/menu button.
     *   Main menu (from `menu` in `content.ts`): "Home", "Projects", "About Me", "Writing" (expands to "Content Design" and "Articles"), "Resume", "Let's Work". Large bold Space Grotesk (`text-[2.5rem]`, `sm:text-6xl`), cream, items stagger in. Three distinct states: **hover** = peach `tertiary` text + slide right + letter roll; **current/selected** (Home = current page, Writing when open) = coral `primary-soft` text (`#F0937A`, a light tint of primary; 6.1:1 on the drawer) plus a thick `primary` bar under the label and a `primary` rule-and-dot marker; **pressed** = cream text, the `primary` bar flashes in, slight scale-down. Drawer buttons follow the same split: hover fills `tertiary`, pressed fills `primary` (submit: pressed fills `cream`).
-    *   **PROJECTS**: Caira (eldercare coordination app for diaspora families, links to https://cairacare.com), Unelo (AI translation and interpretation app), NexusCore (AI WhatsApp sales assistant for Nigerian small businesses), CARF (Culturally Attentive Rhetorical Framework, M.A. thesis), TokenForge (bootcamp capstone).
+    *   **SELECTED WORKS** (`Works.tsx`, data in `projects` in `content.ts`):
+        *   **List:** numbered rows (Caira, NexusCore, MOVA, CARF, Unelo, TokenForge). Each row has a big accent-coloured number, a rule that draws in on hover, the name and one-liner, and a 16:10 cover with a "VIEW CASE STUDY" pill on hover. Rows rise in on scroll.
+        *   **Covers:** `project.cover` when set; otherwise a generated on-brand cover (warm dark field, a drifting accent glow, a dot grid, the project glyph, and the name in huge outlined Anton).
+        *   **Case study** (`caseStudy` view, Back returns to the list): cover, Role / When / What-it-is facts (amber labels), the summary in the project accent with an amber rule, WHAT I DID (amber checks), optional OUTCOME, FOCUS tags, VISIT and START SOMETHING SIMILAR (opens Let's Work), and a NEXT PROJECT link.
+        *   **Copy:** facts from the CV only; unknowns are TODOs in `content.ts`.
     *   **CONTENT DESIGN**: `contentDesign` from `content.ts` ("on the way" message while empty).
     *   **ARTICLES**: `posts` from `content.ts`.
     *   **ABOUT** (`AboutSection.tsx` + `AboutDeck.tsx` + `ExperienceList.tsx`): fills exactly the height under the drawer bar; the outer drawer doesn't scroll, only the two segments do, each independently.
@@ -130,6 +134,11 @@ The application relies on a single-view React `App.tsx` utilizing a layered z-in
         *   Custom Select element with options having `bg-secondary`.
         *   Solid `#983A28` submit button with `#F1E6CE` text.
         *   Submits to `VITE_FORM_ENDPOINT` (Formspree) if set; otherwise opens a prefilled email to `johnboladeji@gmail.com`. Sending, sent, and error states, plus a hidden honeypot field.
+        *   **Skill capsules** (`SkillCapsules.tsx`, `skills` in `content.ts`, uses `matter-js`): under the form, a "WHAT I CAN HELP WITH" pit.
+            *   The skills rain in as brand-coloured pill bodies (staggered 140ms, random x and tilt) and pile up with real physics: bounce, friction, rotation.
+            *   Grab and fling any capsule (spring constraint). DROP AGAIN re-runs the rain.
+            *   The simulation starts when the pit scrolls into view, pauses off-screen or in hidden tabs, keeps its walls on resize, and is torn down on unmount.
+            *   The capsules are a real list for screen readers. Under reduced motion they become a static wrapped list.
 
 ### 3.8. Hover states (all interactive elements)
 *   Hover changes must be clearly visible, using only palette colours with strong contrast:

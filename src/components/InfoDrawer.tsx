@@ -1,12 +1,15 @@
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowUpRight, ChevronDown, Download, Maximize2, Menu, Minimize2, X } from "lucide-react";
 import { contact, contentDesign, menu, posts, projects, resume } from "../content";
 import RollText from "./RollText";
 import DrawerPortraits from "./DrawerPortraits";
 import AboutSection from "./AboutSection";
+// Physics capsules (matter-js) load only when Let's Work opens, keeping the engine out of the first page load
+const SkillCapsules = lazy(() => import("./SkillCapsules"));
+import { CaseStudy, WorksList } from "./Works";
 
-export type DrawerView = "menu" | "projects" | "about" | "contentDesign" | "articles" | "resume" | "contact";
+export type DrawerView = "menu" | "projects" | "caseStudy" | "about" | "contentDesign" | "articles" | "resume" | "contact";
 
 interface InfoDrawerProps {
   open: boolean;
@@ -17,7 +20,8 @@ interface InfoDrawerProps {
 
 const TITLES: Record<DrawerView, string> = {
   menu: "Menu",
-  projects: "Projects",
+  projects: "Selected works",
+  caseStudy: "Case study",
   about: "About me",
   contentDesign: "Content design",
   articles: "Articles",
@@ -32,6 +36,12 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
   const closeRef = useRef<HTMLButtonElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const headRef = useRef<HTMLDivElement>(null);
+  // Which project the case-study view shows
+  const [caseSlug, setCaseSlug] = useState(projects[0].slug);
+  const openCase = (slug: string) => {
+    setCaseSlug(slug);
+    onNavigate("caseStudy");
+  };
   // Full-screen reading mode for content views (not the menu); resets whenever the drawer closes
   const [full, setFull] = useState(false);
   useEffect(() => {
@@ -86,10 +96,10 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
     return () => ro.disconnect();
   }, [open]);
 
-  // Reset scroll when switching views
+  // Reset scroll when switching views (or moving to the next case study)
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
-  }, [view]);
+  }, [view, caseSlug]);
 
   return (
     <AnimatePresence>
@@ -130,7 +140,7 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
               ) : (
                 <button
                   type="button"
-                  onClick={() => onNavigate("menu")}
+                  onClick={() => onNavigate(view === "caseStudy" ? "projects" : "menu")}
                   className="flex items-center gap-2 font-mono text-xs tracking-[0.2em] text-cream/80 transition-colors hover:text-tertiary underline-offset-[6px] decoration-2 hover:underline active:text-cream active:decoration-primary"
                 >
                   <ArrowLeft size={16} aria-hidden="true" />
@@ -165,7 +175,7 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
             </div>
 
             {/* About lays itself out to fit exactly and scrolls inside its own segments, so the outer scroller is locked */}
-            <div ref={scrollRef} className={`relative z-10 flex-1 ${view === "about" ? "overflow-hidden" : "overflow-y-auto"}`}>
+            <div ref={scrollRef} className={`fx-scroll relative z-10 flex-1 ${view === "about" ? "overflow-hidden" : "overflow-y-auto"}`}>
               {/* About fills exactly the height under the bar so only its segments scroll */}
               <div
                 className={
@@ -180,13 +190,13 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
                     id="drawer-title"
                     className={view === "menu" ? "sr-only" : "mb-8 font-display text-5xl uppercase text-cream sm:text-6xl"}
                   >
-                    {TITLES[view]}
+                    {view === "caseStudy" ? (projects.find((p) => p.slug === caseSlug)?.name ?? TITLES.caseStudy) : TITLES[view]}
                   </h2>
                 )}
 
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={view}
+                    key={view === "caseStudy" ? `case-${caseSlug}` : view}
                     initial={{ opacity: 0, x: 24 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -24 }}
@@ -194,12 +204,22 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
                     className={view === "about" ? "flex min-h-0 flex-1 flex-col" : undefined}
                   >
                     {view === "menu" && <MenuView onNavigate={onNavigate} onClose={onClose} />}
-                    {view === "projects" && <ProjectsView />}
+                    {view === "projects" && <WorksList onOpen={openCase} />}
+                    {view === "caseStudy" && (
+                      <CaseStudy slug={caseSlug} onOpen={setCaseSlug} onLetsWork={() => onNavigate("contact")} />
+                    )}
                     {view === "contentDesign" && <ContentDesignView />}
                     {view === "articles" && <ArticlesView />}
                     {view === "about" && <AboutSection full={isFull} onLetsWork={() => onNavigate("contact")} />}
                     {view === "resume" && <ResumeView />}
-                    {view === "contact" && <ContactView />}
+                    {view === "contact" && (
+                      <>
+                        <ContactView />
+                        <Suspense fallback={null}>
+                          <SkillCapsules />
+                        </Suspense>
+                      </>
+                    )}
                   </motion.div>
                 </AnimatePresence>
               </div>
@@ -319,26 +339,6 @@ function Row({ children }: { children: ReactNode }) {
 /** External links open in a new tab; #anchors and site paths stay in place. */
 function linkProps(url: string) {
   return /^https?:\/\//.test(url) ? { href: url, target: "_blank", rel: "noopener noreferrer" } : { href: url };
-}
-
-function ProjectsView() {
-  return (
-    <ul>
-      {projects.map((p) => (
-        <Row key={p.name}>
-          <a {...linkProps(p.url)} className="group flex items-baseline justify-between gap-4">
-            <span>
-              <span className="block font-display text-3xl uppercase text-cream underline-offset-[6px] decoration-2 transition-colors group-hover:text-tertiary group-hover:underline group-active:text-cream group-active:decoration-primary">
-                {p.name}
-              </span>
-              <span className="mt-1 block text-sm text-cream/70">{p.type}</span>
-            </span>
-            <span className="font-mono text-xs text-cream/70">{p.meta}</span>
-          </a>
-        </Row>
-      ))}
-    </ul>
-  );
 }
 
 function ContentDesignView() {

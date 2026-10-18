@@ -49,6 +49,8 @@ Run `npm run build` after changes to confirm nothing broke.
   - `FooterMarquee.tsx` — outlined marquee plus the © / email footer line (z-30).
   - `InfoDrawer.tsx` — side drawer (z-50): menu (Home, Projects, About Me, Writing ▸ Content Design / Articles, Resume, Let's Work), sub-views, contact form.
   - `DrawerPortraits.tsx` — studio portraits blended into the drawer's right edge, sliding right → left (`drawerImages`).
+  - `Works.tsx` — Selected Works list, generated project covers, case-study view (`projects` in content.ts).
+  - `SkillCapsules.tsx` — physics skill capsules under the Let's Work form (`skills`; uses matter-js).
   - `AboutSection.tsx` — About Me shell: pinned title + typed headline (`TypeLoop.tsx`), Overview/Experience segments (tabs, or side by side in full screen).
   - `AboutDeck.tsx` — Overview: sideways page deck. `ExperienceList.tsx` — Experience timeline (`experience` in content.ts).
 
@@ -80,7 +82,7 @@ Search `src/content.ts` for `TODO`:
 1. ~~Hero photos~~ Done: `public/hero-1.webp`, `public/hero-2.webp` (OpenCV GrabCut cut-outs of
    `public/hero/1791941132446.jpg.jpeg` and `public/hero/file_000000007e90823092fccefdafc9cc6e.png`).
 2. ~~CV~~ Done: `public/resume.pdf`.
-3. Links for Unelo, NexusCore, CARF, TokenForge (Caira already links to cairacare.com).
+3. Projects: links, outcomes, real cover images (`cover`), and Unelo / TokenForge details (see TODOs in `projects`).
 4. Missing years (`YEAR`) in resume roles.
 5. Real GitHub, LinkedIn, X, Instagram and Google Scholar URLs (`socials`).
 6. Real articles (`posts`) and content design samples (`contentDesign`).

@@ -144,6 +144,10 @@ body {
 }
 @keyframes fx-caret { 50% { opacity: 0; } }
 
+/* Skill capsules (SkillCapsules.tsx): transforms come from the physics engine every frame */
+.fx-capsule { will-change: transform; transform-origin: center; }
+.fx-capsule.is-grabbed { cursor: grabbing; filter: brightness(1.08); }
+
 /* Slim, on-brand scrollbars for the About segments */
 .fx-scroll { scrollbar-width: thin; scrollbar-color: rgba(242, 166, 90, 0.35) transparent; }
 .fx-scroll::-webkit-scrollbar { width: 6px; }
