@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowUpRight, ChevronDown, Download, Menu, X } from "lucide-react";
-import { about, contact, contentDesign, menu, posts, projects, resume, socials } from "../content";
+import { ArrowLeft, ArrowUpRight, ChevronDown, Download, Maximize2, Menu, Minimize2, X } from "lucide-react";
+import { contact, contentDesign, menu, posts, projects, resume } from "../content";
 import RollText from "./RollText";
+import DrawerPortraits from "./DrawerPortraits";
+import AboutSection from "./AboutSection";
 
 export type DrawerView = "menu" | "projects" | "about" | "contentDesign" | "articles" | "resume" | "contact";
 
@@ -29,6 +31,14 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
+  // Full-screen reading mode for content views (not the menu); resets whenever the drawer closes
+  const [full, setFull] = useState(false);
+  useEffect(() => {
+    if (!open) setFull(false);
+  }, [open]);
+  const canExpand = view !== "menu";
+  const isFull = full && canExpand;
 
   // Focus management, Escape to close, and a simple focus trap
   useEffect(() => {
@@ -63,6 +73,19 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
     };
   }, [open, onClose]);
 
+  // Publish the sticky bar's height so pinned content (the About header) can sit right under it
+  useEffect(() => {
+    if (!open) return;
+    const head = headRef.current;
+    const panel = panelRef.current;
+    if (!head || !panel) return;
+    const set = () => panel.style.setProperty("--drawer-head", `${head.offsetHeight}px`);
+    set();
+    const ro = new ResizeObserver(set);
+    ro.observe(head);
+    return () => ro.disconnect();
+  }, [open]);
+
   // Reset scroll when switching views
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -87,49 +110,79 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
             role="dialog"
             aria-modal="true"
             aria-labelledby="drawer-title"
-            className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-cream/5 bg-secondary sm:max-w-xl md:max-w-2xl"
+            className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-cream/5 bg-secondary transition-[max-width] duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] sm:max-w-xl md:max-w-2xl"
+            style={isFull ? { maxWidth: "100vw" } : undefined}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 260, damping: 32 }}
           >
-            <div ref={scrollRef} className="flex-1 overflow-y-auto">
-              {/* Sticky header */}
-              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-cream/5 bg-secondary/90 px-6 py-5 backdrop-blur-md sm:px-10 pt-[max(1.25rem,env(safe-area-inset-top))]">
-                {view === "menu" ? (
-                  <span className="flex items-center gap-2 font-mono text-xs tracking-[0.2em] text-cream/70">
-                    <Menu size={16} aria-hidden="true" />
-                    MENU
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => onNavigate("menu")}
-                    className="flex items-center gap-2 font-mono text-xs tracking-[0.2em] text-cream/80 transition-colors hover:text-tertiary underline-offset-[6px] decoration-2 hover:underline"
-                  >
-                    <ArrowLeft size={16} aria-hidden="true" />
-                    BACK
-                  </button>
-                )}
+            {/* Portraits sit behind everything at the panel's right edge; full strength on the menu, dimmed elsewhere */}
+            <DrawerPortraits dim={view !== "menu"} />
+          {/* Top bar: no fill (the portrait shows through it). It sits outside the scroller, so content scrolls
+              below it rather than under it. */}
+          <div ref={headRef} className="relative z-30 flex shrink-0 items-center justify-between border-b border-cream/5 px-6 py-5 sm:px-10 pt-[max(1.25rem,env(safe-area-inset-top))]">
+              {view === "menu" ? (
+                <span className="flex items-center gap-2 font-mono text-xs tracking-[0.2em] text-cream/70">
+                  <Menu size={16} aria-hidden="true" />
+                  MENU
+                </span>
+              ) : (
                 <button
-                  ref={closeRef}
                   type="button"
-                  onClick={onClose}
-                  aria-label="Close menu"
-                  data-magnetic="0.35"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/15 text-cream transition-colors hover:border-tertiary hover:bg-tertiary hover:text-base"
+                  onClick={() => onNavigate("menu")}
+                  className="flex items-center gap-2 font-mono text-xs tracking-[0.2em] text-cream/80 transition-colors hover:text-tertiary underline-offset-[6px] decoration-2 hover:underline active:text-cream active:decoration-primary"
                 >
-                  <X size={18} aria-hidden="true" />
+                  <ArrowLeft size={16} aria-hidden="true" />
+                  BACK
                 </button>
-              </div>
-
-              <div className="px-6 pb-[max(3rem,env(safe-area-inset-bottom))] pt-8 sm:px-10">
-                <h2
-                  id="drawer-title"
-                  className={view === "menu" ? "sr-only" : "mb-8 font-display text-5xl uppercase text-cream sm:text-6xl"}
+              )}
+              <div className="flex items-center gap-2">
+              {canExpand && (
+                <button
+                  type="button"
+                  onClick={() => setFull((f) => !f)}
+                  aria-pressed={isFull}
+                  aria-label={isFull ? "Exit full screen" : "Open in full screen"}
+                  title={isFull ? "Exit full screen" : "Open in full screen"}
+                  data-magnetic="0.35"
+                  className="hidden h-10 w-10 items-center justify-center rounded-full border border-cream/15 text-cream transition-colors hover:border-tertiary hover:bg-tertiary hover:text-base active:border-primary active:bg-primary active:text-cream sm:flex"
                 >
-                  {TITLES[view]}
-                </h2>
+                  {isFull ? <Minimize2 size={16} aria-hidden="true" /> : <Maximize2 size={16} aria-hidden="true" />}
+                </button>
+              )}
+              <button
+                ref={closeRef}
+                type="button"
+                onClick={onClose}
+                aria-label="Close menu"
+                data-magnetic="0.35"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/15 text-cream transition-colors hover:border-tertiary hover:bg-tertiary hover:text-base active:border-primary active:bg-primary active:text-cream"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+              </div>
+            </div>
+
+            {/* About lays itself out to fit exactly and scrolls inside its own segments, so the outer scroller is locked */}
+            <div ref={scrollRef} className={`relative z-10 flex-1 ${view === "about" ? "overflow-hidden" : "overflow-y-auto"}`}>
+              {/* About fills exactly the height under the bar so only its segments scroll */}
+              <div
+                className={
+                  view === "about"
+                    ? "flex h-[calc(100dvh-var(--drawer-head,5rem))] flex-col px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6 sm:px-10"
+                    : `px-6 pb-[max(3rem,env(safe-area-inset-bottom))] pt-8 sm:px-10 ${isFull ? "mx-auto max-w-5xl" : ""}`
+                }
+              >
+                {/* About renders its own pinned title + typing headline */}
+                {view !== "about" && (
+                  <h2
+                    id="drawer-title"
+                    className={view === "menu" ? "sr-only" : "mb-8 font-display text-5xl uppercase text-cream sm:text-6xl"}
+                  >
+                    {TITLES[view]}
+                  </h2>
+                )}
 
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -138,12 +191,13 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -24 }}
                     transition={{ duration: 0.2 }}
+                    className={view === "about" ? "flex min-h-0 flex-1 flex-col" : undefined}
                   >
                     {view === "menu" && <MenuView onNavigate={onNavigate} onClose={onClose} />}
                     {view === "projects" && <ProjectsView />}
                     {view === "contentDesign" && <ContentDesignView />}
                     {view === "articles" && <ArticlesView />}
-                    {view === "about" && <AboutView />}
+                    {view === "about" && <AboutSection full={isFull} onLetsWork={() => onNavigate("contact")} />}
                     {view === "resume" && <ResumeView />}
                     {view === "contact" && <ContactView />}
                   </motion.div>
@@ -160,7 +214,25 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
 // ---- Views ------------------------------------------------------------------
 
 const menuItemClass =
-  "group relative flex items-center gap-3 py-1 pl-5 text-left font-sans text-[2.5rem] font-bold leading-[1.15] tracking-tight transition-[color,transform] duration-300 hover:translate-x-2 hover:text-tertiary sm:text-6xl";
+  "group relative flex items-center gap-3 py-1 pl-5 text-left font-sans text-[2.5rem] font-bold leading-[1.15] tracking-tight [text-shadow:0_2px_18px_rgba(21,6,0,0.75)] transition-[color,transform] duration-300 hover:translate-x-2 hover:text-tertiary active:scale-[0.98] active:text-cream sm:text-6xl";
+// Current / selected item: coral text (primary-soft, a light tint of the brand red) plus a thick brand-red bar
+// under the label (see <MenuLabel>), clearly different from the peach hover and the cream default. The bar is
+// an element, not text-decoration, because the letter-roll spans would hide an underline.
+const menuItemCurrent = "text-primary-soft";
+
+function MenuLabel({ text, current = false, thin = false }: { text: string; current?: boolean; thin?: boolean }) {
+  return (
+    <span className="relative">
+      <RollText text={text} />
+      <span
+        aria-hidden="true"
+        className={`absolute inset-x-0 rounded-full bg-primary transition-opacity duration-150 group-active:opacity-100 ${
+          thin ? "-bottom-0.5 h-[3px]" : "-bottom-1 h-[5px]"
+        } ${current ? "opacity-100" : "opacity-0"}`}
+      />
+    </span>
+  );
+}
 
 /** Large stacked menu. "Home" is the current page; "Writing" expands to its sub-pages. */
 function MenuView({ onNavigate, onClose }: { onNavigate: (v: DrawerView) => void; onClose: () => void }) {
@@ -183,9 +255,9 @@ function MenuView({ onNavigate, onClose }: { onNavigate: (v: DrawerView) => void
                   aria-expanded={writingOpen}
                   aria-controls="menu-writing"
                   onClick={() => setWritingOpen((o) => !o)}
-                  className={`${menuItemClass} ${writingOpen ? "text-tertiary" : "text-cream"}`}
+                  className={`${menuItemClass} ${writingOpen ? menuItemCurrent : "text-cream"}`}
                 >
-                  <RollText text={item.label} />
+                  <MenuLabel text={item.label} current={writingOpen} />
                   <ChevronDown
                     aria-hidden="true"
                     className={`h-7 w-7 transition-transform duration-300 sm:h-9 sm:w-9 ${writingOpen ? "rotate-180" : ""}`}
@@ -206,9 +278,9 @@ function MenuView({ onNavigate, onClose }: { onNavigate: (v: DrawerView) => void
                           <button
                             type="button"
                             onClick={() => onNavigate(child.view)}
-                            className="group py-1.5 text-left font-sans text-2xl font-bold text-cream transition-[color,transform] duration-300 hover:translate-x-1.5 hover:text-tertiary sm:text-3xl"
+                            className="group py-1.5 text-left font-sans text-2xl font-bold text-cream transition-[color,transform] duration-300 hover:translate-x-1.5 hover:text-tertiary active:text-cream sm:text-3xl"
                           >
-                            <RollText text={child.label} />
+                            <MenuLabel text={child.label} thin />
                           </button>
                         </li>
                       ))}
@@ -217,16 +289,16 @@ function MenuView({ onNavigate, onClose }: { onNavigate: (v: DrawerView) => void
                 </AnimatePresence>
               </>
             ) : item.view === "home" ? (
-              <button type="button" onClick={onClose} aria-current="page" className={`${menuItemClass} text-tertiary`}>
+              <button type="button" onClick={onClose} aria-current="page" className={`${menuItemClass} ${menuItemCurrent}`}>
                 {/* Current-page marker: a thin rule with a dot */}
-                <span aria-hidden="true" className="absolute left-0 top-1/2 h-[70%] w-[2px] -translate-y-1/2 rounded-full bg-tertiary">
-                  <span className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tertiary" />
+                <span aria-hidden="true" className="absolute left-0 top-1/2 h-[70%] w-[3px] -translate-y-1/2 rounded-full bg-primary">
+                  <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" />
                 </span>
-                <RollText text={item.label} />
+                <MenuLabel text={item.label} current />
               </button>
             ) : (
               <button type="button" onClick={() => onNavigate(item.view)} className={`${menuItemClass} text-cream`}>
-                <RollText text={item.label} />
+                <MenuLabel text={item.label} />
                 <ArrowUpRight
                   aria-hidden="true"
                   className="h-7 w-7 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 sm:h-9 sm:w-9"
@@ -256,7 +328,7 @@ function ProjectsView() {
         <Row key={p.name}>
           <a {...linkProps(p.url)} className="group flex items-baseline justify-between gap-4">
             <span>
-              <span className="block font-display text-3xl uppercase text-cream underline-offset-[6px] decoration-2 transition-colors group-hover:text-tertiary group-hover:underline">
+              <span className="block font-display text-3xl uppercase text-cream underline-offset-[6px] decoration-2 transition-colors group-hover:text-tertiary group-hover:underline group-active:text-cream group-active:decoration-primary">
                 {p.name}
               </span>
               <span className="mt-1 block text-sm text-cream/70">{p.type}</span>
@@ -271,14 +343,14 @@ function ProjectsView() {
 
 function ContentDesignView() {
   if (contentDesign.length === 0) {
-    return <p className="max-w-prose text-base leading-relaxed text-cream/85">Content design samples are on the way.</p>;
+    return <p className="max-w-prose text-[16px] leading-relaxed text-cream/85">Content design samples are on the way.</p>;
   }
   return (
     <ul>
       {contentDesign.map((p) => (
         <Row key={p.title}>
           <a {...linkProps(p.url)} className="group block">
-            <span className="block text-xl font-medium text-cream underline-offset-4 decoration-2 transition-colors group-hover:text-tertiary group-hover:underline">
+            <span className="block text-xl font-medium text-cream underline-offset-4 decoration-2 transition-colors group-hover:text-tertiary group-hover:underline group-active:text-cream group-active:decoration-primary">
               {p.title}
             </span>
             <span className="mt-1 block font-mono text-xs text-cream/70">{p.meta}</span>
@@ -295,7 +367,7 @@ function ArticlesView() {
       {posts.map((p) => (
         <Row key={p.title}>
           <a {...linkProps(p.url)} className="group block">
-            <span className="block text-xl font-medium text-cream underline-offset-4 decoration-2 transition-colors group-hover:text-tertiary group-hover:underline">
+            <span className="block text-xl font-medium text-cream underline-offset-4 decoration-2 transition-colors group-hover:text-tertiary group-hover:underline group-active:text-cream group-active:decoration-primary">
               {p.title}
             </span>
             <span className="mt-1 block font-mono text-xs text-cream/70">{p.date}</span>
@@ -303,32 +375,6 @@ function ArticlesView() {
         </Row>
       ))}
     </ul>
-  );
-}
-
-function AboutView() {
-  return (
-    <div className="max-w-prose space-y-5 text-base leading-relaxed text-cream/85">
-      {about.paragraphs.map((p) => (
-        <p key={p}>{p}</p>
-      ))}
-      <p className="text-cream/70">{about.availability}</p>
-      {socials.length > 0 && (
-        <ul className="flex flex-wrap gap-x-6 gap-y-2 pt-4">
-          {socials.map((s) => (
-            <li key={s.label}>
-              <a
-                {...linkProps(s.url)}
-                className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-mono text-xs tracking-[0.15em] text-cream transition-colors hover:bg-tertiary hover:text-base"
-              >
-                {s.label.toUpperCase()}
-                <ArrowUpRight size={14} aria-hidden="true" />
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
   );
 }
 
@@ -353,7 +399,7 @@ function ResumeView() {
           href={resume.pdfUrl}
           download={resume.pdfFileName}
           data-magnetic="0.2"
-          className="fx-spotlight group mt-8 inline-flex items-center gap-2 border border-cream/30 px-6 py-3 font-mono text-xs tracking-[0.2em] text-cream transition-colors hover:border-tertiary hover:bg-tertiary hover:text-base"
+          className="fx-spotlight group mt-8 inline-flex items-center gap-2 border border-cream/30 px-6 py-3 font-mono text-xs tracking-[0.2em] text-cream transition-colors hover:border-tertiary hover:bg-tertiary hover:text-base active:border-primary active:bg-primary active:text-cream"
         >
           <Download size={16} aria-hidden="true" />
           <RollText text="DOWNLOAD RESUME (PDF)" />
@@ -364,7 +410,7 @@ function ResumeView() {
 }
 
 const fieldClass =
-  "w-full border-0 border-b border-cream/40 bg-transparent px-0 py-3 text-base text-cream placeholder:text-cream/70 transition-colors focus:border-tertiary focus:outline-none focus:ring-0";
+  "w-full border-0 border-b border-cream/40 bg-transparent px-0 py-3 text-[16px] text-cream placeholder:text-cream/70 transition-colors focus:border-tertiary focus:outline-none focus:ring-0";
 const labelClass = "mb-1 block font-mono text-xs tracking-[0.15em] text-cream/70";
 
 type Status = "idle" | "sending" | "sent" | "error";
@@ -419,7 +465,7 @@ function ContactView() {
         <button
           type="button"
           onClick={() => setStatus("idle")}
-          className="pt-2 font-mono text-xs tracking-[0.15em] text-cream/70 underline decoration-2 underline-offset-4 hover:text-tertiary"
+          className="pt-2 font-mono text-xs tracking-[0.15em] text-cream/70 underline decoration-2 underline-offset-4 hover:text-tertiary active:text-cream active:decoration-primary"
         >
           SEND ANOTHER
         </button>
@@ -473,7 +519,7 @@ function ContactView() {
         type="submit"
         disabled={status === "sending"}
         data-magnetic="0.15"
-        className="fx-spotlight group w-full bg-primary py-4 font-mono text-sm font-medium tracking-[0.2em] text-cream transition-colors hover:bg-tertiary hover:text-base disabled:opacity-60 sm:w-auto sm:px-12"
+        className="fx-spotlight group w-full bg-primary py-4 font-mono text-sm font-medium tracking-[0.2em] text-cream transition-colors hover:bg-tertiary hover:text-base active:bg-cream active:text-base disabled:opacity-60 sm:w-auto sm:px-12"
       >
         {status === "sending" ? "SENDING…" : <RollText text="SEND ENQUIRY" />}
       </button>

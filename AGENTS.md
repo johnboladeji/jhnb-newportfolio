@@ -48,6 +48,9 @@ Run `npm run build` after changes to confirm nothing broke.
   - `SocialIcon.tsx` — inline SVG brand glyphs used in the header.
   - `FooterMarquee.tsx` — outlined marquee plus the © / email footer line (z-30).
   - `InfoDrawer.tsx` — side drawer (z-50): menu (Home, Projects, About Me, Writing ▸ Content Design / Articles, Resume, Let's Work), sub-views, contact form.
+  - `DrawerPortraits.tsx` — studio portraits blended into the drawer's right edge, sliding right → left (`drawerImages`).
+  - `AboutSection.tsx` — About Me shell: pinned title + typed headline (`TypeLoop.tsx`), Overview/Experience segments (tabs, or side by side in full screen).
+  - `AboutDeck.tsx` — Overview: sideways page deck. `ExperienceList.tsx` — Experience timeline (`experience` in content.ts).
 
 ## Design system (current) — JHNB brand palette
 
@@ -67,6 +70,8 @@ Cream on primary is 5.71:1 (fine for button labels). The rotating headline word 
 by the owner's choice; swap to `text-tertiary` in `HeroContent.tsx` if it needs to pass AA.
 
 Fonts: Anton (display), Space Grotesk (body), IBM Plex Mono (labels, buttons).
+
+Gotcha: `base` is a colour token here, so `text-base` means the dark page colour, not 16px. Use `text-[16px]` for the size.
 
 ## Remaining TODOs
 
