@@ -81,10 +81,10 @@ export function ProjectCover({ project, index, large = false }: { project: Proje
 }
 
 /** Selected Works: numbered rows with a rule that draws in on hover, the project's name and line, and a cover. */
-export function WorksList({ onOpen }: { onOpen: (slug: string) => void }) {
+export function WorksList({ onOpen, columns = 1 }: { onOpen: (slug: string) => void; columns?: 1 | 2 }) {
   const reduceMotion = useReducedMotion();
   return (
-    <ol className="space-y-12">
+    <ol className={columns === 2 ? "grid grid-cols-2 gap-x-12 gap-y-14" : "space-y-12"}>
       {projects.map((p, i) => {
         const accent = ACCENTS[p.accent];
         return (

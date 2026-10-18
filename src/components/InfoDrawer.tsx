@@ -1,10 +1,11 @@
 import { lazy, Suspense, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowUpRight, ChevronDown, Download, Maximize2, Menu, Minimize2, X } from "lucide-react";
-import { contact, contentDesign, menu, posts, projects, resume } from "../content";
+import { ArrowLeft, ArrowUpRight, ChevronDown, Download, LayoutGrid, Maximize2, Menu, Minimize2, X } from "lucide-react";
+import { contact, contentDesign, menu, posts, projects, resume, worksHeadline } from "../content";
 import RollText from "./RollText";
 import DrawerPortraits from "./DrawerPortraits";
 import AboutSection from "./AboutSection";
+import TypeLoop from "./TypeLoop";
 // Physics capsules (matter-js) load only when Let's Work opens, keeping the engine out of the first page load
 const SkillCapsules = lazy(() => import("./SkillCapsules"));
 import { CaseStudy, WorksList } from "./Works";
@@ -49,6 +50,15 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
   }, [open]);
   const canExpand = view !== "menu";
   const isFull = full && canExpand;
+  // About and Projects share a layout: pinned header, own inner scroller, full width (no max-width) in full screen
+  const pinned = view === "about" || view === "projects";
+  const [wide, setWide] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const on = () => setWide(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
 
   // Focus management, Escape to close, and a simple focus trap
   useEffect(() => {
@@ -174,18 +184,34 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
               </div>
             </div>
 
-            {/* About lays itself out to fit exactly and scrolls inside its own segments, so the outer scroller is locked */}
-            <div ref={scrollRef} className={`fx-scroll relative z-10 flex-1 ${view === "about" ? "overflow-hidden" : "overflow-y-auto"}`}>
-              {/* About fills exactly the height under the bar so only its segments scroll */}
+            {/* About and Projects lay themselves out to fit exactly and scroll inside their own segments, so the outer scroller is locked */}
+            <div ref={scrollRef} className={`fx-scroll relative z-10 flex-1 ${pinned ? "overflow-hidden" : "overflow-y-auto"}`}>
+              {/* About / Projects fill exactly the height under the bar so only their segments scroll */}
               <div
                 className={
-                  view === "about"
+                  pinned
                     ? "flex h-[calc(100dvh-var(--drawer-head,5rem))] flex-col px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6 sm:px-10"
                     : `px-6 pb-[max(3rem,env(safe-area-inset-bottom))] pt-8 sm:px-10 ${isFull ? "mx-auto max-w-5xl" : ""}`
                 }
               >
                 {/* About renders its own pinned title + typing headline */}
-                {view !== "about" && (
+                {/* Projects matches About Me: outlined title + coral, continuously-typed headline */}
+                {view === "projects" && (
+                  <header className="shrink-0">
+                    <h2 id="drawer-title" className="text-stroke font-display text-5xl uppercase leading-none sm:text-6xl">
+                      {TITLES.projects}
+                    </h2>
+                    <TypeLoop
+                      text={worksHeadline}
+                      className={`mt-3 font-sans font-bold leading-snug tracking-tight text-primary-soft ${
+                        isFull
+                          ? "mx-auto max-w-[52rem] text-center text-2xl sm:text-3xl lg:text-[2.6rem] lg:leading-[1.15]"
+                          : "max-w-[38rem] text-[1.4rem] sm:text-[1.75rem]"
+                      }`}
+                    />
+                  </header>
+                )}
+                {view !== "about" && view !== "projects" && (
                   <h2
                     id="drawer-title"
                     className={view === "menu" ? "sr-only" : "mb-8 font-display text-5xl uppercase text-cream sm:text-6xl"}
@@ -201,10 +227,24 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -24 }}
                     transition={{ duration: 0.2 }}
-                    className={view === "about" ? "flex min-h-0 flex-1 flex-col" : undefined}
+                    className={pinned ? "flex min-h-0 flex-1 flex-col" : undefined}
                   >
                     {view === "menu" && <MenuView onNavigate={onNavigate} onClose={onClose} />}
-                    {view === "projects" && <WorksList onOpen={openCase} />}
+                    {view === "projects" && (
+                      <>
+                        {/* Same rule + label row as About's tab bar */}
+                        <div className="mt-5 flex shrink-0 items-center justify-between border-b border-cream/10 pb-3 font-mono text-xs tracking-[0.25em]">
+                          <span className="flex items-center gap-2 text-primary-soft">
+                            <LayoutGrid size={14} aria-hidden="true" />
+                            ALL WORK
+                          </span>
+                          <span className="text-cream/60">{String(projects.length).padStart(2, "0")} PROJECTS</span>
+                        </div>
+                        <div className="fx-scroll mt-5 min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6 pr-3">
+                          <WorksList onOpen={openCase} columns={isFull && wide ? 2 : 1} />
+                        </div>
+                      </>
+                    )}
                     {view === "caseStudy" && (
                       <CaseStudy slug={caseSlug} onOpen={setCaseSlug} onLetsWork={() => onNavigate("contact")} scrollRef={scrollRef} />
                     )}

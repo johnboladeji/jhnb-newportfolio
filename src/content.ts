@@ -123,6 +123,9 @@ export interface Project {
   outcome?: string;
 }
 
+/** Projects page: headline typed under the "Selected Works" title (same effect as About Me) */
+export const worksHeadline = "Architecting ideas. Building experiences. Delivering impact.";
+
 /** Selected Works, in display order. Each opens a case study in the drawer. */
 export const projects: Project[] = [
   {
