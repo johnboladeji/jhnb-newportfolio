@@ -62,6 +62,8 @@ src/
     InfoDrawer.tsx             spring side panel: menu, projects, about, writing, resume, contact (z-50)
     Works.tsx                  Selected Works list, covers, case-study view
     ContentDesign.tsx          Writing ▸ Content Design samples (content: `writing` in content.ts)
+    NexusStudy.tsx             NexusCore's rich case study + cover (content: `nexusStudy`)
+    StudyKit.tsx               shared case-study chrome (chapter bar, chapters, lit words)
     CairaStudy.tsx             Caira's rich case study + cover (content: `cairaStudy` in content.ts)
 ```
 

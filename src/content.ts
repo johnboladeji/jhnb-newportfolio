@@ -148,17 +148,18 @@ export const projects: Project[] = [
   {
     slug: "nexuscore",
     name: "NexusCore",
-    type: "AI-powered sales & payments for Nigerian SMBs",
-    role: "Full-Stack Product Lead",
+    type: "AI sales assistant for the Nigerian WhatsApp inbox",
+    role: "Founder, designer & full-stack build lead",
     year: "2025 — Today",
-    url: "", // TODO: link
+    url: "https://nexuscorenew.vercel.app",
     icon: "cpu",
     accent: "amber",
-    tags: ["AI", "Fintech", "WhatsApp", "Payments"],
-    summary: "An AI-powered financial platform for the Nigerian small businesses the formal economy overlooks.",
+    tags: ["Product design", "UX writing", "Systems engineering", "AI", "Payments"],
+    summary: "A WhatsApp-native AI assistant that answers customers, closes sales, and sends payment links in the seller's own voice.",
     did: [
-      "Built a WhatsApp-based AI sales assistant integrated with automated payment routing, for merchants operating outside the formal banking economy.",
+      "Designed and built it end to end: product, UX writing, the bot engine, seller WhatsApp commands, billing, and payouts.",
     ],
+    // The full, rich case study lives in `nexusStudy` below (rendered by NexusStudy.tsx)
   },
   {
     slug: "mova",
@@ -874,6 +875,152 @@ export const cairaStudy = {
     { title: "Words are a feature.", text: "“Reach My Family” does work that “Emergency” never could." },
     { title: "Building alone needs a system.", text: "Shared contracts, type-checks, and a review habit kept one person shipping like a team." },
   ],
+};
+
+/**
+ * NexusCore: the full case study (rendered by NexusStudy.tsx). Uses NexusCore's own palette inside the study
+ * (ink #0C0720, indigo #1D0E44, lime #BAD532, lilac #EDE9FA; DM Sans + Fira Code).
+ */
+export const nexusStudy = {
+  slug: "nexuscore",
+  kicker: "AI sales assistant · WhatsApp",
+  headline: "An AI sales assistant that lives inside the Nigerian WhatsApp inbox.",
+  oneLine:
+    "A WhatsApp-native AI assistant that answers customer messages, closes sales, and sends payment links in the voice of the seller — built from the ground up for the Nigerian commerce reality of Pidgin, late-night DMs, and bank transfers over Stripe.",
+  statusPill: "v0.1 verified end to end · Phase 10 of 10",
+  url: "https://nexuscorenew.vercel.app",
+  // The hero case: one night on the seller's phone
+  night: {
+    unread: 180,
+    orders: 6,
+    revenue: 143000,
+    escalated: 2,
+    morning: "While you slept: 6 orders closed, ₦143,000 in sales, and 2 complaints sent to you. Your weekly summary is ready.",
+  },
+  facts: [
+    { label: "Role", value: "Founder, product designer, design engineer, full-stack build lead" },
+    { label: "Timeline", value: "Build in progress; v0.1 end-to-end subscription flow verified; deployed to production infrastructure on Vercel" },
+    { label: "Discipline", value: "Product design, UX writing, systems engineering, culturally attentive rhetoric" },
+    { label: "Live demo", value: "nexuscorenew.vercel.app", url: "https://nexuscorenew.vercel.app", note: "Sandbox-credentialed for review; production rollout underway" },
+  ],
+  stack: ["Next.js 16", "TypeScript", "Postgres (Neon)", "Prisma", "Upstash Redis", "Meta Cloud API", "DeepSeek-V3", "Gemini 2.0 Flash", "Flutterwave", "Africa's Talking", "Cloudflare R2", "Inngest", "Vercel"],
+  problem: {
+    title: "The problem, framed from the user's actual day",
+    story:
+      "A woman in Lagos runs a growing fashion label through Instagram and WhatsApp. By 11pm she has 180 unread customer messages. Half of them are variations of the same four questions. The other half are buying-intent messages she will answer too late — the customer will have already moved on to a competitor who replied in three minutes.",
+    questions: ["Is this available?", "How much?", "Do you deliver to Lekki?", "Do you accept transfer?"],
+    tried: [
+      { name: "Intercom & Zendesk", why: "Cost more than her monthly rent, and weren't built for WhatsApp." },
+      { name: "Local broadcast tools", why: "Glorified broadcast senders." },
+      { name: "Twilio wrappers", why: "Priced in dollars." },
+    ],
+    voice: "None of them understand that her customers write “Abeg how much na?” and expect a reply that doesn't sound like a bank.",
+    insight: "This is not a messaging problem. It is an infrastructure gap — the operating layer for a specific kind of African small business does not exist, so sellers run the business from their thumbs, badly, until they burn out.",
+    answer: "NexusCore is the attempt to build that layer.",
+  },
+  product: {
+    title: "The product in one paragraph",
+    flow: [
+      { step: "Sign up", text: "With a phone number. No email." },
+      { step: "20-minute wizard", text: "Products, prices, delivery zones, and FAQ answers." },
+      { step: "Connect payouts", text: "A Flutterwave payout account." },
+      { step: "Go live", text: "Every customer message answered within five seconds, in the seller's voice." },
+      { step: "“I'll take it”", text: "A Flutterwave payment link, the moment the customer says it." },
+      { step: "Step aside", text: "Escalates to the seller's personal WhatsApp for complaints, high-value decisions, or low confidence." },
+      { step: "Sunday summary", text: "A performance summary every Sunday morning." },
+    ],
+    // Copy from the NexusCore content-design sample (made-up shop and prices)
+    chat: [
+      { from: "buyer", text: "abeg how much for the blue ankara wey you post yesterday" },
+      { from: "bot", text: "The blue Ankara (6 yards) is ₦18,500. We have 4 left. Should we deliver it, or will you pick it up in Aba?" },
+      { from: "buyer", text: "deliver to Enugu" },
+      { from: "bot", text: "Delivery to Enugu is ₦3,000, so your total is ₦21,500. Here's your payment link. Once you pay, Adaeze will confirm your order right here." },
+    ] as { from: "bot" | "buyer"; text: string }[],
+    payment: { label: "Pay ₦21,500", via: "Flutterwave" },
+    commands: {
+      example: "Price Ankara maxi 15000",
+      reply: "Catalog updated: Ankara maxi is now ₦15,000.",
+      intents: ["Pause bot", "Update price", "Add product", "Mark sold out", "Confirm a credit sale", "Log a support ticket"],
+      note: "Fourteen intents, parsed without the LLM, because LLM round-trips were too slow for operational commands.",
+    },
+  },
+  decisions: [
+    {
+      title: "WhatsApp-native, not web-native",
+      text: "The dashboard is a convenience, not the product. The seller's hands are already on WhatsApp sixteen hours a day; making her open a browser tab to update a price is friction she will not accept. So every operational action had to be expressible as a natural-language WhatsApp command.",
+      visual: "command",
+    },
+    {
+      title: "Pidgin and Naija English as the default",
+      text: "Not a localization layer. Customers write in Pidgin, code-switch mid-sentence, and write “wetin dey” without expecting condescension. If the bot replies in corporate English, trust evaporates in the first message. This is where CARF, my thesis framework, stops being academic: decolonizing an interface is defaulting to the register the user actually speaks.",
+      visual: "voice",
+    },
+    {
+      title: "Money as BigInt kobo, never float",
+      text: "All amounts are stored as BigInt kobo (₦1 = 100 kobo). The seller never sees “₦29.99999” on an invoice, because floating-point rounding was ruled out at the schema layer. Every total, split, and weekly summary is correct to the kobo.",
+      visual: "kobo",
+    },
+    {
+      title: "The bot never invents prices",
+      text: "The LLM is a reply generator, not a quote generator. Prices come strictly from the catalog table, enforced in the prompt and in the signal-parsing step after the LLM responds. A bot that occasionally hallucinates ₦5,000 off a dress destroys the seller's margin and her trust at once.",
+      visual: "catalog",
+    },
+    {
+      title: "Escalation as a trust mechanism",
+      text: "Not what happens when the bot fails — what happens when the system decides the human should be involved. The buyer hears “I'm connecting you with the team”; the seller gets a summary and a wa.me link and takes over from her own phone. The AI knew when to step aside.",
+      visual: "escalate",
+    },
+    {
+      title: "Self-serve or nothing",
+      text: "No sales calls, no onboarding specialists. If a seller can't get live in twenty minutes with no human help, we fix the wizard, not the funnel. At a ₦30,000 price point, every manual onboarding hour is a hole in the business model.",
+      visual: "wizard",
+    },
+  ],
+  voices: [
+    { id: "friendly_naija", note: "Default" },
+    { id: "professional", note: "Different markets" },
+    { id: "concise", note: "Different markets" },
+  ],
+  escalateWhen: ["Complaints", "High-value buying intent", "Owner-name mentions", "Low-confidence replies"],
+  wizardChecks: { catalog: 5, questions: 5, diagnosticSeconds: 60 },
+  architecture: {
+    title: "Every tool chosen for a constraint, not a trend",
+    // The path one customer message takes
+    journey: ["WhatsApp", "Meta Cloud API", "Next.js on Vercel", "Redis context", "DeepSeek-V3", "Catalog check", "Payment link"],
+    tools: [
+      { name: "Meta Cloud API", tag: "Messaging", why: "Direct, no BSP. Platform fees would compound against a ₦30,000 subscription. The trade-off: a 1–3 week Meta review, then zero markup forever." },
+      { name: "DeepSeek-V3 + Gemini 2.0 Flash", tag: "LLM", why: "DeepSeek is 5–10x cheaper per token than GPT-4o-class models; Gemini is a warm fallback after 30 seconds, so an outage doesn't take the bot offline. Behind LiteLLM, a provider swap is a config change. Data residency is disclosed at signup." },
+      { name: "Postgres · Prisma · Neon", tag: "Data", why: "Nine relational models designed for the full product from day one. Serverless scales to zero pre-revenue; type-safe queries stop a class of bugs at compile time." },
+      { name: "Upstash Redis", tag: "Context", why: "Conversation context, OTP storage, and rate limiting. Three jobs, one tool." },
+      { name: "Flutterwave", tag: "Payments", why: "Subscriptions and buyer payments in one integration. Subaccounts pay sellers directly, not through escrow: the money is theirs the moment it arrives." },
+      { name: "Africa's Talking", tag: "SMS OTP", why: "The only provider with reliable deliverability to every Nigerian network." },
+      { name: "Cloudflare R2", tag: "Media", why: "Zero egress fees, for voice notes and product images at scale." },
+      { name: "Inngest", tag: "Jobs", why: "Weekly summaries, billing renewals, NDPR cleanup, webhook replays, and dunning, on durable execution instead of raw cron." },
+      { name: "Next.js on Vercel", tag: "Platform", why: "API routes, marketing page, dashboard, and admin panel ship as one artifact that deploys on git push. One mental model, one bill." },
+    ],
+  },
+  lessons: [
+    { title: "The product-engineering boundary is a lie at this scale.", text: "Storing money as BigInt kobo is a product decision expressed in a schema. Defaulting the bot to Naija English is a rhetorical decision that lives in a system prompt. The work is one thing." },
+    { title: "Scope discipline is the hardest craft skill.", text: "An AI coding agent over-built three times and twice shipped work I'd scoped out. Smaller tasks, tighter fences, verify by reading before committing." },
+    { title: "Culturally attentive design has a cost structure.", text: "WhatsApp-native, Pidgin-first, no-email is right for the seller, and it rules out the standard SaaS acquisition playbook. I had to build acquisition from first principles." },
+    { title: "Trust compounds through small details.", text: "A bot that defers when it should. A payment link in sixty seconds instead of a pasted account number. A system that runs its own setup diagnostics." },
+    { title: "A live payment system is a different nervous system.", text: "Ninety-nine percent success on activation means one in a hundred sellers pays and gets nothing. Idempotency, retries, webhook replays, and reconciliation, because sellers lose faith on the first failure." },
+  ],
+  status: {
+    title: "Phase 10 of 10, and live on Vercel",
+    phase: 10,
+    phases: 10,
+    live: ["Marketing page", "Auth", "Onboarding wizard", "Dashboard (six tabs)", "Bot engine", "Seller WhatsApp commands", "Billing", "Admin panel", "Public storefronts", "Direct seller payouts"],
+    proof: ["Trial seller clicks upgrade", "Pays with a test card", "Webhook fires", "Seller found from the transaction reference", "Subscription flips to active", "WhatsApp welcome message"],
+    remaining: ["Live Meta number", "Live Africa's Talking account", "Live Flutterwave keys", "Custom domain nexuscore.africa"],
+    target: { n: 10, text: "paying sellers retained past 30 days, within 90 days of public launch" },
+  },
+  about: {
+    title: "What this project is really about",
+    text: "NexusCore is a bet that the next wave of African software will not look like American software with a currency change. She does not want to be onboarded; she wants her evening back. She does not want a dashboard; she wants to type “pause bot” to her own number and have it work.",
+    refused: ["Email verification", "English-first copy", "Dollar-denominated pricing", "High-touch onboarding", "Stripe-shaped payment flows"],
+    thesis: "If this works for the first hundred sellers, there is a market for software built to this reality, not translated into it.",
+  },
 };
 
 /** Let's Work → skill capsules that rain down and pile up (drag to fling). Order sets the drop order. */

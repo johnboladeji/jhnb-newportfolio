@@ -5,7 +5,6 @@ import {
   useInView,
   useMotionValue,
   useReducedMotion,
-  useScroll,
   useSpring,
   useTransform,
   type MotionValue,
@@ -30,6 +29,7 @@ import {
 import { cairaStudy as C } from "../content";
 import RollText from "./RollText";
 import { Reveal, RiseWords } from "./Reveal";
+import { LitWords, LiveRow, StudyBar, StudyChapter, useStudyProgress, type LiveAccent, type StudyTone } from "./StudyKit";
 
 /**
  * Caira case study. Lives inside the drawer's case-study view and switches into Caira's own world:
@@ -97,40 +97,24 @@ export function CairaMark({ draw = false, className = "" }: { draw?: boolean; cl
   );
 }
 
-/** Chapter wrapper: anchors for the sticky bar, reports when it becomes the current chapter. */
-function Chapter({
-  n,
-  title,
-  onEnter,
-  children,
-}: {
-  n: number;
-  title?: string;
-  onEnter: (n: number) => void;
-  children: ReactNode;
-}) {
-  return (
-    <motion.section
-      id={`caira-ch-${n}`}
-      aria-labelledby={title ? `caira-ch-${n}-title` : undefined}
-      aria-label={title ? undefined : CHAPTERS[n - 1]}
-      className="scroll-mt-20 pt-16 @xl:pt-20"
-      onViewportEnter={() => onEnter(n)}
-      viewport={{ margin: "-45% 0px -50% 0px" }}
-    >
-      <Reveal y={10} className="flex items-center gap-3 font-mono text-[11px] tracking-[0.25em] text-ochre">
-        <span>{pad(n)}</span>
-        <span className="h-px w-10 bg-ochre/60" />
-        <span>{CHAPTERS[n - 1].toUpperCase()}</span>
-      </Reveal>
-      {title && (
-        <h3 id={`caira-ch-${n}-title`} className="mt-4 max-w-[22ch] font-fraunces text-3xl font-semibold leading-[1.08] text-cream @xl:text-4xl @3xl:text-5xl">
-          <RiseWords text={title} />
-        </h3>
-      )}
-      {children}
-    </motion.section>
-  );
+const CAIRA_TONE: StudyTone = {
+  kicker: "text-ochre",
+  rule: "bg-ochre/60",
+  dot: "bg-ochre",
+  progress: "bg-[linear-gradient(90deg,#c05a44,#d4a373)]",
+  title: "font-fraunces font-semibold",
+};
+
+const CAIRA_LIVE: LiveAccent = {
+  text: "text-ochre",
+  fill: "bg-ochre",
+  on: "text-night",
+  tint: "bg-[radial-gradient(120%_160%_at_0%_0%,rgba(212,163,115,0.22),transparent_60%)]",
+};
+
+/** Chapter wrapper (shared StudyChapter, in Caira's tone). */
+function Chapter(props: { n: number; title?: string; onEnter: (n: number) => void; children: ReactNode }) {
+  return <StudyChapter id="caira" chapters={CHAPTERS} tone={CAIRA_TONE} {...props} />;
 }
 
 /** A phone frame. Screens are cropped portrait screenshots, pinned to the top. */
@@ -382,21 +366,8 @@ function Hero() {
 /* Origin: words light up as you scroll                                                                */
 /* ------------------------------------------------------------------------------------------------ */
 
-function ScrollWord({ p, range, children }: { p: MotionValue<number>; range: [number, number]; children: string }) {
-  const opacity = useTransform(p, range, [0.16, 1]);
-  return <motion.span style={{ opacity }}>{children} </motion.span>;
-}
-
 function Origin({ scrollRef }: { scrollRef?: RefObject<HTMLElement | null> }) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLParagraphElement>(null);
-  const { scrollYProgress } = useScroll({
-    container: scrollRef as RefObject<HTMLElement> | undefined,
-    target: ref,
-    offset: ["start 0.9", "end 0.55"],
-  });
   if (!C.origin) return null;
-  const words = C.origin.text.split(" ");
   return (
     <section aria-label={C.origin.kicker} className="relative mt-16">
       <Reveal y={10} className="flex items-center gap-3 font-mono text-[11px] tracking-[0.25em] text-ochre">
@@ -406,9 +377,11 @@ function Origin({ scrollRef }: { scrollRef?: RefObject<HTMLElement | null> }) {
       <span aria-hidden="true" className="pointer-events-none absolute -left-2 top-6 select-none font-fraunces text-[7rem] leading-none text-terra/25">
         &ldquo;
       </span>
-      <p ref={ref} className="relative mt-5 font-fraunces text-2xl font-medium leading-snug text-cream @xl:text-3xl @3xl:text-[2.4rem]">
-        {reduce ? C.origin.text : words.map((w, i) => <ScrollWord key={i} p={scrollYProgress} range={[i / words.length, (i + 1) / words.length]}>{w}</ScrollWord>)}
-      </p>
+      <LitWords
+        text={C.origin.text}
+        scrollRef={scrollRef}
+        className="relative mt-5 font-fraunces text-2xl font-medium leading-snug text-cream @xl:text-3xl @3xl:text-[2.4rem]"
+      />
     </section>
   );
 }
@@ -1338,86 +1311,28 @@ export default function CairaStudy({
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [chapter, setChapter] = useState(0);
-  const { scrollYProgress } = useScroll({
-    container: scrollRef as RefObject<HTMLElement> | undefined,
-    target: rootRef,
-    offset: ["start start", "end end"],
-  });
-  const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
+  const progress = useStudyProgress(scrollRef, rootRef);
+  const live = C.facts.find((f) => "url" in f && f.url);
+  const facts = C.facts.filter((f) => f !== live);
 
-  const jump = (n: number) => document.getElementById(`caira-ch-${n}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
     <div ref={rootRef} className="@container">
-      {/* Sticky chapter bar: progress line, current chapter, jump dots */}
-      <div className="sticky top-0 z-20 -mx-6 mb-6 border-b border-cream/5 bg-secondary/85 px-6 py-3 backdrop-blur-md sm:-mx-10 sm:px-10">
-        <div className="flex items-center justify-between gap-4">
-          <div className="min-w-0 font-mono text-[11px] tracking-[0.2em]" aria-live="polite">
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.span
-                key={chapter}
-                className="block truncate"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.2 }}
-              >
-                {chapter === 0 ? (
-                  <span className="text-ochre">CAIRA · CASE STUDY</span>
-                ) : (
-                  <>
-                    <span className="text-ochre">
-                      {pad(chapter)} / {pad(CHAPTERS.length)}
-                    </span>
-                    <span className="text-cream/80"> · {CHAPTERS[chapter - 1].toUpperCase()}</span>
-                  </>
-                )}
-              </motion.span>
-            </AnimatePresence>
-          </div>
-          <nav aria-label="Case study chapters" className="hidden shrink-0 items-center gap-1.5 @md:flex">
-            {CHAPTERS.map((c, i) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => jump(i + 1)}
-                aria-label={`Go to ${c}`}
-                aria-current={chapter === i + 1 ? "step" : undefined}
-                title={c}
-                className="group flex h-6 items-center"
-              >
-                <span
-                  className={`block h-1.5 rounded-full transition-all duration-300 ${
-                    chapter === i + 1 ? "w-5 bg-ochre" : i + 1 < chapter ? "w-1.5 bg-cream/60 group-hover:bg-tertiary" : "w-1.5 bg-cream/25 group-hover:bg-tertiary"
-                  }`}
-                />
-              </button>
-            ))}
-          </nav>
-        </div>
-        <motion.span aria-hidden="true" style={{ scaleX: progress }} className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-[linear-gradient(90deg,#c05a44,#d4a373)]" />
-      </div>
+      <StudyBar id="caira" label="CAIRA · CASE STUDY" chapters={CHAPTERS} chapter={chapter} progress={progress} tone={CAIRA_TONE} />
 
       <Hero />
       <Origin scrollRef={scrollRef} />
 
       <Chapter n={1} onEnter={setChapter}>
         <dl className="mt-8 grid gap-px overflow-hidden rounded-2xl border border-cream/10 bg-cream/10 @md:grid-cols-2 @3xl:grid-cols-3">
-          {C.facts.map((f, i) => (
-            <Reveal key={f.label} delay={i * 0.05} y={14} className="bg-secondary p-5">
+          {facts.map((f, i) => (
+            // The last fact stretches to close the row (5 facts in 2 or 3 columns)
+            <Reveal key={f.label} delay={i * 0.05} y={14} className={`bg-secondary p-5 ${i === facts.length - 1 ? "@md:col-span-2" : ""}`}>
               <dt className="font-mono text-[10px] tracking-[0.2em] text-ochre">{f.label.toUpperCase()}</dt>
-              <dd className="mt-1.5 font-figtree text-[15px] font-medium leading-snug text-cream">
-                {"url" in f && f.url ? (
-                  <a href={f.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 underline decoration-ochre/60 underline-offset-4 transition-colors hover:text-tertiary">
-                    {f.value}
-                    <ArrowUpRight size={14} aria-hidden="true" />
-                  </a>
-                ) : (
-                  f.value
-                )}
-              </dd>
+              <dd className="mt-1.5 font-figtree text-[15px] font-medium leading-snug text-cream">{f.value}</dd>
             </Reveal>
           ))}
+          {live && "url" in live && live.url && <LiveRow label={live.label} value={live.value} url={live.url} accent={CAIRA_LIVE} />}
         </dl>
       </Chapter>
 

@@ -12,9 +12,11 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { RefObject } from "react";
-import { cairaStudy, projects, type Project } from "../content";
+import { cairaStudy, nexusStudy, projects, type Project } from "../content";
 import CairaStudy, { CairaCover } from "./CairaStudy";
+import NexusStudy, { NexusCover } from "./NexusStudy";
 import RollText from "./RollText";
+import { LiveRow } from "./StudyKit";
 
 const ICONS: Record<Project["icon"], LucideIcon> = {
   "heart-handshake": HeartHandshake,
@@ -43,6 +45,7 @@ export function ProjectCover({ project, index, large = false }: { project: Proje
   const accent = ACCENTS[project.accent];
 
   if (project.slug === cairaStudy.slug) return <CairaCover />;
+  if (project.slug === nexusStudy.slug) return <NexusCover />;
 
   if (project.cover) {
     return (
@@ -148,11 +151,12 @@ export function CaseStudy({
   const rise = (d: number) =>
     reduceMotion ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5, delay: d, ease: [0.2, 0.8, 0.2, 1] as const } };
 
-  // Caira has its own, richer case study
-  if (p.slug === cairaStudy.slug) {
+  // Caira and NexusCore have their own, richer case studies
+  const Rich = p.slug === cairaStudy.slug ? CairaStudy : p.slug === nexusStudy.slug ? NexusStudy : null;
+  if (Rich) {
     return (
       <article className="pb-4">
-        <CairaStudy scrollRef={scrollRef} onLetsWork={onLetsWork} />
+        <Rich scrollRef={scrollRef} onLetsWork={onLetsWork} />
         <NextProject next={next} onOpen={onOpen} />
       </article>
     );
@@ -177,6 +181,16 @@ export function CaseStudy({
           <dt className="font-mono text-[11px] tracking-[0.2em] text-amber">WHAT IT IS</dt>
           <dd className="mt-1 text-sm text-cream">{p.type}</dd>
         </div>
+        {p.url && (
+          <LiveRow
+            label={p.name}
+            value={p.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+            url={p.url}
+            accent={{ text: "text-tertiary", fill: "bg-tertiary", on: "text-base", tint: "bg-[radial-gradient(120%_160%_at_0%_0%,rgba(255,208,161,0.16),transparent_60%)]" }}
+            framed
+            className="mt-3"
+          />
+        )}
       </motion.dl>
 
       <motion.p {...rise(0.14)} className={`mt-6 border-l-2 border-amber pl-4 font-sans text-xl font-bold leading-snug sm:text-2xl ${accent.text}`}>

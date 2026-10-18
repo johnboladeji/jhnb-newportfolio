@@ -25,6 +25,16 @@
   --font-fraunces: "Fraunces", Georgia, serif;
   --font-figtree: "Figtree", system-ui, sans-serif;
 
+  /* NexusCore's own palette and type, used only inside the NexusCore case study (NexusStudy.tsx) */
+  --color-nx-ink: #0c0720;     /* page */
+  --color-nx-indigo: #1d0e44;  /* brand primary */
+  --color-nx-plum: #231840;    /* raised surface */
+  --color-nx-lime: #bad532;    /* accent: 12:1 on ink */
+  --color-nx-lilac: #ede9fa;   /* text */
+  --color-nx-mist: #a79fc4;    /* muted text: 7.9:1 on ink */
+  --font-dmsans: "DM Sans", system-ui, sans-serif;
+  --font-fira: "Fira Code", "Cascadia Code", monospace;
+
   --animate-marquee: marquee 40s linear infinite;
 
   @keyframes marquee {

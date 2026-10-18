@@ -55,6 +55,10 @@ Run `npm run build` after changes to confirm nothing broke.
   - `CairaStudy.tsx` — Caira's rich case study and list cover (content in `cairaStudy` in content.ts, images in
     `public/work/caira/`). Uses Caira's own tokens (`night`, `terra`, `ochre`, `sage`, `paper`; Fraunces + Figtree)
     only inside the study, and container queries (`@container`, `@md`/`@xl`/`@3xl`) so it adapts to the drawer width.
+  - `NexusStudy.tsx` — NexusCore's rich case study and list cover (content in `nexusStudy`). NexusCore's own tokens
+    (`nx-ink`, `nx-indigo`, `nx-plum`, `nx-lime`, `nx-lilac`, `nx-mist`; DM Sans + Fira Code), only inside the study.
+  - `StudyKit.tsx` — shared chrome for rich case studies: sticky chapter bar (`StudyBar`), numbered chapters
+    (`StudyChapter`), `LitWords` (words light up on scroll), `useStudyProgress`. Each study passes its own `tone`.
   - `SkillCapsules.tsx` — physics skill capsules under the Let's Work form (`skills`; uses matter-js).
   - `AboutSection.tsx` — About Me shell: pinned title + typed headline (`TypeLoop.tsx`), Overview/Experience segments (tabs, or side by side in full screen).
   - `AboutDeck.tsx` — Overview: sideways page deck. `ExperienceList.tsx` — Experience timeline (`experience` in content.ts).
