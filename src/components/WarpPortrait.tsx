@@ -285,7 +285,7 @@ export default function WarpPortrait({ src, rig, alt, onError, className = "" }:
         const img = tex.image as HTMLImageElement;
         uniforms.uTex.value = tex;
         uniforms.uSize.value.set(img.naturalWidth, img.naturalHeight);
-        uniforms.uLensR.value = img.naturalWidth * 0.26;
+        uniforms.uLensR.value = img.naturalWidth * 0.2;
         // Drawing buffer = image size: gives the canvas the photo's intrinsic aspect ratio for CSS (h-full w-auto)
         renderer.setPixelRatio(1);
         renderer.setSize(img.naturalWidth, img.naturalHeight, false);
