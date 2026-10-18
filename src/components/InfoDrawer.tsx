@@ -206,7 +206,7 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
                     {view === "menu" && <MenuView onNavigate={onNavigate} onClose={onClose} />}
                     {view === "projects" && <WorksList onOpen={openCase} />}
                     {view === "caseStudy" && (
-                      <CaseStudy slug={caseSlug} onOpen={setCaseSlug} onLetsWork={() => onNavigate("contact")} />
+                      <CaseStudy slug={caseSlug} onOpen={setCaseSlug} onLetsWork={() => onNavigate("contact")} scrollRef={scrollRef} />
                     )}
                     {view === "contentDesign" && <ContentDesignView />}
                     {view === "articles" && <ArticlesView />}

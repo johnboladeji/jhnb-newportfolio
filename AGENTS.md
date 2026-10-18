@@ -50,6 +50,9 @@ Run `npm run build` after changes to confirm nothing broke.
   - `InfoDrawer.tsx` — side drawer (z-50): menu (Home, Projects, About Me, Writing ▸ Content Design / Articles, Resume, Let's Work), sub-views, contact form.
   - `DrawerPortraits.tsx` — studio portraits blended into the drawer's right edge, sliding right → left (`drawerImages`).
   - `Works.tsx` — Selected Works list, generated project covers, case-study view (`projects` in content.ts).
+  - `CairaStudy.tsx` — Caira's rich case study and list cover (content in `cairaStudy` in content.ts, images in
+    `public/work/caira/`). Uses Caira's own tokens (`night`, `terra`, `ochre`, `sage`, `paper`; Fraunces + Figtree)
+    only inside the study, and container queries (`@container`, `@md`/`@xl`/`@3xl`) so it adapts to the drawer width.
   - `SkillCapsules.tsx` — physics skill capsules under the Let's Work form (`skills`; uses matter-js).
   - `AboutSection.tsx` — About Me shell: pinned title + typed headline (`TypeLoop.tsx`), Overview/Experience segments (tabs, or side by side in full screen).
   - `AboutDeck.tsx` — Overview: sideways page deck. `ExperienceList.tsx` — Experience timeline (`experience` in content.ts).

@@ -128,19 +128,19 @@ export const projects: Project[] = [
   {
     slug: "caira",
     name: "Caira",
-    type: "Eldercare coordination for diaspora families",
-    role: "Founder & Product Lead",
-    year: "2024 — Today",
+    type: "Eldercare coordination for families abroad",
+    role: "Founder, sole designer & engineer",
+    year: "2026",
     url: "https://cairacare.com",
     icon: "heart-handshake",
     accent: "coral",
-    tags: ["Product strategy", "Brand identity", "User research", "Mobile app", "Backend"],
-    summary: "A platform for families coordinating the care of ageing loved ones across borders.",
+    tags: ["Brand", "Research plan", "PRD", "UX & UI", "Microcopy", "Full-stack build"],
+    summary: "A private care circle that helps families abroad look after an ageing parent back home.",
     did: [
-      "Led the venture end to end: brand identity, user research, product design, and full-stack development of the mobile app and backend.",
-      "Designed the coordination model: shared tasks, check-ins and cross-border care-support workflows for globally dispersed families.",
+      "Designed and built it end to end, alone: brand, product strategy, requirements, UX, UI, microcopy, the Android app, the backend, and the website.",
+      "Designed the coordination model: role-based access, Elder Mode, coordinator voting, and consent before anything else.",
     ],
-    // TODO: add an outcome (users, pilots, launches) and a real cover at public/work/caira.webp
+    // The full, rich case study lives in `cairaStudy` below (rendered by CairaStudy.tsx)
   },
   {
     slug: "nexuscore",
@@ -332,6 +332,177 @@ export const socials = [
   { label: "Instagram", icon: "instagram", url: "https://instagram.com/" },
   { label: "Google Scholar", icon: "scholar", url: "https://scholar.google.com/" },
 ] as const;
+
+/**
+ * Caira: the full case study (rendered by CairaStudy.tsx instead of the plain case-study layout).
+ * Screens and logos live in public/work/caira/. Caira's own palette is used inside the study.
+ */
+export const cairaStudy = {
+  slug: "caira",
+  tagline: "Care. Together.",
+  headline: "Far from home. Close to Mum.",
+  intro:
+    "Caira helps families abroad coordinate care for an ageing parent back home. I designed and built it end to end, alone: brand, product strategy, requirements, UX, UI, microcopy, the mobile app, the backend, and the website.",
+  status: "Pre-launch · Android app live",
+  logo: "/work/caira/logo-light.webp",
+  // Optional framing: set `origin` to null to keep the story private
+  origin: {
+    kicker: "Why Caira exists",
+    text: "A friend lost her mother. The care had fallen between time zones and group chats, and when the emergency came, it reached the family too late. Distance shouldn't mean a loved one goes uncared for. Coordination — knowing, together, in time — can be designed.",
+  } as { kicker: string; text: string } | null,
+  facts: [
+    { label: "Role", value: "Founder, sole product designer and full-stack engineer" },
+    { label: "Type", value: "Mobile app (Android) and website, B2C" },
+    { label: "Industry", value: "Eldercare, health tech" },
+    { label: "Year", value: "2026" },
+    { label: "Scope", value: "Brand, research plan, PRD, UX, UI, microcopy, full-stack build, deployment" },
+    { label: "Live", value: "cairacare.com", url: "https://cairacare.com" },
+  ],
+  challenge: {
+    title: "The family group chat was never built for this.",
+    body: "Care for a parent back home runs on scattered WhatsApp threads and late-night calls. One sibling ends up carrying everything, and there's no calm, shared place to see how Mum is really doing.",
+    insight: "The real problem isn't tracking. It's trust, consent, and coordination among people who love the same person but live in different worlds.",
+    // The group chat that plays out, then the Caira update that answers it
+    chat: [
+      { who: "Tunde, Houston", text: "Did anyone call Mummy today?", me: false },
+      { who: "Kemi, Lagos", text: "I thought you did. I've been at work since 6.", me: false },
+      { who: "You, London", text: "Has she taken her BP medicine?", me: true },
+      { who: "Tunde, Houston", text: "Not sure. I'll try her tonight.", me: false },
+    ],
+    update: {
+      time: "9:04 AM in Lagos",
+      title: "Mummy checked in:",
+      quote: "“I'm okay today.”",
+      rows: ["BP medicine taken at 8:30 AM", "Next: clinic visit, Thursday at 10:00 AM"],
+    },
+  },
+  audience: {
+    title: "Who it's for",
+    body: "Nigerians in the US, the UK and Canada first. Positioned for any family abroad: Western markets primary, Africa secondary.",
+    from: ["US", "UK", "Canada"],
+    to: "Nigeria",
+    roles: [
+      { icon: "crown", name: "Care Coordinator", text: "Sets up the circle, invites the family, and approves who joins." },
+      { icon: "users", name: "Family Members", text: "Follow updates, share tasks, and check in from wherever they live." },
+      { icon: "heart", name: "Person Cared For", text: "Uses Elder Mode: a calm, simple view that needs no setup." },
+      { icon: "map-pin", name: "Trusted Local Contact", text: "Someone nearby who can act on the ground when it matters." },
+    ],
+  },
+  decisions: [
+    {
+      title: "Access matches the role",
+      text: "Each person sees only what their role needs, enforced at the database with row-level security in Postgres, not just hidden in the UI.",
+      visual: "rls",
+    },
+    {
+      title: "Elder Mode, with no setup for the elder",
+      text: "A simplified view with large targets and a single “Reach My Family” button. Dignity was the constraint: the elder never fills in a form or remembers a password.",
+      visual: "elder",
+    },
+    {
+      title: "No single point of failure",
+      text: "Coordinators can be changed by a family vote with a 72-hour window and deadlock safeguards, so care never stalls on one person.",
+      visual: "vote",
+    },
+    {
+      title: "Consent comes first",
+      text: "Voice-led consent from the elder, or a logged family attestation, before anything is shared. Built with NDPR and GDPR in mind.",
+      visual: "consent",
+    },
+  ],
+  product: {
+    title: "The product",
+    body: "Four tabs, cut down from five. One account can belong to several circles, and push notifications keep everyone in sync.",
+    tabs: [
+      { icon: "home", name: "Home", text: "Hero card, today's summary, recent updates, and circle members." },
+      { icon: "clipboard", name: "Care", text: "Tasks and medications." },
+      { icon: "activity", name: "Updates", text: "A shared activity feed." },
+      { icon: "users", name: "Circle", text: "Members, invitations, and requests to join that the coordinator approves." },
+    ],
+    onboarding: [
+      { src: "/work/caira/screen-onboard-family.webp", alt: "Onboarding: Your whole family, one circle of care." },
+      { src: "/work/caira/screen-onboard-moments.webp", alt: "Onboarding: Never miss a moment that matters." },
+      { src: "/work/caira/screen-onboard-home.webp", alt: "Onboarding: Close to home, from anywhere." },
+    ],
+    flow: [
+      { src: "/work/caira/screen-start.webp", alt: "Does your family already use Caira? Start a new circle, or join with an invite code.", caption: "Start or join a circle" },
+      { src: "/work/caira/screen-about-circle.webp", alt: "About the circle: who it's for, family name, and language.", caption: "About the circle" },
+      { src: "/work/caira/screen-who.webp", alt: "Who is this circle for? Their name, your relationship, and the circle's name.", caption: "Who it's for, in the family's words" },
+      { src: "/work/caira/screen-details.webp", alt: "Optional details: where they live, their email, and phone.", caption: "Optional details, never required" },
+    ],
+    elder: {
+      greeting: "Good morning, Mama.",
+      ask: "How are you feeling today?",
+      choices: [
+        { label: "I'm okay", tone: "ok", reply: "Thank you, Mama. Your family will see that you're okay today." },
+        { label: "Not feeling great", tone: "meh", reply: "Thank you for telling us. Your family will check in with you today." },
+      ],
+      reach: { label: "Reach My Family", reply: "We're letting your whole circle know now." },
+    },
+    next: "An escalation engine for missed check-ins, timed to the elder's local time zone, with quiet hours.",
+  },
+  visual: {
+    title: "Visual language",
+    body: "Family, not hospital. A terracotta heart-to-infinity mark, the tagline “Care. Together.”, and a care-circle motif throughout.",
+    colours: [
+      { name: "Deep Night Sky", hex: "#1A2238" },
+      { name: "Terracotta", hex: "#C05A44" },
+      { name: "Ochre", hex: "#D4A373" },
+      { name: "Sage", hex: "#8B9467" },
+      { name: "Cream", hex: "#FDF5E6" },
+    ],
+    type: [
+      { family: "Fraunces", role: "Headlines", sample: "Care. Together." },
+      { family: "Figtree", role: "Interface & body", sample: "One private circle for the whole family." },
+    ],
+    tone: "Gentle amber, never alarm red.",
+  },
+  // Academic layer: collapsed by default
+  thinking: {
+    rhetoric: {
+      title: "Rhetorical lens (CARF)",
+      points: [
+        "Consent in English and Nigerian Pidgin (the Pidgin copy is waiting on native-speaker review).",
+        "Family hierarchy is respected, not flattened.",
+        "“Reach My Family,” not “Emergency”: ochre and a heart icon instead of red and a siren.",
+        "Time on the elder's terms: everything is scheduled in their local time zone.",
+      ],
+    },
+    engineering: {
+      title: "Engineering",
+      stack: [
+        { layer: "App", items: ["React Native", "Expo SDK 54", "Android via EAS", "OTA updates"] },
+        { layer: "API", items: ["Fastify", "Node 20", "Railway", "Zod contracts"] },
+        { layer: "Data", items: ["Neon Postgres", "Row-level security"] },
+        { layer: "Signals", items: ["Expo push", "FCM"] },
+        { layer: "Web", items: ["Static site", "Vercel", "Early-access signup"] },
+      ],
+      points: [
+        "A TypeScript monorepo with shared Zod contracts between app and API.",
+        "OTA updates through EAS, with one-command rollback.",
+        "I direct an AI coding agent, then review, type-check, and approve every change.",
+      ],
+    },
+  },
+  shipped: [
+    "Android app, with over-the-air updates",
+    "Website live at cairacare.com",
+    "Research plan and early tester responses",
+    "A hardened PRD: consent, escalation, offline",
+    "Applied to the Africa Health-Tech Accelerator 2026 (co-hosted by Africa CDC)",
+  ],
+  next: [
+    "Run research with diaspora families",
+    "Recruit pilot families",
+    "Build the escalation engine",
+    "Get the Pidgin copy reviewed",
+  ],
+  lessons: [
+    { title: "The hard parts live at the edges.", text: "Consent, escalation, offline, and who's allowed to see what took more design than any screen." },
+    { title: "Words are a feature.", text: "“Reach My Family” does work that “Emergency” never could." },
+    { title: "Building alone needs a system.", text: "Shared contracts, type-checks, and a review habit kept one person shipping like a team." },
+  ],
+};
 
 /** Let's Work → skill capsules that rain down and pile up (drag to fling). Order sets the drop order. */
 export const skills = [

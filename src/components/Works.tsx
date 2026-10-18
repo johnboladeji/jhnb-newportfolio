@@ -11,7 +11,9 @@ import {
   Truck,
   type LucideIcon,
 } from "lucide-react";
-import { projects, type Project } from "../content";
+import type { RefObject } from "react";
+import { cairaStudy, projects, type Project } from "../content";
+import CairaStudy, { CairaCover } from "./CairaStudy";
 import RollText from "./RollText";
 
 const ICONS: Record<Project["icon"], LucideIcon> = {
@@ -39,6 +41,8 @@ const pad = (n: number) => String(n).padStart(2, "0");
 export function ProjectCover({ project, index, large = false }: { project: Project; index: number; large?: boolean }) {
   const Icon = ICONS[project.icon];
   const accent = ACCENTS[project.accent];
+
+  if (project.slug === cairaStudy.slug) return <CairaCover />;
 
   if (project.cover) {
     return (
@@ -124,7 +128,18 @@ export function WorksList({ onOpen }: { onOpen: (slug: string) => void }) {
 }
 
 /** A single case study: cover, facts, summary, what I did, focus areas, link, and next project. */
-export function CaseStudy({ slug, onOpen, onLetsWork }: { slug: string; onOpen: (slug: string) => void; onLetsWork: () => void }) {
+export function CaseStudy({
+  slug,
+  onOpen,
+  onLetsWork,
+  scrollRef,
+}: {
+  slug: string;
+  onOpen: (slug: string) => void;
+  onLetsWork: () => void;
+  /** The drawer's scroller, for scroll-linked effects in rich case studies */
+  scrollRef?: RefObject<HTMLElement | null>;
+}) {
   const reduceMotion = useReducedMotion();
   const index = Math.max(0, projects.findIndex((p) => p.slug === slug));
   const p = projects[index];
@@ -132,6 +147,16 @@ export function CaseStudy({ slug, onOpen, onLetsWork }: { slug: string; onOpen: 
   const accent = ACCENTS[p.accent];
   const rise = (d: number) =>
     reduceMotion ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5, delay: d, ease: [0.2, 0.8, 0.2, 1] as const } };
+
+  // Caira has its own, richer case study
+  if (p.slug === cairaStudy.slug) {
+    return (
+      <article className="pb-4">
+        <CairaStudy scrollRef={scrollRef} onLetsWork={onLetsWork} />
+        <NextProject next={next} onOpen={onOpen} />
+      </article>
+    );
+  }
 
   return (
     <article className="pb-4">
@@ -215,22 +240,28 @@ export function CaseStudy({ slug, onOpen, onLetsWork }: { slug: string; onOpen: 
         </button>
       </motion.div>
 
-      {/* Next project */}
-      <button
-        type="button"
-        onClick={() => onOpen(next.slug)}
-        className="group mt-14 flex w-full items-center justify-between gap-4 border-t border-cream/10 pt-6 text-left"
-      >
-        <span>
-          <span className="block font-mono text-[11px] tracking-[0.2em] text-amber">NEXT PROJECT</span>
-          <span className="mt-1 block font-display text-4xl uppercase leading-none text-cream transition-colors group-hover:text-tertiary sm:text-5xl">
-            {next.name}
-          </span>
-        </span>
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-cream/20 text-cream transition-all duration-300 group-hover:translate-x-1 group-hover:border-tertiary group-hover:bg-tertiary group-hover:text-base">
-          <ArrowRight size={18} aria-hidden="true" />
-        </span>
-      </button>
+      <NextProject next={next} onOpen={onOpen} />
     </article>
+  );
+}
+
+/** Big "next project" link at the foot of every case study. */
+function NextProject({ next, onOpen }: { next: Project; onOpen: (slug: string) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(next.slug)}
+      className="group mt-14 flex w-full items-center justify-between gap-4 border-t border-cream/10 pt-6 text-left"
+    >
+      <span>
+        <span className="block font-mono text-[11px] tracking-[0.2em] text-amber">NEXT PROJECT</span>
+        <span className="mt-1 block font-display text-4xl uppercase leading-none text-cream transition-colors group-hover:text-tertiary sm:text-5xl">
+          {next.name}
+        </span>
+      </span>
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-cream/20 text-cream transition-all duration-300 group-hover:translate-x-1 group-hover:border-tertiary group-hover:bg-tertiary group-hover:text-base">
+        <ArrowRight size={18} aria-hidden="true" />
+      </span>
+    </button>
   );
 }
