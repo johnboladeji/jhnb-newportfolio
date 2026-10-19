@@ -249,3 +249,18 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Hero bio reading light: TypewriterBio writes --g (0–1) on each word near the pointer */
+.bio-word {
+  --g: 0;
+  color: color-mix(in srgb, var(--color-tertiary) calc(var(--g) * 100%), currentColor);
+  transform: translateY(calc(var(--g) * -2px));
+  text-shadow: 0 0 calc(var(--g) * 16px) rgb(255 208 161 / calc(var(--g) * 0.6)), 0 1px 12px rgb(21 6 0 / 0.95);
+  transition: color 0.3s ease, transform 0.3s ease, text-shadow 0.3s ease;
+}
+.bio-word.bio-hi {
+  color: color-mix(in srgb, var(--color-cream) calc(var(--g) * 100%), var(--color-tertiary));
+}
+@media (prefers-reduced-motion: reduce) {
+  .bio-word { transform: none; }
+}

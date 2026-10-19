@@ -69,6 +69,12 @@ export const hero = {
   /** Rotating bottom line, changes every 4 seconds */
   rotatingWords: ["RHETORIC", "CULTURE", "CODE"],
   bio: "I’m John-B — a Nigerian-born product designer, design engineer, and rhetorician. I design, write, and code products that speak the language of the people they serve, shaped by more than six years leading brands across Nigeria and the UK and by my research into culturally attentive UX writing. One conviction drives it all: technology should adapt to culture, never the other way around.",
+  /** Phrases in the bio that reveal in the accent colour (must match the bio text exactly) */
+  bioHighlights: [
+    "product designer, design engineer, and rhetorician",
+    "speak the language of the people they serve",
+    "technology should adapt to culture",
+  ],
   /** Sign-off, always typed on its own line after the bio */
   bioSignoff: "— Just Hold No Bounds.",
   /** Small accent line under the headline (desktop) */

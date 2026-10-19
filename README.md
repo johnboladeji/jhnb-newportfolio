@@ -55,7 +55,7 @@ src/
     RollText.tsx               letter-roll hover labels
     HeroContent.tsx            outlined "DESIGN WITH" + rotating word, every 4s (z-20)
     ScrambleText.tsx           random-letter scramble before settling
-    TypewriterBio.tsx          per-character stagger, replays every 7s
+    TypewriterBio.tsx          word-by-word bio reveal, reading light, replay
     Header.tsx                 social icons, morphing logo, View Me menu button (z-30)
     SocialIcon.tsx             inline SVG brand glyphs
     FooterMarquee.tsx          outlined infinite marquee + © / email line (z-30)

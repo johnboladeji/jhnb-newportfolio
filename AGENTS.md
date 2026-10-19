@@ -141,7 +141,10 @@ Search `src/content.ts` for `TODO`:
 - Keep accessibility intact: focus trap and Escape-to-close in the drawer, labelled form fields,
   `sr-only` text for animated headings (the hero h1 is one stable sentence; the scramble is `aria-hidden`), reduced-motion
   handling (the global CSS rule stops animations; JS demos must render their final state when motion is reduced).
-- The hero bio types once per visit (sessionStorage `jhnb-bio-typed`), about 4 seconds; the full text is always in the page.
+- The hero bio (`TypewriterBio.tsx`) reveals word by word on every visit (blur → sharp rise, about 9 seconds; on phones the
+  sign-off follows the three visible lines at about 4 seconds). `hero.bioHighlights` phrases land in `tertiary`; only the sign-off is bold. A reading
+  light (`.bio-word`, CSS var `--g` in index.css) warms words near the pointer or finger; a tap while revealing shows it all;
+  a replay button follows the sign-off. The full text is always in the page for screen readers; reduced motion shows it still.
 - No remote images in production; put assets in `public/`.
 - Keep the page free of scrollbars on mobile (root uses `h-dvh`).
 - Don't add new dependencies without saying why.
