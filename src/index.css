@@ -43,6 +43,7 @@
   --color-tf-lav: #dee4fe;     /* accent text: 15:1 on ink */
   --font-inter: "Inter", system-ui, sans-serif;
 
+
   --animate-marquee: marquee 40s linear infinite;
 
   @keyframes marquee {
@@ -210,6 +211,22 @@ body {
 .caira-ripple { animation: caira-ripple 1.8s ease-out infinite; }
 @keyframes caira-blink { 50% { opacity: 0.25; } }
 .caira-colon { animation: caira-blink 2s steps(1) infinite; }
+/* Travelling pen (TravellingPen.tsx): the writing hand never quite stops, a small looping scribble at the nib */
+@keyframes pen-scribble {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(2.5px, -1.5px) rotate(4deg); }
+  40% { transform: translate(-1.5px, 1px) rotate(-3deg); }
+  60% { transform: translate(2px, 1.5px) rotate(3deg); }
+  80% { transform: translate(-2px, -1px) rotate(-2deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+.pen-scribble { animation: pen-scribble 1.3s ease-in-out infinite; }
+
+/* CARF cover: slowly turning rays and a floating reading lens (CarfStudy.tsx) */
+@keyframes carf-rays-spin { to { transform: rotate(360deg); } }
+.carf-rays { animation: carf-rays-spin 90s linear infinite; transform-origin: 0 0; }
+@keyframes carf-lens-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.carf-lens { animation: carf-lens-float 3.6s ease-in-out infinite; }
 .caira-outline { color: transparent; -webkit-text-stroke: 1px rgba(212, 163, 115, 0.6); }
 
 /* Visible keyboard focus everywhere */

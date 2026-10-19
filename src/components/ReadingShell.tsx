@@ -2,6 +2,7 @@ import { createContext, useEffect, useId, useRef, useState, type ReactNode, type
 import { AnimatePresence, motion, useReducedMotion, useScroll } from "framer-motion";
 import { LayoutGrid } from "lucide-react";
 import TypeLoop from "./TypeLoop";
+import TravellingPen from "./TravellingPen";
 
 /**
  * The shared shell for the Writing pages (Content Design, Articles), built on About Me's structure:
@@ -64,6 +65,16 @@ export default function ReadingShell({
   const paneRef = useRef<HTMLDivElement>(null);
   const id = useId();
   const { scrollYProgress } = useScroll({ container: paneRef });
+  // The travelling pen gets a right-hand gutter when the pane is wide enough to spare it (not on phones)
+  const [penRoom, setPenRoom] = useState(false);
+  useEffect(() => {
+    const el = paneRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setPenRoom(el.clientWidth >= 520));
+    ro.observe(el);
+    return () => ro.disconnect();
+    // The pane element is re-created when the layout switches to the full-screen split
+  }, [split]);
 
   const open = (t: string) => {
     setTab(t);
@@ -102,7 +113,7 @@ export default function ReadingShell({
         role="tabpanel"
         id={`${id}-panel`}
         aria-labelledby={`${id}-tab-${tab}`}
-        className="@container fx-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6 pr-3 pt-6"
+        className={`@container fx-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6 pt-6 ${penRoom ? "pr-24" : "pr-3"}`}
       >
         <PaneContext.Provider value={paneRef}>
           <AnimatePresence mode="wait" initial={false}>
@@ -112,6 +123,7 @@ export default function ReadingShell({
           </AnimatePresence>
         </PaneContext.Provider>
       </div>
+      {penRoom && <TravellingPen progress={scrollYProgress} paneRef={paneRef} />}
     </div>
   );
 

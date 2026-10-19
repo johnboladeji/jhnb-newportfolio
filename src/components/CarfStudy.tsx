@@ -55,27 +55,141 @@ function CountUp({ to }: { to: number }) {
 /* Cover (Selected Works list)                                                                        */
 /* ------------------------------------------------------------------------------------------------ */
 
+/**
+ * The CARF cover: a radiant scene that tells the study at a glance. Two phones, Lagos and Chicago, show the same
+ * identity check in opposite registers; a reading lens hovers over the Lagos copy, magnifying the word that does
+ * the damage ("restrict"); a flight arc links the two cities; slow rays radiate behind it all. Hover warms the
+ * title and moves the lens. Drawn in code (no remote images); the rays and arc pause under reduced motion.
+ */
 export function CarfCover() {
+  const reduce = useReducedMotion();
+  const MONO = "IBM Plex Mono, monospace";
+  const SANS = "Space Grotesk, sans-serif";
+  const SERIF = "Newsreader, Georgia, serif";
+  const rays = Array.from({ length: 28 }, (_, i) => i);
   return (
-    <div aria-hidden="true" className="relative h-full w-full overflow-hidden bg-[linear-gradient(150deg,#2a0d03_0%,#150600_70%)]">
-      <div className="absolute inset-0 opacity-[0.1] [background-image:radial-gradient(#f1e6ce_1px,transparent_1px)] [background-size:18px_18px]" />
-      <div className="absolute -right-[10%] -top-[20%] h-[110%] w-[60%] rounded-full bg-[radial-gradient(circle,rgba(242,166,90,0.3),transparent_65%)] blur-3xl" />
-      <span className="absolute left-[6%] top-[9%] font-mono text-xs tracking-[0.25em] text-amber">04</span>
-      {/* The same rule, two registers */}
-      <div className="absolute right-[6%] top-1/2 w-[44%] -translate-y-1/2 space-y-[5%] font-sans text-[clamp(0.5rem,1.4vw,0.75rem)] leading-snug transition-transform duration-700 ease-out group-hover:-translate-y-[54%]">
-        <div className="rotate-[-2deg] rounded-lg bg-cream p-[5%] text-base shadow-xl">
-          <span className="font-mono text-[0.8em] text-primary">LAGOS</span>
-          <p className="mt-1">Any information that cannot be matched may restrict your account.</p>
-        </div>
-        <div className="translate-x-[8%] rotate-[2deg] rounded-lg bg-tertiary p-[5%] text-base shadow-xl">
-          <span className="font-mono text-[0.8em] text-primary">CHICAGO</span>
-          <p className="mt-1">We just need to confirm who&apos;s signing up.</p>
-        </div>
-      </div>
-      <span className="text-stroke absolute bottom-[6%] left-[5%] font-display text-[clamp(3.25rem,11vw,6.5rem)] uppercase leading-[0.85] transition-transform duration-700 ease-out group-hover:-translate-y-1">
+    <svg viewBox="0 0 640 400" className="h-full w-full" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <radialGradient id="carf-bg" cx="0.66" cy="0.42" r="0.75">
+          <stop offset="0" stopColor="#4a1708" />
+          <stop offset="0.55" stopColor="#220902" />
+          <stop offset="1" stopColor="#150600" />
+        </radialGradient>
+        <radialGradient id="carf-sun" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor="#ffd0a1" stopOpacity="0.55" />
+          <stop offset="0.45" stopColor="#f2a65a" stopOpacity="0.18" />
+          <stop offset="1" stopColor="#f2a65a" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="carf-title" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#ffd0a1" />
+          <stop offset="0.5" stopColor="#f2a65a" />
+          <stop offset="1" stopColor="#f0937a" />
+        </linearGradient>
+        <clipPath id="carf-lens-clip">
+          <circle cx="0" cy="0" r="30" />
+        </clipPath>
+      </defs>
+
+      <rect width="640" height="400" fill="url(#carf-bg)" />
+
+      {/* Radiant rays, slowly turning */}
+      <g transform="translate(420 170)">
+        <g className="carf-rays">
+          {rays.map((i) => {
+            const a = (i / rays.length) * Math.PI * 2;
+            const b = a + Math.PI / rays.length;
+            const R = 420;
+            return (
+              <path
+                key={i}
+                d={`M0 0 L${(Math.cos(a) * R).toFixed(1)} ${(Math.sin(a) * R).toFixed(1)} L${(Math.cos(b) * R).toFixed(1)} ${(Math.sin(b) * R).toFixed(1)} Z`}
+                fill="#f2a65a"
+                opacity={i % 2 ? 0.035 : 0.075}
+              />
+            );
+          })}
+        </g>
+        <circle r="190" fill="url(#carf-sun)" />
+      </g>
+
+      {/* Flight arc: Lagos ⇄ Chicago */}
+      <path id="carf-arc" d="M318 92 C 370 18, 470 18, 520 96" fill="none" stroke="#ffd0a1" strokeOpacity="0.55" strokeWidth="1.4" strokeDasharray="4 6" />
+      {!reduce && (
+        <circle r="3.5" fill="#ffd0a1">
+          <animateMotion dur="4s" repeatCount="indefinite" path="M318 92 C 370 18, 470 18, 520 96" />
+        </circle>
+      )}
+
+      {/* Lagos phone: the document to be checked */}
+      <g transform="rotate(-7 335 205)" className="transition-transform duration-700 ease-out group-hover:-translate-y-1">
+        <rect x="262" y="96" width="146" height="236" rx="20" fill="#0b0402" />
+        <rect x="268" y="102" width="134" height="224" rx="15" fill="#f1e6ce" />
+        <rect x="278" y="114" width="58" height="14" rx="7" fill="#983a28" />
+        <text x="307" y="124" textAnchor="middle" fontFamily={MONO} fontSize="8" fill="#f1e6ce">LAGOS · NG</text>
+        <text x="280" y="148" fontFamily={SANS} fontWeight="700" fontSize="11" fill="#150600">Verify your identity</text>
+        {[0, 1, 2, 3].map((i) => (
+          <rect key={i} x="280" y={160 + i * 12} width={[108, 96, 104, 70][i]} height="5" rx="2.5" fill="#150600" fillOpacity="0.28" />
+        ))}
+        {/* the loaded word, highlighted */}
+        <rect x="278" y="208" width="58" height="13" rx="3" fill="#f0937a" fillOpacity="0.55" />
+        <text x="281" y="218" fontFamily={SANS} fontWeight="700" fontSize="9.5" fill="#150600">restrict</text>
+        <rect x="340" y="212" width="48" height="5" rx="2.5" fill="#150600" fillOpacity="0.28" />
+        <rect x="280" y="290" width="110" height="24" rx="8" fill="#150600" />
+        <text x="335" y="306" textAnchor="middle" fontFamily={MONO} fontSize="8" fill="#f1e6ce">SUBMIT DOCUMENTS</text>
+      </g>
+
+      {/* Chicago phone: the customer to be helped */}
+      <g transform="rotate(7 515 215)" className="transition-transform duration-700 ease-out group-hover:-translate-y-2">
+        <rect x="444" y="108" width="146" height="236" rx="20" fill="#0b0402" />
+        <rect x="450" y="114" width="134" height="224" rx="15" fill="#ffd0a1" />
+        <rect x="460" y="126" width="72" height="14" rx="7" fill="#150600" />
+        <text x="496" y="136" textAnchor="middle" fontFamily={MONO} fontSize="8" fill="#ffd0a1">CHICAGO · US</text>
+        <text x="462" y="160" fontFamily={SANS} fontWeight="700" fontSize="11" fill="#150600">Let&apos;s confirm it&apos;s you</text>
+        {[0, 1, 2].map((i) => (
+          <rect key={i} x="462" y={172 + i * 12} width={[104, 92, 64][i]} height="5" rx="2.5" fill="#150600" fillOpacity="0.25" />
+        ))}
+        <rect x="460" y="218" width="112" height="26" rx="13" fill="#150600" fillOpacity="0.9" />
+        <circle cx="474" cy="231" r="7" fill="#f2a65a" />
+        <path d="M470.5 231 l2.5 2.5 l4.5 -5" fill="none" stroke="#150600" strokeWidth="1.8" strokeLinecap="round" />
+        <text x="486" y="234.5" fontFamily={SANS} fontSize="9" fill="#ffd0a1">Just a moment</text>
+        <rect x="462" y="302" width="110" height="24" rx="12" fill="#983a28" />
+        <text x="517" y="318" textAnchor="middle" fontFamily={MONO} fontSize="8" fill="#f1e6ce">CONTINUE</text>
+      </g>
+
+      {/* The reading lens over "restrict" */}
+      <g className="transition-transform duration-700 ease-out group-hover:translate-x-[6px] group-hover:-translate-y-[4px]">
+        <g className="carf-lens">
+        <g transform="translate(318 222)">
+          <circle r="31" fill="#150600" fillOpacity="0.15" />
+          <g clipPath="url(#carf-lens-clip)">
+            <circle r="30" fill="#f1e6ce" />
+            <text x="0" y="7" textAnchor="middle" fontFamily={SERIF} fontStyle="italic" fontSize="20" fill="#983a28">restrict</text>
+          </g>
+          <circle r="30" fill="none" stroke="#ffd0a1" strokeWidth="4" />
+          <circle r="30" fill="none" stroke="#150600" strokeOpacity="0.4" strokeWidth="1" />
+          <path d="M21 21 L44 44" stroke="#ffd0a1" strokeWidth="9" strokeLinecap="round" />
+          <path d="M21 21 L44 44" stroke="#983a28" strokeWidth="5" strokeLinecap="round" />
+        </g>
+        </g>
+      </g>
+
+      {/* Title block */}
+      <text x="28" y="40" fontFamily={MONO} fontSize="12" letterSpacing="3" fill="#f2a65a">04</text>
+      <text x="28" y="262" fontFamily={MONO} fontSize="10" letterSpacing="2.5" fill="#ffd0a1" fillOpacity="0.85">RESEARCH · M.A. THESIS</text>
+      <text
+        x="24"
+        y="356"
+        fontFamily="Anton, Impact, sans-serif"
+        fontSize="104"
+        letterSpacing="2"
+        className="fill-transparent transition-[fill] duration-700 group-hover:fill-[url(#carf-title)]"
+        stroke="#f1e6ce"
+        strokeWidth="1.6"
+      >
         CARF
-      </span>
-    </div>
+      </text>
+      <text x="28" y="382" fontFamily={SERIF} fontStyle="italic" fontSize="15" fill="#ffd0a1">Culturally Attentive Rhetorical Framework</text>
+    </svg>
   );
 }
 

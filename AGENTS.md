@@ -66,6 +66,10 @@ output `dist`). Only committed files go live, so anything git-ignored (`public/h
   - `FooterMarquee.tsx` — outlined marquee plus the © / email footer line (z-30).
   - `InfoDrawer.tsx` — side drawer (z-50): menu (Home, Projects, About Me, Writing ▸ Content Design / Articles, Resume, Let's Work), sub-views, contact form.
   - `DrawerPortraits.tsx` — studio portraits blended into the drawer's right edge, sliding right → left (`drawerImages`).
+  - `TravellingPen.tsx` — the Writing pages' travelling fountain pen, drawn in code and never still: it flies in with a
+    twirl, scribbles at rest (`.pen-scribble`), glints, travels down a right-hand gutter as you scroll while leaning into
+    the motion, writes a looping cursive ink trail (how far you've read), and splashes + spins at each quarter.
+    Shown only when the pane is ≥ 520px wide (ReadingShell then reserves `pr-24`); hidden under reduced motion.
   - `ReadingShell.tsx` — shared shell for the Writing pages: pinned header (outlined title, optional struck draft, typed headline), tab row / full-screen side list, reading pane with progress; `PaneContext` is the pane's scroll root.
   - `Articles.tsx` — Writing ▸ Articles on `ReadingShell`: overview with code-drawn covers, article pages with interactive explainers, links to Medium (`articles` in content.ts).
   - `ContentDesign.tsx` — Writing ▸ Content Design: pinned header + tabs + reading pane (About's structure); samples are typed blocks (`WritingBlock`) in `writing` in content.ts; screenshots in `public/writing/`.
