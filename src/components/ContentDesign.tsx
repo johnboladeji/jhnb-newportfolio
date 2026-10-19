@@ -1,10 +1,11 @@
-import { createContext, useContext, useEffect, useId, useRef, useState, type ReactNode, type RefObject } from "react";
-import { AnimatePresence, animate, motion, useInView, useMotionValue, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
-import { ArrowLeft, ArrowRight, ChevronsLeftRight, Download, LayoutGrid, RotateCcw } from "lucide-react";
+import { useContext, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { AnimatePresence, animate, motion, useInView, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
+import { ArrowLeft, ArrowRight, ChevronsLeftRight, Download, RotateCcw } from "lucide-react";
 import { writing, type WritingBlock, type WritingSample } from "../content";
 import RollText from "./RollText";
-import TypeLoop from "./TypeLoop";
+import ReadingShell, { PaneContext, type ShellTab } from "./ReadingShell";
 import { Reveal, RiseWords } from "./Reveal";
+import { LitWords } from "./StudyKit";
 
 /**
  * Writing → Content Design. Same shell as About Me and Selected Works: an outlined title with a continuously
@@ -19,19 +20,7 @@ import { Reveal, RiseWords } from "./Reveal";
 const EASE = [0.2, 0.8, 0.2, 1] as const;
 type Tab = "overview" | string;
 
-// The reading pane is the scroll root for scroll-linked effects (pull quotes)
-const PaneContext = createContext<RefObject<HTMLDivElement> | null>(null);
 
-const useMedia = (query: string) => {
-  const [match, setMatch] = useState(() => window.matchMedia(query).matches);
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const on = () => setMatch(mq.matches);
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
-  }, [query]);
-  return match;
-};
 
 /** "Case study 01" → "01", "Quick sample A" → "A" */
 const indexOf = (s: WritingSample) => s.kicker.split(" ").pop() ?? "";
@@ -708,26 +697,15 @@ function Readability({ b }: { b: Extract<WritingBlock, { kind: "readability" }> 
   );
 }
 
-function QuoteWord({ p, range, children }: { p: MotionValue<number>; range: [number, number]; children: string }) {
-  const opacity = useTransform(p, range, [0.2, 1]);
-  return <motion.span style={{ opacity }}>{children} </motion.span>;
-}
-
 function Quote({ b }: { b: Extract<WritingBlock, { kind: "quote" }> }) {
-  const reduce = useReducedMotion();
   const pane = useContext(PaneContext);
-  const ref = useRef<HTMLParagraphElement>(null);
-  const { scrollYProgress } = useScroll({ container: pane ?? undefined, target: ref, offset: ["start 0.95", "end 0.6"] });
-  const words = b.text.split(" ");
   return (
     <figure className="relative my-12 border-l-[3px] border-primary-soft pl-5 sm:pl-7">
       <figcaption className="font-mono text-[10px] tracking-[0.25em] text-amber">WHAT I LEARNED</figcaption>
       <span aria-hidden="true" className="pointer-events-none absolute -top-6 right-0 select-none font-serif text-[7rem] leading-none text-primary-soft/15">
         &rdquo;
       </span>
-      <p ref={ref} className="mt-3 font-serif text-2xl italic leading-snug text-tertiary @xl:text-[1.85rem]">
-        {reduce ? b.text : words.map((w, i) => <QuoteWord key={i} p={scrollYProgress} range={[i / words.length, (i + 1) / words.length]}>{w}</QuoteWord>)}
-      </p>
+      <LitWords text={b.text} scrollRef={pane ?? undefined} className="mt-3 font-serif text-2xl italic leading-snug text-tertiary @xl:text-[1.85rem]" />
     </figure>
   );
 }
@@ -965,157 +943,23 @@ function SampleView({ s, onOpen }: { s: WritingSample; onOpen: (t: Tab) => void 
 /* ------------------------------------------------------------------------------------------------ */
 
 export default function ContentDesignSection({ full }: { full: boolean }) {
-  const reduce = useReducedMotion();
-  const wide = useMedia("(min-width: 1024px)");
-  const split = full && wide;
-  const [tab, setTab] = useState<Tab>("overview");
-  const paneRef = useRef<HTMLDivElement>(null);
-  const id = useId();
-  const { scrollYProgress } = useScroll({ container: paneRef });
-
-  const tabs: { key: Tab; index: string; label: string; s?: WritingSample }[] = [
-    { key: "overview", index: "", label: "Overview" },
-    ...writing.samples.map((s) => ({ key: s.id, index: indexOf(s), label: s.short, s })),
+  const tabs: ShellTab[] = [
+    { key: "overview", index: "", label: "Overview", title: "Overview", meta: "INTRO · HOW I WORK" },
+    ...writing.samples.map((s) => ({ key: s.id, index: indexOf(s), label: s.short, title: s.title, meta: s.topic.toUpperCase(), dot: s.status === "Shipped" })),
   ];
-  const sample = writing.samples.find((s) => s.id === tab);
-
-  const open = (t: Tab) => {
-    setTab(t);
-    paneRef.current?.scrollTo({ top: 0 });
-    // Keep the chosen tab visible in the sideways-scrolling tab row
-    requestAnimationFrame(() => document.getElementById(`${id}-tab-${t}`)?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" }));
-  };
-
-  const onKey = (e: React.KeyboardEvent, i: number) => {
-    const fwd = split ? "ArrowDown" : "ArrowRight";
-    const back = split ? "ArrowUp" : "ArrowLeft";
-    if (e.key !== fwd && e.key !== back) return;
-    e.preventDefault();
-    const n = (i + (e.key === fwd ? 1 : -1) + tabs.length) % tabs.length;
-    open(tabs[n].key);
-    document.getElementById(`${id}-tab-${tabs[n].key}`)?.focus();
-  };
-
-  const pane = (
-    <div className="relative flex min-h-0 flex-1 flex-col">
-      {/* Reading progress */}
-      <motion.span aria-hidden="true" style={{ scaleX: scrollYProgress }} className="absolute inset-x-0 top-0 z-10 h-0.5 origin-left bg-[linear-gradient(90deg,#983a28,#f0937a)]" />
-      <div
-        ref={paneRef}
-        role="tabpanel"
-        id={`${id}-panel`}
-        aria-labelledby={`${id}-tab-${tab}`}
-        className="@container fx-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6 pr-3 pt-6"
-      >
-        <PaneContext.Provider value={paneRef}>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div key={tab} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.25 }}>
-              {sample ? <SampleView s={sample} onOpen={open} /> : <Overview onOpen={open} />}
-            </motion.div>
-          </AnimatePresence>
-        </PaneContext.Provider>
-      </div>
-    </div>
-  );
-
   return (
-    <section aria-labelledby="drawer-title" className="flex h-full min-h-0 flex-col">
-      {/* Pinned header, like About Me and Selected Works */}
-      <header className="shrink-0">
-        <h2 id="drawer-title" className="text-stroke font-display text-5xl uppercase leading-none sm:text-6xl">
-          Content design
-        </h2>
-        <p aria-hidden="true" className={`mt-3 font-sans text-[16px] font-medium text-cream/45 sm:text-lg ${full ? "text-center" : ""}`}>
-          <span className="relative inline-block">
-            {writing.draft}
-            <motion.span
-              className="absolute left-0 right-0 top-1/2 h-[3px] origin-left rounded-full bg-primary-soft"
-              initial={reduce ? false : { scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.6, delay: 0.5, ease: [0.65, 0, 0.35, 1] }}
-            />
-          </span>
-        </p>
-        <TypeLoop
-          text={writing.headline}
-          className={`mt-1 font-sans font-bold leading-snug tracking-tight text-primary-soft ${
-            full ? "mx-auto max-w-[52rem] text-center text-2xl sm:text-3xl lg:text-[2.6rem] lg:leading-[1.15]" : "max-w-[38rem] text-[1.4rem] sm:text-[1.75rem]"
-          }`}
-        />
-      </header>
-
-      {split ? (
-        <div className="mt-6 grid min-h-0 flex-1 grid-cols-[17rem_1fr] gap-12">
-          <nav className="flex min-h-0 flex-col">
-            <h3 className="mb-4 flex shrink-0 items-center gap-2 border-b border-cream/10 pb-3 font-mono text-xs tracking-[0.25em] text-amber">
-              <LayoutGrid size={14} aria-hidden="true" />
-              THE SAMPLES
-            </h3>
-            <div role="tablist" aria-orientation="vertical" aria-label="Content design samples" className="fx-scroll min-h-0 flex-1 space-y-1 overflow-y-auto pr-2">
-              {tabs.map((t, i) => {
-                const on = tab === t.key;
-                return (
-                  <button
-                    key={t.key}
-                    type="button"
-                    role="tab"
-                    id={`${id}-tab-${t.key}`}
-                    aria-selected={on}
-                    aria-controls={`${id}-panel`}
-                    tabIndex={on ? 0 : -1}
-                    onClick={() => open(t.key)}
-                    onKeyDown={(e) => onKey(e, i)}
-                    className={`group relative flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors ${on ? "bg-base/40" : "hover:bg-base/20"}`}
-                  >
-                    {on && <motion.span layoutId={`${id}-side-bar`} className="absolute inset-y-2 left-0 w-[3px] rounded-full bg-primary" />}
-                    <span className={`w-7 shrink-0 font-display text-2xl leading-none ${on ? "text-primary-soft" : "text-cream/40 group-hover:text-tertiary"}`}>{t.index || "·"}</span>
-                    <span className="min-w-0">
-                      <span className={`block font-sans text-[15px] font-bold leading-snug ${on ? "text-primary-soft" : "text-cream group-hover:text-tertiary"}`}>
-                        {t.s ? t.s.title : "Overview"}
-                      </span>
-                      <span className="mt-1 flex items-center gap-2 font-mono text-[10px] tracking-[0.15em] text-cream/50">
-                        {t.s ? t.s.topic.toUpperCase() : "INTRO · HOW I WORK"}
-                        {t.s?.status === "Shipped" && <span className="h-1.5 w-1.5 rounded-full bg-amber" />}
-                      </span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </nav>
-          {pane}
-        </div>
-      ) : (
-        <>
-          <div role="tablist" aria-label="Content design samples" className="fx-deck mt-5 flex shrink-0 gap-5 overflow-x-auto border-b border-cream/10">
-            {tabs.map((t, i) => {
-              const on = tab === t.key;
-              return (
-                <button
-                  key={t.key}
-                  type="button"
-                  role="tab"
-                  id={`${id}-tab-${t.key}`}
-                  aria-selected={on}
-                  aria-controls={`${id}-panel`}
-                  tabIndex={on ? 0 : -1}
-                  onClick={() => open(t.key)}
-                  onKeyDown={(e) => onKey(e, i)}
-                  className={`relative flex shrink-0 items-center gap-2 whitespace-nowrap pb-3 font-mono text-xs tracking-[0.2em] transition-colors ${
-                    on ? "text-primary-soft" : "text-cream/60 hover:text-tertiary"
-                  }`}
-                >
-                  {t.key === "overview" ? <LayoutGrid size={14} aria-hidden="true" /> : <span className="text-cream/40">{t.index}</span>}
-                  {t.label.toUpperCase()}
-                  {t.s?.status === "Shipped" && <span aria-label="shipped" className="h-1.5 w-1.5 rounded-full bg-amber" />}
-                  {on && <motion.span layoutId={`${id}-tab-bar`} className="absolute inset-x-0 -bottom-px h-[3px] rounded-full bg-primary" />}
-                </button>
-              );
-            })}
-          </div>
-          {pane}
-        </>
-      )}
-    </section>
+    <ReadingShell
+      title="Content design"
+      draft={writing.draft}
+      headline={writing.headline}
+      full={full}
+      navLabel="Content design samples"
+      listTitle="THE SAMPLES"
+      tabs={tabs}
+      render={(tab, open) => {
+        const sample = writing.samples.find((s) => s.id === tab);
+        return sample ? <SampleView s={sample} onOpen={open} /> : <Overview onOpen={open} />;
+      }}
+    />
   );
 }

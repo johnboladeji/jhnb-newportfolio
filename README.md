@@ -61,6 +61,8 @@ src/
     FooterMarquee.tsx          outlined infinite marquee + © / email line (z-30)
     InfoDrawer.tsx             spring side panel: menu, projects, about, writing, resume, contact (z-50)
     Works.tsx                  Selected Works list, covers, case-study view
+    ReadingShell.tsx           shared shell for the Writing pages
+    Articles.tsx               Writing ▸ Articles, linked to Medium (content: `articles`)
     ContentDesign.tsx          Writing ▸ Content Design samples (content: `writing` in content.ts)
     NexusStudy.tsx             NexusCore's rich case study + cover (content: `nexusStudy`)
     StudyKit.tsx               shared case-study chrome (chapter bar, chapters, lit words)

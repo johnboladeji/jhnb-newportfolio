@@ -49,6 +49,8 @@ Run `npm run build` after changes to confirm nothing broke.
   - `FooterMarquee.tsx` — outlined marquee plus the © / email footer line (z-30).
   - `InfoDrawer.tsx` — side drawer (z-50): menu (Home, Projects, About Me, Writing ▸ Content Design / Articles, Resume, Let's Work), sub-views, contact form.
   - `DrawerPortraits.tsx` — studio portraits blended into the drawer's right edge, sliding right → left (`drawerImages`).
+  - `ReadingShell.tsx` — shared shell for the Writing pages: pinned header (outlined title, optional struck draft, typed headline), tab row / full-screen side list, reading pane with progress; `PaneContext` is the pane's scroll root.
+  - `Articles.tsx` — Writing ▸ Articles on `ReadingShell`: overview with code-drawn covers, article pages with interactive explainers, links to Medium (`articles` in content.ts).
   - `ContentDesign.tsx` — Writing ▸ Content Design: pinned header + tabs + reading pane (About's structure); samples are typed blocks (`WritingBlock`) in `writing` in content.ts; screenshots in `public/writing/`.
   - `Reveal.tsx` — shared `Reveal` (fade-rise) and `RiseWords` (masked word rise) helpers.
   - `Works.tsx` — Selected Works list, generated project covers, case-study view (`projects` in content.ts).
@@ -58,7 +60,7 @@ Run `npm run build` after changes to confirm nothing broke.
   - `NexusStudy.tsx` — NexusCore's rich case study and list cover (content in `nexusStudy`). NexusCore's own tokens
     (`nx-ink`, `nx-indigo`, `nx-plum`, `nx-lime`, `nx-lilac`, `nx-mist`; DM Sans + Fira Code), only inside the study.
   - `StudyKit.tsx` — shared chrome for rich case studies: sticky chapter bar (`StudyBar`), numbered chapters
-    (`StudyChapter`), `LitWords` (words light up on scroll), `useStudyProgress`. Each study passes its own `tone`.
+    (`StudyChapter`), `LitWords` (words light up on scroll, via `useScrollThrough`, which reads any scroll container directly; use it rather than framer `useScroll` for nested scrollers such as the Writing reading pane), `useStudyProgress`. Each study passes its own `tone`.
   - `SkillCapsules.tsx` — physics skill capsules under the Let's Work form (`skills`; uses matter-js).
   - `AboutSection.tsx` — About Me shell: pinned title + typed headline (`TypeLoop.tsx`), Overview/Experience segments (tabs, or side by side in full screen).
   - `AboutDeck.tsx` — Overview: sideways page deck. `ExperienceList.tsx` — Experience timeline (`experience` in content.ts).
@@ -94,7 +96,7 @@ Search `src/content.ts` for `TODO`:
 3. Projects: links, outcomes, real cover images (`cover`), and Unelo / TokenForge details (see TODOs in `projects`).
 4. Missing years (`YEAR`) in resume roles.
 5. Real GitHub, LinkedIn, X, Instagram and Google Scholar URLs (`socials`).
-6. Real articles (`posts`). (Content design samples are done: `writing`.)
+6. ~~Articles and content design samples~~ Done: `articles` (Medium) and `writing`. Add new Medium articles to `articles.items`.
 7. Project types to match the JHNB rate card service lines.
 8. Optional: set `VITE_FORM_ENDPOINT` in `.env` (see `.env.example`) so the form posts to
    Formspree instead of opening the visitor's email app.

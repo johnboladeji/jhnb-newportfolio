@@ -219,11 +219,66 @@ export const projects: Project[] = [
   },
 ];
 
-/** Writing → Articles. TODO: replace with your real articles, or remove items. */
-export const posts = [
-  { title: "Decolonizing the interface: why UX writing needs rhetoric", date: "TODO", url: "#" },
-  { title: "Designing fintech for Nigerian and American users", date: "TODO", url: "#" },
-];
+/**
+ * Writing → Articles (rendered by Articles.tsx). Each article links to its full text on Medium; the page shows
+ * a short summary and an interactive explainer of its ideas (summaries are paraphrased, not copied).
+ */
+export const articles = {
+  headline: "Field notes from where design meets code.",
+  intro: "Long-form notes on design systems, building with AI, and the craft in between. Each one is published on Medium; here you get the gist, and the ideas to play with.",
+  profile: { label: "medium.com/@johnboladeji", url: "https://medium.com/@johnboladeji" },
+  items: [
+    {
+      id: "auto-layout",
+      short: "Auto Layout",
+      kicker: "Article 01",
+      topic: "Figma · Responsive design",
+      title: "Auto Layout Mental Models: Mastering Responsive Design in Figma",
+      date: "Dec 17, 2025",
+      read: "7 min read",
+      url: "https://medium.com/@johnboladeji/auto-layout-mental-models-mastering-responsive-design-in-figma-5d963121d6a6",
+      summary:
+        "Auto Layout isn't unpredictable; we just bring the wrong mental model to it. Four simple models make its behaviour predictable, and turn pixel-pushing into systems thinking.",
+      tags: ["Figma", "Auto Layout", "Design systems", "Responsive design"],
+      // Interactive explainer: the four models (each has a live demo in Articles.tsx)
+      models: [
+        { id: "belt", name: "The Conveyor Belt", idea: "Direction and flow", text: "A frame flows one way at a time: a row or a column. Pick the direction first; spacing, padding, and alignment all follow from it." },
+        { id: "container", name: "The Smart Container", idea: "Parent vs. child", text: "The parent sets the rules (padding, alignment, spacing) and every child obeys at once. If you're nudging gaps by hand, set them on the parent." },
+        { id: "dictator", name: "The Content Dictator", idea: "Resizing behaviour", text: "Fixed is a brick wall, Hug is a glove, Fill is a rubber band. Ask who's the boss of the size: you, the content, or the container." },
+        { id: "nesting", name: "Nested Alternation", idea: "Building 2D layouts", text: "Every time the direction changes, nest a new frame with the opposite flow, like stacking Lego blocks. Outline View (Shift + L) shows the structure." },
+      ],
+      rule: "Fixed when stability matters. Hug when the content should set the size. Fill when the container should.",
+      pitfalls: [
+        { title: "Inconsistent spacing", fix: "Define spacing once on the parent and trust it; nest a frame when one item needs different spacing." },
+        { title: "Fill that won't fill", fix: "A child can't fill a parent that hugs. Give the parent a size, or let it fill its own container." },
+        { title: "Lost in nested frames", fix: "Name your layers, use Outline View, and debug from the innermost child outward." },
+      ],
+      takeaway: "Stop pushing pixels; define rules and relationships, and let the layout adapt itself.",
+    },
+    {
+      id: "prd-prompt",
+      short: "Vibe coding",
+      kicker: "Article 02",
+      topic: "AI · Product strategy",
+      title: "The Vibe Coder's Secret Weapon: Why Your PRD is Now Your Most Powerful Prompt",
+      date: "Feb 3, 2026",
+      read: "3 min read",
+      url: "https://medium.com/@johnboladeji/the-vibe-coders-secret-weapon-why-your-prd-is-now-your-most-powerful-prompt-8f7169a529c9",
+      summary:
+        "Vibe coding makes the how almost instant, which makes the what and the why matter more. The PRD isn't obsolete; it's become the prompt that keeps human and machine pointed the same way.",
+      tags: ["Vibe coding", "AI", "PRD", "Product strategy"],
+      split: { ai: "The how", human: "The what, and the why" },
+      reasons: [
+        { title: "It prevents hallucination at scale", text: "Without constraints and user stories, AI can build perfectly working code for the wrong product." },
+        { title: "It answers what AI can't", text: "Which problem is worth solving, for whom, and how you'll know it worked: that's still human work." },
+        { title: "It's the foundation for good prompts", text: "Clear acceptance criteria and user flows are exactly the detail precise prompts need." },
+        { title: "It keeps the team aligned", text: "When cycles shrink from weeks to hours, one source of truth keeps product, design, and leadership in step." },
+      ],
+      modern: ["Concise", "Outcome-oriented", "Strategic"],
+      takeaway: "Don't let the vibe become a drift.",
+    },
+  ] as const,
+};
 
 /* ---- Writing → Content Design (rendered by ContentDesign.tsx) ------------------------------------------- */
 /* Inline markup in any text: **bold**, *italic*, {variable}. Images live in public/writing/. */

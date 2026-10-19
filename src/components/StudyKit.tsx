@@ -1,5 +1,5 @@
-import { useRef, type ReactNode, type RefObject } from "react";
-import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion";
+import { useEffect, useRef, type ReactNode, type RefObject } from "react";
+import { AnimatePresence, motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { Reveal, RiseWords } from "./Reveal";
 
@@ -149,19 +149,55 @@ function LitWord({ p, range, children }: { p: MotionValue<number>; range: [numbe
   return <motion.span style={{ opacity }}>{children} </motion.span>;
 }
 
-/** A paragraph whose words light up one by one as it scrolls through the drawer. */
+/**
+ * Progress (0 → 1) of an element through a scroll container: 0 when its top reaches `start` (a fraction of the
+ * container's height from its top), 1 when its bottom reaches `end`. Reads the container directly on scroll
+ * and resize, so it works for nested scrollers (the drawer, the Writing reading pane) as well as the window.
+ */
+export function useScrollThrough(
+  target: RefObject<HTMLElement>,
+  container: RefObject<HTMLElement | null> | undefined,
+  start = 0.9,
+  end = 0.55,
+) {
+  const progress = useMotionValue(0);
+  useEffect(() => {
+    const el = target.current;
+    const root = container?.current ?? null;
+    if (!el) return;
+    const measure = () => {
+      const box = root ? root.getBoundingClientRect() : { top: 0, height: window.innerHeight };
+      const r = el.getBoundingClientRect();
+      const top = r.top - box.top;
+      const from = start * box.height; // top line where it starts
+      const to = end * box.height - r.height; // top position when its bottom hits the end line
+      let p = from === to ? 1 : (from - top) / (from - to);
+      // Near the end of the container there may be no room left to scroll it fully through: count it as read
+      const atEnd = root ? root.scrollTop + root.clientHeight >= root.scrollHeight - 2 : window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+      if (atEnd && r.top - box.top < box.height) p = 1;
+      progress.set(Math.min(1, Math.max(0, p)));
+    };
+    measure();
+    const scroller: HTMLElement | Window = root ?? window;
+    scroller.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", measure);
+    return () => {
+      scroller.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+    };
+  }, [target, container, start, end, progress]);
+  return progress;
+}
+
+/** A paragraph whose words light up one by one as it scrolls through its container. */
 export function LitWords({ text, scrollRef, className = "" }: { text: string; scrollRef?: RefObject<HTMLElement | null>; className?: string }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLParagraphElement>(null);
-  const { scrollYProgress } = useScroll({
-    container: scrollRef as RefObject<HTMLElement> | undefined,
-    target: ref,
-    offset: ["start 0.9", "end 0.55"],
-  });
+  const progress = useScrollThrough(ref, scrollRef);
   const words = text.split(" ");
   return (
     <p ref={ref} className={className}>
-      {reduce ? text : words.map((w, i) => <LitWord key={i} p={scrollYProgress} range={[i / words.length, (i + 1) / words.length]}>{w}</LitWord>)}
+      {reduce ? text : words.map((w, i) => <LitWord key={i} p={progress} range={[i / words.length, (i + 1) / words.length]}>{w}</LitWord>)}
     </p>
   );
 }
