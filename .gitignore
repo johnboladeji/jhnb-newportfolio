@@ -28,3 +28,6 @@ desktop.ini
 
 # Original, unedited photos: not used by the site (the cut-outs are hero-1/2.webp); kept local only
 public/hero/
+
+# Originals with private details (e.g. the unredacted CV): kept local only
+private/
