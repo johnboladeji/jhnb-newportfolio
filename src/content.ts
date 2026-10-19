@@ -14,6 +14,11 @@ export const site = {
   wordmarkSrc: "/jhnb-wordmark.png",
   fullName: "John B. Oladeji",
   role: "Product Designer & Design Engineer",
+  /** The live address, used for share previews and the canonical link. Update when a custom domain is set up. */
+  url: "https://jhnb-newportfolio.vercel.app",
+  /** Share-preview text (search results, LinkedIn, email) */
+  description:
+    "John B. Oladeji (JHNB): product designer, design engineer, and rhetoric scholar building culturally attentive products, from Caira and NexusCore to CARF, a research framework for UX writing.",
 };
 
 export interface PortraitRig {
@@ -127,14 +132,13 @@ export interface Project {
 export const worksHeadline = "Architecting ideas. Building experiences. Delivering impact.";
 
 /** Selected Works, in display order. Each opens a case study in the drawer. */
-export const projects: Project[
-  ] = [
+export const projects: Project[] = [
   {
     slug: "caira",
     name: "Caira",
     type: "Eldercare coordination for families abroad",
     role: "Founder, sole designer & engineer",
-    year: "2026",
+    year: "2024 — Today",
     url: "https://cairacare.com",
     icon: "heart-handshake",
     accent: "coral",
@@ -177,6 +181,20 @@ export const projects: Project[
     // The full, rich case study lives in `tokenStudy` below (rendered by TokenStudy.tsx)
   },
   {
+    slug: "carf",
+    name: "CARF",
+    type: "Culturally Attentive Rhetorical Framework",
+    role: "Researcher, M.A. thesis",
+    year: "2025 — 2026",
+    url: "",
+    icon: "book-open",
+    accent: "amber",
+    tags: ["Research", "UX writing", "Fintech", "CTDA", "Value Sensitive Design"],
+    summary: "A method for reading, and rewriting, the language inside financial apps.",
+    did: [],
+    // The full research case study lives in `carfStudy` below (rendered by CarfStudy.tsx)
+  },
+  {
     slug: "mova",
     name: "MOVA",
     type: "Last-mile logistics marketplace for Lagos",
@@ -188,23 +206,6 @@ export const projects: Project[
     tags: ["Logistics", "Marketplace", "Design engineering"],
     summary: "A coordinated fulfilment platform for last-mile delivery in Lagos.",
     did: ["Designing the platform that connects vendors, delivery riders and customers in one coordinated flow."],
-  },
-  {
-    slug: "carf",
-    name: "CARF",
-    type: "Culturally Attentive Rhetorical Framework",
-    role: "M.A. thesis · Researcher",
-    year: "2025 — 2026",
-    url: "", // TODO: link to the thesis or a write-up
-    icon: "book-open",
-    accent: "amber",
-    tags: ["Research", "UX writing", "Fintech", "CTDA", "Value Sensitive Design"],
-    summary:
-      "Decolonizing the Interface: a rhetorical framework for culturally attentive UX writing in Nigerian and American fintech platforms.",
-    did: [
-      "Combines Critical Technocultural Discourse Analysis with Value Sensitive Design to examine how fintech interfaces encode cultural assumptions across national contexts.",
-      "Moves from that analysis toward more just, human-centred design that teams can apply to interface language and microcopy.",
-    ],
   },
   {
     slug: "unelo",
@@ -339,7 +340,7 @@ export const writing = {
   headline: "I write interface words for people the product wasn't first built for.",
   intro: [
     "I'm Nigerian, I spent six years as a brand and creative lead for companies in Nigeria and the UK, and I now live in New Mexico. Working across those places made me notice how often a product assumes one kind of reader. \"Try again\" is good advice on a failed transfer in Chicago. In Lagos it can cost someone their money twice.",
-    "I'm finishing an M.A. in Linguistics, Rhetoric, and Composition at New Mexico Highlands University in December 2026. My thesis is about UX writing in Nigerian and American fintech, and how the words on a screen carry cultural meaning. I also teach first-year writing and work in the university's Writing Center, so most of my week goes to helping people say what they mean to a particular reader. And I build, in Figma and in React Native and Next.js, so I know what happens to a string after it leaves the doc.",
+    "I'm finishing an M.A. in English at New Mexico Highlands University in December 2026. My thesis is about UX writing in Nigerian and American fintech, and how the words on a screen carry cultural meaning. I also teach first-year writing and work in the university's Writing Center, so most of my week goes to helping people say what they mean to a particular reader. And I build, in Figma and in React Native and Next.js, so I know what happens to a string after it leaves the doc.",
     "Below are three case studies and two shorter pieces. Two come from products I'm building, Caira and NexusCore, and the Caira copy is now live in the app. The rest are concept projects I set for myself. I've kept my first draft in each one, because the changes are the interesting part.",
   ],
   glance: [
@@ -688,7 +689,7 @@ export const about = {
       title: "Products for the overlooked",
       body: [
         "NexusCore: an AI-powered sales and payments assistant for the Nigerian SMBs the formal economy overlooks. MOVA: a last-mile logistics marketplace for Lagos.",
-        "And through the OYNA youth software programme, I wrote the curriculum and take students from their first commit to a deployed marketplace app — real products, not classroom demos.",
+        "And as volunteer lead facilitator for the OYNA youth software programme's first cohort, I wrote the curriculum and took students from their first commit to a deployed marketplace app — real products, not classroom demos.",
       ],
     },
     {
@@ -715,7 +716,7 @@ export const about = {
   highlights: [
     { value: "10 yrs", label: "Designing brands and products, since 2016" },
     { value: "3", label: "Ventures founded or led — Caira, NexusCore, MOVA" },
-    { value: "M.A.", label: "Linguistics, Rhetoric & Composition, NMHU (Dec 2026)" },
+    { value: "M.A.", label: "English, NMHU (expected Dec 2026)" },
     { value: "2", label: "Conference papers — HACU 2025, SWPACA 2026" },
   ],
   /** Final page */
@@ -732,13 +733,50 @@ export const experience = [
   { period: "2024 — Today", role: "Founder & Product Designer", org: "Caira", icon: "heart-handshake", current: true },
   { period: "2025 — Today", role: "Full-Stack Product Lead", org: "NexusCore", icon: "cpu", current: true },
   { period: "2025 — Today", role: "Design Engineer", org: "MOVA", icon: "truck", current: true },
-  { period: "2025 — Today", role: "Lead Instructor", org: "OYNA Youth Software Development Programme", icon: "graduation-cap", current: true },
-  { period: "2022 — 2024", role: "Creative Lead", org: "GRAMEF Digital Agency", icon: "sparkles", current: false },
+  // TODO [confirm years]: volunteer role for the first cohort
+  { period: "2025 — 2026", role: "Lead Facilitator & Trainer (volunteer), first cohort", org: "OYNA Youth Software Development Programme", icon: "graduation-cap", current: false },
+  { period: "2023 — 2025", role: "Creative Lead", org: "GRAMEF Digital Agency", icon: "sparkles", current: false },
   { period: "2022 — 2023", role: "Group Brand & Packaging Designer", org: "SUMAL Foods", icon: "package", current: false },
   { period: "2020 — 2021", role: "Lead Brand Designer", org: "CHECKERS Africa", icon: "pen-tool", current: false },
   { period: "2018 — 2022", role: "Brand Strategist", org: "AFRIKRAFT Studios", icon: "megaphone", current: false },
   { period: "2016 — 2020", role: "Early design experience", org: "Print & graphic design roles", icon: "printer", current: false },
 ] as const;
+
+/**
+ * About Me → Experience: "Research & Teaching" sits above the industry timeline, so faculty readers see the
+ * scholar before the designer. From the CV and the owner's notes; items marked TODO are still to confirm.
+ */
+export const researchTeaching = {
+  title: "Research & Teaching",
+  statement:
+    "I study how interfaces persuade, include, or quietly shut people out, and I teach students to write for the screens they'll spend their lives on.",
+  teaching: [
+    { period: "Aug 2026 — Today", role: "Instructor, First-Year Rhetoric and Composition", org: "Department of English, New Mexico Highlands University", text: "I teach first-year rhetoric, writing, and composition, from drafting through revision." },
+    { period: "Jan 2025 — Today", role: "Writing Center Tutor", org: "New Mexico Highlands University", text: "One-to-one and workshop support for student writers across disciplines." },
+    // TODO [confirm years]
+    { period: "2025 — 2026", role: "Lead Facilitator and Trainer (volunteer), first cohort", org: "OYNA Youth Software Development Programme", text: "Designed the full curriculum, including handbooks, prompt sheets, and slide decks, built around a real product requirements document students build from." },
+  ],
+  research: [
+    { period: "2025 — Today", role: "M.A. thesis: CARF", org: "New Mexico Highlands University", text: "A framework for culturally attentive UX writing in Nigerian and American fintech.", slug: "carf" },
+    { period: "Jan 2026 — Today", role: "Digital Publishing and Editorial Development", org: "New Mexico Review, the university's literary journal", text: "Designed and built the journal's website from start to finish, including its digital editorial workflow.", slug: "" },
+  ],
+  presentations: [
+    { year: "2026", title: "Trapped in the Algorithm: How Echo Chambers and Cognitive Biases Fuel Misinformation", venue: "Southwest Popular/American Culture Association, 47th Annual Conference" },
+    { year: "2025", title: "Navigating Authenticity: Digital Code-Switching as Identity Construction on TikTok in Nigeria and the United States", venue: "Hispanic Association of Colleges and Universities, 39th Annual Conference" },
+  ],
+  manuscripts: [
+    "The Rhetoric of Fintech: How Digital Platforms Shape Public Perception of Financial Services and Trust in Accounting Systems",
+    "Navigating Authenticity: Digital Code-Switching and Multilingual Identity on TikTok in Nigeria and the United States",
+    "Language, Ideology, and Satirical Resistance in Wole Soyinka's The Lion and the Jewel: A Stylistic Reading of the Opening Sidi-Lakunle Dialogue",
+    "Balancing Human Creativity and Artificial Intelligence Productivity: An Empirical Analysis of the Evolving Digital Economy",
+  ],
+  recognition: [{ year: "2026", what: "OYNA Intellectual Excellence Award" }],
+  education: [
+    // TODO [confirm]: exact degree title from the transcript
+    { year: "Expected Dec 2026", what: "M.A. in English", where: "New Mexico Highlands University" },
+    { year: "2015", what: "B.A. (Education) in English", where: "Ekiti State University, Nigeria" },
+  ],
+};
 
 export const resume = {
   /** CV at public/resume.pdf. Set to "" to hide the download button. */
@@ -795,7 +833,8 @@ export const resume = {
     ],
   },
   education: [
-    { year: "2026", what: "M.A. in English (Linguistics, Literary, and Composition)", where: "New Mexico Highlands University", note: "Expected December 2026" },
+    // TODO [confirm]: use the exact degree title from the transcript (the CV and thesis spell the concentration differently)
+    { year: "2026", what: "M.A. in English", where: "New Mexico Highlands University", note: "Expected December 2026" },
     { year: "2025–26", what: "Professional Certificate: UI/UX Design, AI-Assisted MVP Development & Product Thinking", where: "Dev & Design Academy" },
     { year: "2021–22", what: "Professional Certificate: Digital Interface and Design", where: "SQI College of ICT, Nigeria" },
     { year: "2018", what: "Professional Certificate: Brand Communication and Advertising", where: "O2 Academy, Lagos" },
@@ -805,8 +844,9 @@ export const resume = {
     { name: "Caira", slug: "caira", line: "Eldercare coordination for families abroad" },
     { name: "NexusCore", slug: "nexuscore", line: "AI sales assistant for the WhatsApp inbox" },
     { name: "MOVA", slug: "mova", line: "Last-mile logistics for Lagos" },
-    { name: "OYNA", slug: "", line: "Youth software programme: I wrote the curriculum" },
+    { name: "OYNA", slug: "", line: "Volunteer lead facilitator, first cohort: I wrote the curriculum" },
   ],
+  recognition: [{ year: "2026", what: "OYNA Intellectual Excellence Award" }],
 };
 
 /** Header (top-left) and About links. `icon` picks the glyph. TODO: add your real profile URLs. */
@@ -828,7 +868,7 @@ export const cairaStudy = {
   headline: "Far from home. Close to Mum.",
   intro:
     "Caira helps families abroad coordinate care for an ageing parent back home. I designed and built it end to end, alone: brand, product strategy, requirements, UX, UI, microcopy, the mobile app, the backend, and the website.",
-  status: "Pre-launch · Android app live",
+  status: "Pre-launch · Android app live (testing)",
   logo: "/work/caira/logo-light.webp",
   // Optional framing: set `origin` to null to keep the story private
   origin: {
@@ -839,7 +879,7 @@ export const cairaStudy = {
     { label: "Role", value: "Founder, sole product designer and full-stack engineer" },
     { label: "Type", value: "Mobile app (Android) and website, B2C" },
     { label: "Industry", value: "Eldercare, health tech" },
-    { label: "Year", value: "2026" },
+    { label: "Timeline", value: "2024 to today" },
     { label: "Scope", value: "Brand, research plan, PRD, UX, UI, microcopy, full-stack build, deployment" },
     { label: "Live", value: "cairacare.com", url: "https://cairacare.com" },
   ],
@@ -974,8 +1014,8 @@ export const cairaStudy = {
     "Website live at cairacare.com",
     "Research plan and early tester responses",
     "A hardened PRD: consent, escalation, offline",
-    "Applied to the Africa Health-Tech Accelerator 2026 (co-hosted by Africa CDC)",
   ],
+  milestones: ["Applied to the Africa Health-Tech Accelerator 2026 (co-hosted by Africa CDC)"],
   next: [
     "Run research with diaspora families",
     "Recruit pilot families",
@@ -1238,6 +1278,92 @@ export const tokenStudy = {
   team: ["Eseosa Francis Aduwa (lead product designer)", "Tobechukwu Onyia", "Ujunwa Okoye", "Victor Omolasoye", "Tijani Zaynab Oyenike", "Malachi Remilekun", "John B. Oladeji", "Enoch Ojukwu", "Precious Udeanioke", "Abioye Oluwabukola Esther"],
 };
 
+/**
+ * CARF: the research case study (rendered by CarfStudy.tsx). Paired with Caira: one built, one researched.
+ * From the owner's thesis notes and CV.
+ */
+export const carfStudy = {
+  slug: "carf",
+  name: "CARF",
+  fullName: "Culturally Attentive Rhetorical Framework",
+  line: "A method for reading, and rewriting, the language inside financial apps.",
+  facts: [
+    { label: "Role", value: "Researcher, M.A. thesis" },
+    { label: "Status", value: "In progress, completion expected December 2026" },
+    { label: "Field", value: "Digital rhetoric, UX writing, HCI" },
+    { label: "Methods", value: "Critical Technocultural Discourse Analysis, Value Sensitive Design" },
+  ],
+  question: {
+    // Paraphrased from the two onboarding flows the study compares
+    lagos: { city: "Lagos", text: "Any information that cannot be matched against external databases may restrict your account.", reading: "A document to be checked" },
+    chicago: { city: "Chicago", text: "We just need to confirm who's signing up. It'll only take a moment.", reading: "A customer to be helped" },
+    contrast: "Same regulatory step. Very different relationship.",
+    ask: "What does interface language assume about the people it addresses, and what does that cost the users it was never written for?",
+  },
+  argument: {
+    lead: "Fintech microcopy is not neutral text. It carries the cultural, institutional, and economic assumptions of the place it was designed. When those assumptions travel unexamined, the interface quietly ranks some users' norms as standard and others' as exceptions.",
+    parts: [
+      { name: "Cultural", text: "Tone, register, trust signals, and who carries the blame for an error all encode assumptions about who the user is." },
+      { name: "Structural", text: "When one market's communication norms become the default, other markets are positioned as departures from it." },
+      { name: "Material", text: "Consent and verification screens are where platforms collect user data. Reading them closely means reading who benefits, not only how they sound." },
+    ],
+  },
+  corpus: {
+    lead: "Six widely used platforms, chosen because they operate under different cultural, regulatory, and institutional conditions.",
+    nigeria: [
+      { name: "OPay", kind: "High-growth mobile wallet" },
+      { name: "PalmPay", kind: "Mobile wallet with agent network" },
+      { name: "GTBank", kind: "Established commercial bank, digitized" },
+    ],
+    us: [
+      { name: "Chime", kind: "Branchless digital bank" },
+      { name: "Cash App", kind: "Peer-to-peer payments and investing" },
+      { name: "Venmo", kind: "Peer-to-peer payments with a social feed" },
+    ],
+    moments: ["Onboarding", "Identity verification", "Fee disclosure", "Error messages", "Consent"],
+  },
+  method: {
+    ctda: { name: "Critical Technocultural Discourse Analysis", layers: ["What the system does", "What its language means in context", "Whose power it reinforces"] },
+    vsd: { name: "Value Sensitive Design", text: "Asks which human values each screen supports or undermines, so every proposed rewrite rests on a named value, not on taste." },
+    evidence: { n: 37460, text: "Nigerian banking-app reviews in a published study ground the analysis in how users actually describe these moments." },
+    note: "The study is corpus-based by design. Interviews and testing with users are the next stage of the research.",
+  },
+  framework: {
+    lead: "CARF turns the analysis into something UX writers can use: three dimensions to examine, and five practices to apply.",
+    dimensions: [
+      { name: "Epistemic", text: "Which forms of identity and which financial practices the flow treats as standard" },
+      { name: "Linguistic", text: "Register, politeness, indirectness, and how trust and authority are voiced" },
+      { name: "Economic", text: "Whether the language assumes a salaried income, and whether consent serves the user or the platform" },
+    ],
+    pathways: [
+      { name: "Cultural Epistemic Mapping", text: "Surface a flow's assumptions before writing a word" },
+      { name: "Rhetorical Strategy Adaptation", text: "Adapt tone, address, and ordering to the community's traditions" },
+      { name: "Linguistic Decolonization", text: "Go past translation to local norms of formality and relational address" },
+      { name: "Trust Architecture Design", text: "Calibrate trust signals to the audience instead of universalizing them" },
+      { name: "Continuous Cultural Feedback", text: "Involve affected communities in every revision" },
+    ],
+  },
+  questions: [
+    "How do Nigerian and American fintech microcopy reflect different assumptions about financial identity, trust, and legitimate behavior?",
+    "How does standardized interface language reproduce colonial hierarchies of knowledge, and through what mechanisms?",
+    "How do users respond to culturally specific versus generic interface language at verification, consent, and error?",
+    "What guidelines can help writers produce culturally responsive language without reducing culture to stereotype?",
+  ],
+  status: [
+    { text: "Introduction and literature review drafted", state: "done" },
+    { text: "Corpus analysis in progress", state: "now" },
+    { text: "Thesis completion expected December 2026", state: "next" },
+    { text: "Next: extend CARF to AI-generated interface language, and test its pathways with Nigerian and diaspora users", state: "next" },
+  ] as { text: string; state: "done" | "now" | "next" }[],
+  related: [
+    { title: "Trapped in the Algorithm: How Echo Chambers and Cognitive Biases Fuel Misinformation", where: "Southwest Popular/American Culture Association, 47th Annual Conference, 2026" },
+    { title: "Navigating Authenticity: Digital Code-Switching as Identity Construction on TikTok in Nigeria and the United States", where: "Hispanic Association of Colleges and Universities, 39th Annual Conference, 2025" },
+    { title: "The Rhetoric of Fintech: How Digital Platforms Shape Public Perception of Financial Services and Trust in Accounting Systems", where: "Manuscript in preparation" },
+  ],
+  relatedNote: "Related work on digital rhetoric and identity, not CARF itself.",
+  closing: "A writing sample from this project is available on request.",
+};
+
 /** Let's Work → skill capsules that rain down and pile up (drag to fling). Order sets the drop order. */
 export const skills = [
   "Product Design",
@@ -1262,7 +1388,7 @@ export const contact = {
   /** Enquiries go here when no form endpoint is set (opens the visitor's email app). */
   email: "johnboladeji@gmail.com",
   /** Optional form service endpoint, set in .env as VITE_FORM_ENDPOINT (see .env.example). */
-  formEndpoint: import.meta.env.VITE_FORM_ENDPOINT as string | undefined,
+  formEndpoint: (import.meta.env?.VITE_FORM_ENDPOINT as string | undefined) || undefined,
   /** TODO: match these to your rate card service lines. */
   projectTypes: ["Brand identity", "Packaging", "Product / UX design", "Design systems", "Social content", "Something else"],
   budgets: ["Under $1k", "$1k – $5k", "$5k – $15k", "$15k+", "Not sure yet"],

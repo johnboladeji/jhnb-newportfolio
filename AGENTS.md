@@ -37,6 +37,15 @@ Live at **https://jhnb-newportfolio.vercel.app**. Vercel project `jhnb-newportfo
 output `dist`). Only committed files go live, so anything git-ignored (`public/hero/`, `private/`, `.env*`) stays private.
 `public/resume.pdf` is the redacted CV (no home address or phones); the original is in the git-ignored `private/` folder.
 
+## Links, crawlers, and share previews
+
+- Every panel has an address in the URL hash (`src/routes.ts`): `#/menu`, `#/work`, `#/work/<slug>`, `#/about`,
+  `#/writing/content-design`, `#/writing/articles`, `#/resume`, `#/contact`. App.tsx owns the drawer state and keeps
+  it in sync with the hash; Back steps between panels; the tab title follows the panel.
+- `prerender.ts` (a Vite plugin) writes the real headline, bio, projects, articles and contact into `index.html` at
+  build time, plus canonical and Open Graph / Twitter tags, all from `content.ts`. React replaces it on mount.
+  `public/og-image.png` (1200×630) is the share image. Set `site.url` when moving to a custom domain.
+
 ## Where things live
 
 - `src/content.ts` — ALL visible text, links, and settings. Edit content here, not in components.
@@ -50,6 +59,7 @@ output `dist`). Only committed files go live, so anything git-ignored (`public/h
   - `HeroImage.tsx` — cut-out photos sliding right → left (z-10). Skips any that fail to load.
   - `WarpPortrait.tsx` — WebGL portrait: head/eyes/hand follow the cursor (rig data in `hero.images[].rig`).
   - `InteractionFX.tsx`, `RollText.tsx` — cursor follower, magnetic buttons, spotlight, click burst, letter roll.
+    RollText draws its letters in CSS (`data-ch` + `::before`/`::after`), so the DOM holds the label once (no doubled letters).
   - `HeroContent.tsx`, `ScrambleText.tsx`, `TypewriterBio.tsx` — headline and bio (z-20).
   - `Header.tsx` — social icons (left), morphing logo (centre), "View Me" menu button (right) (z-30).
   - `SocialIcon.tsx` — inline SVG brand glyphs used in the header.
@@ -66,6 +76,9 @@ output `dist`). Only committed files go live, so anything git-ignored (`public/h
     only inside the study, and container queries (`@container`, `@md`/`@xl`/`@3xl`) so it adapts to the drawer width.
   - `NexusStudy.tsx` — NexusCore's rich case study and list cover (content in `nexusStudy`). NexusCore's own tokens
     (`nx-ink`, `nx-indigo`, `nx-plum`, `nx-lime`, `nx-lilac`, `nx-mist`; DM Sans + Fira Code), only inside the study.
+  - `CarfStudy.tsx` — CARF research case study and list cover (content in `carfStudy`): the researched twin of Caira,
+    on StudyKit, in the site palette with Newsreader italics.
+  - `ResearchTeaching.tsx` — About Me → Experience: the Research & Teaching group above the industry timeline (`researchTeaching`).
   - `TokenStudy.tsx` — TokenForge's rich case study and list cover (content in `tokenStudy`, from the team's Behance
     case study and the live app). TokenForge's tokens (`tf-ink`, `tf-panel`, `tf-violet`, `tf-grey`, `tf-lav`; Inter), only inside the study.
   - `ResumeSection.tsx` — Resume: About's structure (pinned title + typed headline), download card with the shared pill
@@ -107,6 +120,9 @@ Search `src/content.ts` for `TODO`:
 3. Projects: links, outcomes, real cover images (`cover`), and Unelo / TokenForge details (see TODOs in `projects`).
 4. ~~Missing years in resume roles~~ The Resume page no longer lists roles. TokenForge: name your part in the team (`role` TODO in `projects`).
 5. Real GitHub, LinkedIn, X, Instagram and Google Scholar URLs (`socials`).
+9. To confirm (marked TODO in content.ts): OYNA years (2025 — 2026?), the exact M.A. title from the transcript,
+   your role on TokenForge, and that the friend's-mother story in the Caira study is fine to keep public.
+10. Before sharing with faculty: move to a custom domain (update `site.url`).
 6. ~~Articles and content design samples~~ Done: `articles` (Medium) and `writing`. Add new Medium articles to `articles.items`.
 7. Project types to match the JHNB rate card service lines.
 8. Optional: set `VITE_FORM_ENDPOINT` in `.env` (see `.env.example`) so the form posts to
@@ -116,7 +132,9 @@ Search `src/content.ts` for `TODO`:
 
 - Keep content in `src/content.ts`; components should read from it.
 - Keep accessibility intact: focus trap and Escape-to-close in the drawer, labelled form fields,
-  `sr-only` text for animated headings, reduced-motion handling.
+  `sr-only` text for animated headings (the hero h1 is one stable sentence; the scramble is `aria-hidden`), reduced-motion
+  handling (the global CSS rule stops animations; JS demos must render their final state when motion is reduced).
+- The hero bio types once per visit (sessionStorage `jhnb-bio-typed`), about 4 seconds; the full text is always in the page.
 - No remote images in production; put assets in `public/`.
 - Keep the page free of scrollbars on mobile (root uses `h-dvh`).
 - Don't add new dependencies without saying why.

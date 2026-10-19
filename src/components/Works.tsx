@@ -10,10 +10,11 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { RefObject } from "react";
-import { cairaStudy, nexusStudy, projects, tokenStudy, type Project } from "../content";
+import { cairaStudy, carfStudy, nexusStudy, projects, tokenStudy, type Project } from "../content";
 import CairaStudy, { CairaCover } from "./CairaStudy";
 import NexusStudy, { NexusCover } from "./NexusStudy";
 import TokenStudy, { TokenCover } from "./TokenStudy";
+import CarfStudy, { CarfCover } from "./CarfStudy";
 import RollText from "./RollText";
 import { LiveRow } from "./StudyKit";
 
@@ -36,7 +37,7 @@ const ACCENTS: Record<Project["accent"], { glow: string; text: string }> = {
 const pad = (n: number) => String(n).padStart(2, "0");
 
 /** Projects with a full case study; the rest show "Coming soon..." until theirs is written. */
-const RICH_SLUGS = [cairaStudy.slug, nexusStudy.slug, tokenStudy.slug];
+const RICH_SLUGS = [cairaStudy.slug, nexusStudy.slug, tokenStudy.slug, carfStudy.slug];
 export const hasCaseStudy = (slug: string) => RICH_SLUGS.includes(slug);
 
 /**
@@ -50,6 +51,7 @@ export function ProjectCover({ project, index, large = false }: { project: Proje
   if (project.slug === cairaStudy.slug) return <CairaCover />;
   if (project.slug === nexusStudy.slug) return <NexusCover />;
   if (project.slug === tokenStudy.slug) return <TokenCover />;
+  if (project.slug === carfStudy.slug) return <CarfCover />;
 
   if (project.cover) {
     return (
@@ -162,8 +164,8 @@ export function CaseStudy({
   const rise = (d: number) =>
     reduceMotion ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5, delay: d, ease: [0.2, 0.8, 0.2, 1] as const } };
 
-  // Caira, NexusCore, and TokenForge have their own, richer case studies
-  const Rich = p.slug === cairaStudy.slug ? CairaStudy : p.slug === nexusStudy.slug ? NexusStudy : p.slug === tokenStudy.slug ? TokenStudy : null;
+  // Caira, NexusCore, TokenForge, and CARF have their own, richer case studies
+  const Rich = p.slug === cairaStudy.slug ? CairaStudy : p.slug === nexusStudy.slug ? NexusStudy : p.slug === tokenStudy.slug ? TokenStudy : p.slug === carfStudy.slug ? CarfStudy : null;
   if (Rich) {
     return (
       <article className="pb-4">

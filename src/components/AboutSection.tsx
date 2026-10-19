@@ -4,6 +4,7 @@ import { BookOpen, Briefcase } from "lucide-react";
 import { about } from "../content";
 import AboutDeck from "./AboutDeck";
 import ExperienceList from "./ExperienceList";
+import ResearchTeaching from "./ResearchTeaching";
 import TypeLoop from "./TypeLoop";
 
 type Segment = "overview" | "experience";
@@ -26,7 +27,7 @@ const useMedia = (query: string) => {
  *   - Full screen on a large display: they sit side by side.
  * The whole section is exactly the drawer's remaining height, so only the segments scroll; the header never moves.
  */
-export default function AboutSection({ full, onLetsWork }: { full: boolean; onLetsWork: () => void }) {
+export default function AboutSection({ full, onLetsWork, onOpenCase }: { full: boolean; onLetsWork: () => void; onOpenCase: (slug: string) => void }) {
   const wide = useMedia("(min-width: 1024px)");
   const split = full && wide;
   const [segment, setSegment] = useState<Segment>("overview");
@@ -40,7 +41,13 @@ export default function AboutSection({ full, onLetsWork }: { full: boolean; onLe
   ];
 
   const overview = <AboutDeck onLetsWork={onLetsWork} />;
-  const experienceList = <ExperienceList scrollRoot={experienceRef} />;
+  // Research & Teaching first (the scholar before the designer), then the industry timeline
+  const experienceList = (
+    <>
+      <ResearchTeaching scrollRoot={experienceRef} onOpenCase={onOpenCase} />
+      <ExperienceList scrollRoot={experienceRef} />
+    </>
+  );
 
   const segmentScroll = "fx-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6 pr-3";
 

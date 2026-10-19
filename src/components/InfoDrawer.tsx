@@ -18,7 +18,10 @@ export type DrawerView = "menu" | "projects" | "caseStudy" | "about" | "contentD
 interface InfoDrawerProps {
   open: boolean;
   view: DrawerView;
+  /** The project the case-study view shows */
+  caseSlug: string;
   onNavigate: (view: DrawerView) => void;
+  onOpenCase: (slug: string) => void;
   onClose: () => void;
 }
 
@@ -35,17 +38,13 @@ const TITLES: Record<DrawerView, string> = {
 
 // -----------------------------------------------------------------------------
 
-export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDrawerProps) {
+export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCase, onClose }: InfoDrawerProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const headRef = useRef<HTMLDivElement>(null);
-  // Which project the case-study view shows
-  const [caseSlug, setCaseSlug] = useState(projects[0].slug);
-  const openCase = (slug: string) => {
-    setCaseSlug(slug);
-    onNavigate("caseStudy");
-  };
+  const openCase = onOpenCase;
+
   // Full-screen reading mode for content views (not the menu); resets whenever the drawer closes
   const [full, setFull] = useState(false);
   useEffect(() => {
@@ -130,6 +129,7 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
           <motion.div
             key="panel"
             ref={panelRef}
+            id="site-drawer"
             role="dialog"
             aria-modal="true"
             aria-labelledby="drawer-title"
@@ -249,11 +249,11 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
                       </>
                     )}
                     {view === "caseStudy" && (
-                      <CaseStudy slug={caseSlug} onOpen={setCaseSlug} onLetsWork={() => onNavigate("contact")} scrollRef={scrollRef} />
+                      <CaseStudy slug={caseSlug} onOpen={onOpenCase} onLetsWork={() => onNavigate("contact")} scrollRef={scrollRef} />
                     )}
                     {view === "contentDesign" && <ContentDesignSection full={isFull} />}
                     {view === "articles" && <ArticlesSection full={isFull} />}
-                    {view === "about" && <AboutSection full={isFull} onLetsWork={() => onNavigate("contact")} />}
+                    {view === "about" && <AboutSection full={isFull} onLetsWork={() => onNavigate("contact")} onOpenCase={openCase} />}
                     {view === "resume" && <ResumeSection full={isFull} onOpenCase={openCase} onLetsWork={() => onNavigate("contact")} />}
                     {view === "contact" && (
                       <>

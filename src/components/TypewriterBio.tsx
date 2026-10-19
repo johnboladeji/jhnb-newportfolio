@@ -5,12 +5,18 @@ import { hero } from "../content";
 const BIO = hero.bio;
 const SIGNOFF = hero.bioSignoff;
 const TOTAL_CHARS = BIO.length + SIGNOFF.length;
-// Stagger per character, capped so a long bio still finishes typing in ~6s
-const CHAR_DELAY = Math.min(0.02, 6 / TOTAL_CHARS);
+// Stagger per character (~12ms), capped so the whole bio finishes typing in about 4 seconds
+const CHAR_DELAY = Math.min(0.012, 4 / TOTAL_CHARS);
 const CHAR_DURATION = 0.05;
-// Replay once typing has finished and the full text has been readable for a while
-const HOLD_MS = 8000;
-const LOOP_MS = Math.round((TOTAL_CHARS * CHAR_DELAY + CHAR_DURATION) * 1000) + HOLD_MS;
+// Type once per visit: after the first pass the full text simply shows, even if the hero re-renders
+const PLAYED_KEY = "jhnb-bio-typed";
+const alreadyPlayed = () => {
+  try {
+    return sessionStorage.getItem(PLAYED_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
 
 /** Split text into words of indexed characters (indices continue from `start`) so lines only break at spaces. */
 function toWords(text: string, start: number) {
@@ -58,46 +64,47 @@ interface TypewriterBioProps {
 }
 
 export default function TypewriterBio({ onTyped }: TypewriterBioProps) {
-  const [cycle, setCycle] = useState(0);
   const reduceMotion = useReducedMotion();
+  // Decided once on mount, so a re-render never restarts the typing
+  const [skip] = useState(alreadyPlayed);
+  const still = reduceMotion || skip;
 
   useEffect(() => {
-    if (!onTyped) return;
-    if (reduceMotion) {
-      onTyped();
+    if (still) {
+      onTyped?.();
       return;
     }
-    const id = window.setTimeout(onTyped, TYPED_MS);
+    const id = window.setTimeout(() => {
+      try {
+        sessionStorage.setItem(PLAYED_KEY, "1");
+      } catch {
+        /* storage unavailable: it will simply type again next time */
+      }
+      onTyped?.();
+    }, TYPED_MS);
     return () => window.clearTimeout(id);
-    // Fire for the first typing pass only; later replays don't hide anything again
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduceMotion]);
-
-  useEffect(() => {
-    if (reduceMotion) return;
-    const id = window.setInterval(() => setCycle((c) => c + 1), LOOP_MS);
-    return () => window.clearInterval(id);
-  }, [reduceMotion]);
+  }, [still]);
 
   const signoffClass = "mt-2 block font-semibold tracking-wide text-tertiary";
   // Below md the body shows three lines and fades out on the third (no awkward "…" gap, since words never split);
-  // the full text stays in aria-label and "View more" opens About Me
+  // the full text is always in the page (visually hidden copy) and "View more" opens About Me
   const bodyClass =
     "block max-md:max-h-[calc(1.625em*3)] max-md:overflow-hidden max-md:[mask-image:linear-gradient(to_bottom,#000_55%,transparent)]";
 
   return (
     <p
-      aria-label={`${BIO} ${SIGNOFF}`}
       // Full-strength cream (15:1 on the base colour) plus a soft dark halo so it stays legible over the particles and photo edges
       className="mx-auto max-w-[34rem] text-center font-sans text-[13px] font-medium leading-relaxed text-cream [text-shadow:0_1px_10px_rgba(21,6,0,0.9)] sm:text-sm lg:mx-0 lg:text-right"
     >
-      {reduceMotion ? (
+      <span className="sr-only">{`${BIO} ${SIGNOFF}`}</span>
+      {still ? (
         <span aria-hidden="true">
           <span className={bodyClass}>{BIO}</span>
           <span className={signoffClass}>{SIGNOFF}</span>
         </span>
       ) : (
-        <span key={cycle} aria-hidden="true">
+        <span aria-hidden="true">
           <span className={bodyClass}>
             <Typed words={bioWords.words} />
           </span>

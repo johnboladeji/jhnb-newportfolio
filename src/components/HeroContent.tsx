@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import ScrambleText from "./ScrambleText";
 import TypewriterBio from "./TypewriterBio";
 import RollText from "./RollText";
@@ -8,6 +8,11 @@ import { hero } from "../content";
 
 const WORDS = hero.rotatingWords;
 const ROTATE_MS = 4000;
+// One stable sentence for screen readers, search engines and link previews, e.g. "Design with rhetoric, culture, and code"
+const lower = (w: string) => w.toLowerCase();
+const HEADLINE_TEXT = `${hero.headline.charAt(0)}${lower(hero.headline.slice(1))} ${WORDS.slice(0, -1).map(lower).join(", ")}, and ${lower(WORDS[WORDS.length - 1])}`;
+// With reduced motion the word holds still on this one
+const STILL_WORD = Math.max(0, WORDS.findIndex((w) => lower(w) === "culture"));
 
 interface HeroContentProps {
   onViewProjects: () => void;
@@ -15,14 +20,19 @@ interface HeroContentProps {
 }
 
 export default function HeroContent({ onViewProjects, onViewAbout }: HeroContentProps) {
+  const reduceMotion = useReducedMotion();
   const [wordIndex, setWordIndex] = useState(0);
   // Mobile "View more" stays hidden until the bio's sign-off has finished typing
   const [bioTyped, setBioTyped] = useState(false);
 
   useEffect(() => {
+    if (reduceMotion) {
+      setWordIndex(STILL_WORD);
+      return;
+    }
     const id = window.setInterval(() => setWordIndex((i) => (i + 1) % WORDS.length), ROTATE_MS);
     return () => window.clearInterval(id);
-  }, []);
+  }, [reduceMotion]);
 
   // Below lg the photo starts where the text ends. Publish the bio's bottom edge as a CSS variable
   // (--hero-text-bottom) that HeroImage sizes against, and keep it current as the layout changes.
@@ -61,6 +71,9 @@ export default function HeroContent({ onViewProjects, onViewAbout }: HeroContent
         {/* Optical alignment: -ml-[0.03em] cancels Anton's left side-bearing so both lines' ink starts on the same edge
             as the tagline and button; -mr-[0.08em] cancels the outline line's trailing letter-spacing so it centres truly. */}
         <h1 className="pointer-events-auto flex flex-col items-center text-center font-display uppercase leading-[0.9] lg:items-start lg:text-left">
+          <span className="sr-only">{HEADLINE_TEXT}</span>
+          {/* The visual headline (outline line + scrambling word) is decoration over the sentence above */}
+          <span aria-hidden="true" className="contents">
           <span className="text-stroke -ml-[0.03em] -mr-[0.08em] text-[21px] tracking-[0.08em] sm:text-[36px] md:text-[52px] lg:text-[47px] xl:text-[66px] 2xl:text-[78px]">
             {hero.headline}
           </span>
@@ -68,6 +81,7 @@ export default function HeroContent({ onViewProjects, onViewAbout }: HeroContent
             text={WORDS[wordIndex]}
             className="-ml-[0.03em] block text-[60px] text-primary sm:text-[104px] md:text-[144px] lg:text-[104px] xl:text-[160px] 2xl:text-[190px]"
           />
+          </span>
         </h1>
 
         {/* Always one line. Its size scales with the viewport (10.5px at 1024 → 15px from ~1430) so it never

@@ -393,7 +393,8 @@ function Origin({ scrollRef }: { scrollRef?: RefObject<HTMLElement | null> }) {
 function ChatDemo() {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.4 });
+  // Without IntersectionObserver the conversation simply shows in full, never blank
+  const inView = useInView(ref, { once: true, amount: 0.4 }) || typeof IntersectionObserver === "undefined";
   const msgs = C.challenge.chat;
   const total = msgs.length + 2; // messages, divider, Caira card
   const [shown, setShown] = useState(reduce ? total : 0);
@@ -1261,6 +1262,21 @@ function Status() {
             ))}
           </ul>
         </div>
+        {C.milestones.length > 0 && (
+          <div className="@3xl:col-span-2">
+            <h4 className="font-mono text-[11px] tracking-[0.25em] text-ochre">MILESTONES</h4>
+            <ul className="mt-4 space-y-3">
+              {C.milestones.map((s, i) => (
+                <Reveal key={s} delay={i * 0.06} y={12}>
+                  <li className="flex gap-3 font-figtree text-[15px] leading-relaxed text-cream/90">
+                    <span className="mt-1.5 h-3 w-3 shrink-0 rotate-45 bg-ochre" aria-hidden="true" />
+                    {s}
+                  </li>
+                </Reveal>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </>
   );

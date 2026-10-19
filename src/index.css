@@ -158,8 +158,11 @@ body {
 /* Letter roll: each letter slides up and a copy rolls in from below, staggered */
 .fx-roll-char { display: inline-flex; flex-direction: column; height: 1lh; overflow: hidden; vertical-align: top; }
 .fx-roll-char > span { display: block; transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1); transition-delay: calc(var(--i) * 18ms); }
+/* Both the letter and its rolling copy are drawn from data-ch, so the DOM holds no duplicate or spaced-out text */
+.fx-roll-char > span::before,
+.fx-roll-char > span::after { content: attr(data-ch); display: block; }
 .group:hover .fx-roll-char > span,
-.group:focus-visible .fx-roll-char > span { transform: translateY(-100%); }
+.group:focus-visible .fx-roll-char > span { transform: translateY(-50%); }
 
 /* Typing caret (TypeLoop) */
 .fx-caret {
@@ -223,6 +226,9 @@ body {
   .caira-orbit, .caira-orbit-chip, .caira-ping, .caira-travel, .caira-dot, .caira-wave, .caira-ripple, .caira-colon { animation: none; }
   .group:hover .fx-roll-char > span { transform: none; }
   *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

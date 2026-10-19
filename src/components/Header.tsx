@@ -6,9 +6,11 @@ import SocialIcon from "./SocialIcon";
 
 interface HeaderProps {
   onMenu: () => void;
+  /** Whether the drawer is open (for aria-expanded on the menu button) */
+  menuOpen?: boolean;
 }
 
-export default function Header({ onMenu }: HeaderProps) {
+export default function Header({ onMenu, menuOpen = false }: HeaderProps) {
   return (
     <header className="relative z-30 grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-8 lg:px-12">
       <div className="justify-self-start">
@@ -28,7 +30,7 @@ export default function Header({ onMenu }: HeaderProps) {
       <LogoMorph />
 
       <div className="justify-self-end">
-        <MenuButton onClick={onMenu} />
+        <MenuButton onClick={onMenu} expanded={menuOpen} />
       </div>
     </header>
   );
@@ -171,12 +173,14 @@ function LogoMorph() {
 }
 
 /** Pill with a rolling "View Me" caption and a hamburger whose lines shift; hover fills the pill peach. */
-function MenuButton({ onClick }: { onClick: () => void }) {
+function MenuButton({ onClick, expanded }: { onClick: () => void; expanded: boolean }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-haspopup="dialog"
+      aria-expanded={expanded}
+      aria-controls="site-drawer"
       aria-label={`${menuButtonLabel} — open menu`}
       data-magnetic="0.25"
       className="fx-spotlight group flex items-center gap-2.5 rounded-full border border-cream/20 py-1 pl-3.5 pr-1 transition-colors duration-300 hover:border-tertiary hover:bg-tertiary focus-visible:border-tertiary focus-visible:bg-tertiary sm:gap-3 sm:py-1.5 sm:pl-5 sm:pr-1.5"

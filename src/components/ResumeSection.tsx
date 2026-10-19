@@ -25,7 +25,7 @@ function Buttons() {
         data-magnetic="0.2"
         className="fx-spotlight group inline-flex items-center gap-3 rounded-full bg-tertiary py-1.5 pl-5 pr-1.5 font-mono text-xs font-medium tracking-[0.15em] text-base shadow-[0_14px_30px_-16px_rgba(0,0,0,0.8)] transition-transform duration-300 hover:-translate-y-0.5 active:bg-primary active:text-cream"
       >
-        <RollText text={`DOWNLOAD CV · PDF · ${resume.pages} PAGES`} />
+        <RollText text="DOWNLOAD CV (PDF)" />
         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/15 transition-transform duration-300 group-hover:translate-y-0.5">
           <Download size={15} aria-hidden="true" />
         </span>
@@ -110,9 +110,9 @@ export default function ResumeSection({ full, onOpenCase, onLetsWork }: { full: 
       <div className="@container fx-scroll mt-5 min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6 pr-3">
         {/* Download card */}
         <Reveal>
-          <div className="grid items-center gap-6 rounded-3xl border border-cream/10 bg-[linear-gradient(135deg,rgba(152,58,40,0.35),rgba(21,6,0,0.45))] p-6 @xl:grid-cols-[10rem_1fr] @xl:p-8">
+          <div className="grid items-center gap-6 rounded-3xl border border-cream/10 bg-[linear-gradient(135deg,rgba(152,58,40,0.35),rgba(21,6,0,0.45))] p-6 @xl:grid-cols-[10rem_minmax(0,1fr)] @xl:p-8">
             <Pages />
-            <div>
+            <div className="min-w-0">
               <p className="max-w-[56ch] text-[16px] leading-relaxed text-cream/85">{resume.intro}</p>
               <div className="mt-5">
                 <Buttons />
@@ -254,6 +254,19 @@ export default function ResumeSection({ full, onOpenCase, onLetsWork }: { full: 
             </Reveal>
           ))}
         </ol>
+
+        {/* Recognition */}
+        <h3 className={`mt-14 ${label}`}>RECOGNITION</h3>
+        <ul className="mt-4 space-y-2">
+          {resume.recognition.map((r) => (
+            <Reveal key={r.what} y={10}>
+              <li className="flex items-center gap-3 rounded-2xl border border-cream/10 bg-base/30 p-4">
+                <span className="rounded-full bg-amber px-2.5 py-0.5 font-mono text-[11px] text-base">{r.year}</span>
+                <span className="font-sans text-[15px] font-bold text-cream">{r.what}</span>
+              </li>
+            </Reveal>
+          ))}
+        </ul>
 
         {/* Ventures */}
         <h3 className={`mt-14 ${label}`}>VENTURES</h3>

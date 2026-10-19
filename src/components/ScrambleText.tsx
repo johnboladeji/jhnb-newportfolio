@@ -9,7 +9,7 @@ interface ScrambleTextProps {
   className?: string;
 }
 
-/** Cycles random uppercase characters, revealing the target word left to right. */
+/** Cycles random uppercase characters, revealing the target word left to right. Decorative: give the real text elsewhere. */
 export default function ScrambleText({ text, className }: ScrambleTextProps) {
   const [display, setDisplay] = useState(text);
 
@@ -35,10 +35,10 @@ export default function ScrambleText({ text, className }: ScrambleTextProps) {
     return () => window.clearInterval(id);
   }, [text]);
 
+  // Purely visual: the parent heading carries the accessible text
   return (
-    <span className={className}>
-      <span className="sr-only">{text}</span>
-      <span aria-hidden="true">{display}</span>
+    <span className={className} aria-hidden="true">
+      {display}
     </span>
   );
 }

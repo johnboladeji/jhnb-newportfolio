@@ -396,7 +396,8 @@ function Flow() {
 function CustomerChat() {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.4 });
+  // Without IntersectionObserver the conversation simply shows in full, never blank
+  const inView = useInView(ref, { once: true, amount: 0.4 }) || typeof IntersectionObserver === "undefined";
   const msgs = N.product.chat;
   const [shown, setShown] = useState(reduce ? msgs.length + 1 : 0);
   const [typing, setTyping] = useState<null | "bot" | "buyer">(null);
