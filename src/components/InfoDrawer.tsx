@@ -1,13 +1,14 @@
-import { lazy, Suspense, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowUpRight, ChevronDown, Download, LayoutGrid, Maximize2, Menu, Minimize2, X } from "lucide-react";
-import { contact, menu, projects, resume, worksHeadline } from "../content";
+import { ArrowLeft, ArrowUpRight, ChevronDown, LayoutGrid, Maximize2, Menu, Minimize2, X } from "lucide-react";
+import { contact, menu, projects, worksHeadline } from "../content";
 import RollText from "./RollText";
 import DrawerPortraits from "./DrawerPortraits";
 import AboutSection from "./AboutSection";
 import TypeLoop from "./TypeLoop";
 import ContentDesignSection from "./ContentDesign";
 import ArticlesSection from "./Articles";
+import ResumeSection from "./ResumeSection";
 // Physics capsules (matter-js) load only when Let's Work opens, keeping the engine out of the first page load
 const SkillCapsules = lazy(() => import("./SkillCapsules"));
 import { CaseStudy, WorksList } from "./Works";
@@ -53,7 +54,7 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
   const canExpand = view !== "menu";
   const isFull = full && canExpand;
   // About and Projects share a layout: pinned header, own inner scroller, full width (no max-width) in full screen
-  const pinned = view === "about" || view === "projects" || view === "contentDesign" || view === "articles";
+  const pinned = view === "about" || view === "projects" || view === "contentDesign" || view === "articles" || view === "resume";
   const [wide, setWide] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
@@ -213,7 +214,7 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
                     />
                   </header>
                 )}
-                {view !== "about" && view !== "projects" && view !== "contentDesign" && view !== "articles" && (
+                {view !== "about" && view !== "projects" && view !== "contentDesign" && view !== "articles" && view !== "resume" && (
                   <h2
                     id="drawer-title"
                     className={view === "menu" ? "sr-only" : "mb-8 font-display text-5xl uppercase text-cream sm:text-6xl"}
@@ -253,7 +254,7 @@ export default function InfoDrawer({ open, view, onNavigate, onClose }: InfoDraw
                     {view === "contentDesign" && <ContentDesignSection full={isFull} />}
                     {view === "articles" && <ArticlesSection full={isFull} />}
                     {view === "about" && <AboutSection full={isFull} onLetsWork={() => onNavigate("contact")} />}
-                    {view === "resume" && <ResumeView />}
+                    {view === "resume" && <ResumeSection full={isFull} onOpenCase={openCase} onLetsWork={() => onNavigate("contact")} />}
                     {view === "contact" && (
                       <>
                         <ContactView />
@@ -374,40 +375,6 @@ function MenuView({ onNavigate, onClose }: { onNavigate: (v: DrawerView) => void
   );
 }
 
-function Row({ children }: { children: ReactNode }) {
-  return <li className="border-b border-cream/10 py-5">{children}</li>;
-}
-
-function ResumeView() {
-  return (
-    <div>
-      <ul>
-        {resume.roles.map((r) => (
-          <Row key={r.period}>
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-              <span>
-                <span className="block text-xl font-medium text-cream">{r.role}</span>
-                <span className="block text-sm text-cream/70">{r.org}</span>
-              </span>
-              <span className="font-mono text-xs text-cream/70">{r.period}</span>
-            </div>
-          </Row>
-        ))}
-      </ul>
-      {resume.pdfUrl && (
-        <a
-          href={resume.pdfUrl}
-          download={resume.pdfFileName}
-          data-magnetic="0.2"
-          className="fx-spotlight group mt-8 inline-flex items-center gap-2 border border-cream/30 px-6 py-3 font-mono text-xs tracking-[0.2em] text-cream transition-colors hover:border-tertiary hover:bg-tertiary hover:text-base active:border-primary active:bg-primary active:text-cream"
-        >
-          <Download size={16} aria-hidden="true" />
-          <RollText text="DOWNLOAD RESUME (PDF)" />
-        </a>
-      )}
-    </div>
-  );
-}
 
 const fieldClass =
   "w-full border-0 border-b border-cream/40 bg-transparent px-0 py-3 text-[16px] text-cream placeholder:text-cream/70 transition-colors focus:border-tertiary focus:outline-none focus:ring-0";

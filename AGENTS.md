@@ -59,6 +59,10 @@ Run `npm run build` after changes to confirm nothing broke.
     only inside the study, and container queries (`@container`, `@md`/`@xl`/`@3xl`) so it adapts to the drawer width.
   - `NexusStudy.tsx` — NexusCore's rich case study and list cover (content in `nexusStudy`). NexusCore's own tokens
     (`nx-ink`, `nx-indigo`, `nx-plum`, `nx-lime`, `nx-lilac`, `nx-mist`; DM Sans + Fira Code), only inside the study.
+  - `TokenStudy.tsx` — TokenForge's rich case study and list cover (content in `tokenStudy`, from the team's Behance
+    case study and the live app). TokenForge's tokens (`tf-ink`, `tf-panel`, `tf-violet`, `tf-grey`, `tf-lav`; Inter), only inside the study.
+  - `ResumeSection.tsx` — Resume: About's structure (pinned title + typed headline), download card with the shared pill
+    buttons, numbers, the arc by discipline, expertise, research, education, ventures (`resume` in content.ts). No job list; work history stays in the PDF.
   - `StudyKit.tsx` — shared chrome for rich case studies: sticky chapter bar (`StudyBar`), numbered chapters
     (`StudyChapter`), `LitWords` (words light up on scroll, via `useScrollThrough`, which reads any scroll container directly; use it rather than framer `useScroll` for nested scrollers such as the Writing reading pane), `useStudyProgress`. Each study passes its own `tone`.
   - `SkillCapsules.tsx` — physics skill capsules under the Let's Work form (`skills`; uses matter-js).
@@ -94,7 +98,7 @@ Search `src/content.ts` for `TODO`:
    `public/hero/1791941132446.jpg.jpeg` and `public/hero/file_000000007e90823092fccefdafc9cc6e.png`).
 2. ~~CV~~ Done: `public/resume.pdf`.
 3. Projects: links, outcomes, real cover images (`cover`), and Unelo / TokenForge details (see TODOs in `projects`).
-4. Missing years (`YEAR`) in resume roles.
+4. ~~Missing years in resume roles~~ The Resume page no longer lists roles. TokenForge: name your part in the team (`role` TODO in `projects`).
 5. Real GitHub, LinkedIn, X, Instagram and Google Scholar URLs (`socials`).
 6. ~~Articles and content design samples~~ Done: `articles` (Medium) and `writing`. Add new Medium articles to `articles.items`.
 7. Project types to match the JHNB rate card service lines.

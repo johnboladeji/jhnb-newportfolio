@@ -127,7 +127,8 @@ export interface Project {
 export const worksHeadline = "Architecting ideas. Building experiences. Delivering impact.";
 
 /** Selected Works, in display order. Each opens a case study in the drawer. */
-export const projects: Project[] = [
+export const projects: Project[
+  ] = [
   {
     slug: "caira",
     name: "Caira",
@@ -160,6 +161,20 @@ export const projects: Project[] = [
       "Designed and built it end to end: product, UX writing, the bot engine, seller WhatsApp commands, billing, and payouts.",
     ],
     // The full, rich case study lives in `nexusStudy` below (rendered by NexusStudy.tsx)
+  },
+  {
+    slug: "tokenforge",
+    name: "TokenForge",
+    type: "AI design-system token generator",
+    role: "Co-creator, team of ten", // TODO: name your part in the team (e.g. research, UX, front-end)
+    year: "2026",
+    url: "https://token-forge-three.vercel.app",
+    icon: "graduation-cap",
+    accent: "peach",
+    tags: ["Product design", "Design systems", "AI", "UX research", "SaaS"],
+    summary: "An AI platform that turns a one-line brand description into production-ready design tokens in seconds.",
+    did: ["Built in four weeks by a team of ten as the Dev & Design Academy capstone, from research to a shipped web app."],
+    // The full, rich case study lives in `tokenStudy` below (rendered by TokenStudy.tsx)
   },
   {
     slug: "mova",
@@ -203,19 +218,6 @@ export const projects: Project[] = [
     tags: ["AI", "Language", "Mobile app"],
     summary: "An AI translation and interpretation app.",
     did: [], // TODO: what you did on Unelo
-  },
-  {
-    slug: "tokenforge",
-    name: "TokenForge",
-    type: "Dev & Design Academy capstone",
-    role: "Capstone project",
-    year: "2025 — 2026",
-    url: "", // TODO: link
-    icon: "graduation-cap",
-    accent: "peach",
-    tags: ["UI/UX", "AI-assisted MVP", "Product thinking"],
-    summary: "Capstone for the Dev & Design Academy programme in UI/UX design, AI-assisted MVP development and product thinking.",
-    did: [], // TODO: what TokenForge is and what you built
   },
 ];
 
@@ -743,12 +745,67 @@ export const resume = {
   pdfUrl: "/resume.pdf",
   /** File name visitors get when they download the CV */
   pdfFileName: "John-B-Oladeji-CV.pdf",
-  /** TODO: fill in the years marked YEAR. */
-  roles: [
-    { period: "2026 — now", role: "Instructor, First-Year Rhetoric & Composition", org: "New Mexico Highlands University" },
-    { period: "YEAR — now", role: "Graduate Assistant, Writing Center & New Mexico Review", org: "New Mexico Highlands University" },
-    { period: "YEAR — now", role: "Lead Instructor", org: "OYNA Youth Software Development Programme" },
-    { period: "YEAR — YEAR", role: "Creative Lead", org: "GRAMEF Digital Agency" },
+  pages: 3,
+  /** Rendered by ResumeSection.tsx. Work history stays in the PDF; the page shows the shape of it. */
+  headline: "Proven expertise. Relentless execution. Transformative results.",
+  intro:
+    "Ten years across language, design, and code: brand studios in Nigeria and the UK, products I've founded and built, and research into how interfaces carry culture. The full CV has the details.",
+  stats: [
+    { n: 10, suffix: "+", label: "Years designing" },
+    { n: 3, suffix: "", label: "Countries worked across" },
+    { n: 4, suffix: "", label: "Ventures & programmes led" },
+    { n: 2, suffix: "", label: "Conference papers" },
+    { n: 4, suffix: "", label: "Manuscripts in preparation" },
+  ],
+  // The arc of the work, by discipline (no employer list)
+  arc: [
+    { year: "2015", label: "Language", text: "B.A. in English" },
+    { year: "2016", label: "Visual design", text: "Print, layout, typography" },
+    { year: "2018", label: "Brand strategy", text: "Audience and rhetorical research" },
+    { year: "2023", label: "Creative leadership", text: "Leading designers, writers, and developers, UK" },
+    { year: "2024", label: "Founder", text: "Caira, end to end" },
+    { year: "2025", label: "Design engineering", text: "Full-stack products, AI, teaching code" },
+    { year: "2026", label: "Rhetoric research", text: "Culturally attentive UX writing" },
+  ],
+  expertise: [
+    {
+      area: "Design & development",
+      items: ["Figma", "UX/UI design", "Design systems", "Prototyping", "Photoshop & Illustrator", "React", "Next.js", "TypeScript", "React Native (Expo)", "Node.js / Fastify", "PostgreSQL", "Full-stack product development"],
+    },
+    {
+      area: "Research methods",
+      items: ["Critical Technocultural Discourse Analysis", "Value Sensitive Design", "Digital ethnography", "User research & usability", "Participatory & co-design", "Qualitative & content analysis", "Multimodal discourse analysis", "Rhetorical & stylistic critique"],
+    },
+    { area: "Writing", items: ["UX writing & microcopy", "Content strategy", "Technical writing", "Academic writing", "Editorial development"] },
+    { area: "Teaching", items: ["Writing instruction", "Curriculum development", "Workshop facilitation", "One-to-one tutoring", "Technical writing"] },
+  ],
+  research: {
+    thesis: "Decolonizing the Interface: A Rhetorical Framework for Culturally Attentive UX Writing in Nigerian and American Fintech Platforms",
+    framework: "CARF, the Culturally Attentive Rhetorical Framework, combines Critical Technocultural Discourse Analysis and Value Sensitive Design to show how fintech interfaces encode cultural assumptions, and to move from that analysis toward more just, human-centered design.",
+    interests: ["Rhetoric of digital interfaces", "Value-sensitive AI systems", "Decolonial interaction design", "Participatory design", "African & North American digital rhetorics", "Fintech, trust & user agency"],
+    manuscripts: [
+      "The Rhetoric of Fintech: How Digital Platforms Shape Public Perception of Financial Services and Trust in Accounting Systems",
+      "Navigating Authenticity: Digital Code-Switching and Multilingual Identity on TikTok in Nigeria and the United States",
+      "Language, Ideology, and Satirical Resistance in Wole Soyinka's The Lion and the Jewel",
+      "Balancing Human Creativity and Artificial Intelligence Productivity: An Empirical Analysis of the Evolving Digital Economy",
+    ],
+    talks: [
+      { year: "2026", title: "Trapped in the Algorithm: How Echo Chambers and Cognitive Biases Fuel Misinformation", venue: "SWPACA 47th Annual Conference" },
+      { year: "2025", title: "Navigating Authenticity: Digital Code-Switching as Identity Construction on TikTok in Nigeria and the United States", venue: "HACU 39th Annual Conference" },
+    ],
+  },
+  education: [
+    { year: "2026", what: "M.A. in English (Linguistics, Literary, and Composition)", where: "New Mexico Highlands University", note: "Expected December 2026" },
+    { year: "2025–26", what: "Professional Certificate: UI/UX Design, AI-Assisted MVP Development & Product Thinking", where: "Dev & Design Academy" },
+    { year: "2021–22", what: "Professional Certificate: Digital Interface and Design", where: "SQI College of ICT, Nigeria" },
+    { year: "2018", what: "Professional Certificate: Brand Communication and Advertising", where: "O2 Academy, Lagos" },
+    { year: "2011–15", what: "B.A. (Education) in English", where: "Ekiti State University, Nigeria" },
+  ],
+  ventures: [
+    { name: "Caira", slug: "caira", line: "Eldercare coordination for families abroad" },
+    { name: "NexusCore", slug: "nexuscore", line: "AI sales assistant for the WhatsApp inbox" },
+    { name: "MOVA", slug: "mova", line: "Last-mile logistics for Lagos" },
+    { name: "OYNA", slug: "", line: "Youth software programme: I wrote the curriculum" },
   ],
 };
 
@@ -1076,6 +1133,109 @@ export const nexusStudy = {
     refused: ["Email verification", "English-first copy", "Dollar-denominated pricing", "High-touch onboarding", "Stripe-shaped payment flows"],
     thesis: "If this works for the first hundred sellers, there is a market for software built to this reality, not translated into it.",
   },
+};
+
+/**
+ * TokenForge: the full case study (rendered by TokenStudy.tsx), from the team's Behance case study and the live app.
+ * TokenForge's own palette inside the study: ink #0F0F12, violet #9F46E5, grey #9FA1A9, lavender #DEE4FE; Inter.
+ */
+export const tokenStudy = {
+  slug: "tokenforge",
+  kicker: "AI · Design systems · Dev & Design Academy capstone",
+  headline: ["Describe your brand to generate", "a design system"],
+  oneLine: "TokenForge helps designers, developers and teams go from brand idea to production-ready design tokens in seconds.",
+  statusPill: "Shipped · 2026 · Team of ten",
+  url: "https://token-forge-three.vercel.app",
+  behance: "https://www.behance.net/gallery/255008197/TOKENFORGE-AI-Powered-Design-System-Token-Generator",
+  facts: [
+    { label: "Industry", value: "Design tooling / AI automation" },
+    { label: "Product", value: "Web app · SaaS platform · Design tool" },
+    { label: "Timeline", value: "4 weeks, 2026" },
+    { label: "Status", value: "Shipped" },
+    { label: "Team", value: "Ten co-creators, Dev & Design Academy capstone" },
+    { label: "Live", value: "token-forge-three.vercel.app", url: "https://token-forge-three.vercel.app" },
+  ],
+  problem:
+    "Designers and developers spend hours building design systems from scratch: defining colours, typography, spacing, and other foundational decisions. The process is repetitive, hard to keep consistent, and it's easy to overlook accessibility.",
+  solution:
+    "TokenForge uses AI to turn a simple brand description into a complete, production-ready design system in seconds. Users preview and refine their tokens visually, check accessibility, remix variations, and export straight to CSS, Tailwind, or JSON.",
+  speed: { from: "6+ hours", to: "< 60 seconds", note: "Design-system setup, before and after" },
+  audiences: [
+    { name: "Designers", text: "Need to establish a visual language for a new project or client quickly, and want live previews they can tweak." },
+    { name: "Developers", text: "Need a structured token file (CSS variables, a Tailwind config) they can drop into a codebase without reformatting." },
+    { name: "Company founders", text: "Juggle several brands and need quick, accessible, varied design systems for pitches and new contracts." },
+  ],
+  process: [
+    { phase: "Research & Discovery", steps: ["User research", "Idea generation", "Competitor analysis"] },
+    { phase: "User Flow & Wireframing", steps: ["User flow", "Interaction planning"] },
+    { phase: "High-Fidelity Design", steps: ["Design system", "UI components", "High-fidelity design", "Interactive prototype"] },
+    { phase: "Testing & Iteration", steps: ["Usability testing", "AI output validation", "Accessibility testing", "Design refinement"] },
+  ],
+  competitors: [
+    { name: "Specify", kind: "Design token engine", text: "Manages design tokens across flexible pipelines and integrations." },
+    { name: "Supernova", kind: "Enterprise design system platform", text: "Helps established teams manage, document, and sync an existing system." },
+    { name: "Figma", kind: "Design tool / industry standard", text: "Where designers create interfaces, prototypes, and components." },
+    { name: "Locofy.ai", kind: "Design-to-code platform", text: "Converts Figma designs into front-end code." },
+  ],
+  gap: "Existing tools manage or implement design systems, but creating one is still largely manual. TokenForge uses AI to generate, refine, validate, and export a complete design system from a simple brand description.",
+  swot: [
+    { key: "S", name: "Strengths", points: ["Setup drops from 6+ hours to under 60 seconds", "A natural-language interface instead of complex panels", "WCAG accessibility checks built in, not bolted on", "Developer-first exports: CSS variables, Tailwind config, JSON"] },
+    { key: "W", name: "Weaknesses", points: ["No Figma plugin at first: tokens are copied by hand", "A new brand next to Adobe, Figma, and Canva", "Output quality depends on prompting and the DeepSeek API", "No learning loop from user corrections in the MVP"] },
+    { key: "O", name: "Opportunities", points: ["Most small businesses and freelancers can't afford a design system", "Become the source-of-truth plugin for Figma, Webflow, and VS Code", "From generator to governor: AI that checks pull requests for design drift"] },
+    { key: "T", name: "Threats", points: ["Figma or Canva could ship a native “Generate Styles” button", "Cheaper AI inference squeezes pricing", "Weak early outputs could hurt trust in the brand"] },
+  ],
+  personas: [
+    {
+      name: "Lily Williams",
+      who: "28 · UI/UX designer",
+      motivation: "Create polished, consistent design systems quickly, without spending hours defining foundational tokens before product design.",
+      goals: ["Set up colours, type, spacing, and components fast", "Explore several visual directions for a brand", "Adjust without rebuilding from scratch"],
+      pains: ["Manual token creation is repetitive", "Consistency across foundations is hard", "AI output still needs review before it's trusted"],
+      map: {
+        says: ["I don't want to spend hours setting up tokens", "I need to know if these colours are accessible"],
+        thinks: ["There has to be a faster way", "I need control over what the AI generates"],
+        feels: ["Overwhelmed starting from scratch", "Confident when she can preview and refine"],
+        does: ["Defines colours, type, spacing, radii", "Reviews and adjusts generated tokens"],
+      },
+    },
+    {
+      name: "Alexander Smith",
+      who: "25 · Developer",
+      motivation: "Get a structured, consistent set of tokens he can implement directly, without translating design decisions by hand.",
+      goals: ["Receive tokens that are ready for development", "Export in formats that fit his workflow", "Keep the product's visual language consistent"],
+      pains: ["Translating design to code is tedious and error-prone", "Inconsistent naming creates extra work", "He needs confidence the values are usable"],
+      map: {
+        says: ["I need tokens I can actually use in my codebase", "The naming needs to be consistent"],
+        thinks: ["Will these translate cleanly into code?", "Which export format fits this project?"],
+        feels: ["Relieved when tokens are ready to export", "Confident when output drops straight in"],
+        does: ["Exports development-ready formats", "Integrates tokens into the codebase"],
+      },
+    },
+  ],
+  style: {
+    font: "Inter",
+    fontNote: "Designed for digital interfaces: clean, highly legible, precise and flexible.",
+    weights: ["Regular", "Medium", "Semi-Bold", "Bold"],
+    colours: ["#9F46E5", "#9FA1A9", "#DEE4FE", "#FFFFFF"],
+  },
+  steps: [
+    { name: "Describe your brand", text: "Type your vision, audience, and aesthetic; the AI reads the creative direction." },
+    { name: "AI generation", text: "A full system: semantic colour palettes, harmonious type, spacing foundations." },
+    { name: "Refine & tweak", text: "A real-time visual editor, with every change shown in the live preview." },
+    { name: "Export for production", text: "CSS variables, a Tailwind config, or pure JSON, ready for the codebase." },
+  ],
+  workstation: [
+    { panel: "Editor", text: "Brand description, mood and industry, and manual token controls." },
+    { panel: "Live preview", text: "Colour roles and real components, like a sign-in form, update as you edit." },
+    { panel: "Accessibility · Remix · Export", text: "Contrast checks, generated variations, and one-click export." },
+  ],
+  // The example prompts from the live app, used by the interactive demo
+  prompts: [
+    "A premium fintech app for young investors who want clean, trustworthy design with a hint of excitement.",
+    "A fitness app that feels energetic and motivating.",
+    "A healthcare platform that feels calming and professional.",
+  ],
+  team: ["Eseosa Francis Aduwa (lead product designer)", "Tobechukwu Onyia", "Ujunwa Okoye", "Victor Omolasoye", "Tijani Zaynab Oyenike", "Malachi Remilekun", "John B. Oladeji", "Enoch Ojukwu", "Precious Udeanioke", "Abioye Oluwabukola Esther"],
 };
 
 /** Let's Work → skill capsules that rain down and pile up (drag to fling). Order sets the drop order. */

@@ -1,9 +1,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
-  ArrowUpRight,
   BookOpen,
-  Check,
   Cpu,
   GraduationCap,
   HeartHandshake,
@@ -12,9 +10,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { RefObject } from "react";
-import { cairaStudy, nexusStudy, projects, type Project } from "../content";
+import { cairaStudy, nexusStudy, projects, tokenStudy, type Project } from "../content";
 import CairaStudy, { CairaCover } from "./CairaStudy";
 import NexusStudy, { NexusCover } from "./NexusStudy";
+import TokenStudy, { TokenCover } from "./TokenStudy";
 import RollText from "./RollText";
 import { LiveRow } from "./StudyKit";
 
@@ -36,6 +35,10 @@ const ACCENTS: Record<Project["accent"], { glow: string; text: string }> = {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+/** Projects with a full case study; the rest show "Coming soon..." until theirs is written. */
+const RICH_SLUGS = [cairaStudy.slug, nexusStudy.slug, tokenStudy.slug];
+export const hasCaseStudy = (slug: string) => RICH_SLUGS.includes(slug);
+
 /**
  * Project cover. Uses `project.cover` when provided; otherwise generates an on-brand cover: dark warm field,
  * an accent glow that drifts on hover, a fine dot grid, the project glyph, and the name set huge in outlined Anton.
@@ -46,6 +49,7 @@ export function ProjectCover({ project, index, large = false }: { project: Proje
 
   if (project.slug === cairaStudy.slug) return <CairaCover />;
   if (project.slug === nexusStudy.slug) return <NexusCover />;
+  if (project.slug === tokenStudy.slug) return <TokenCover />;
 
   if (project.cover) {
     return (
@@ -90,6 +94,7 @@ export function WorksList({ onOpen, columns = 1 }: { onOpen: (slug: string) => v
     <ol className={columns === 2 ? "grid grid-cols-2 gap-x-12 gap-y-14" : "space-y-12"}>
       {projects.map((p, i) => {
         const accent = ACCENTS[p.accent];
+        const ready = hasCaseStudy(p.slug);
         return (
           <motion.li
             key={p.slug}
@@ -98,7 +103,7 @@ export function WorksList({ onOpen, columns = 1 }: { onOpen: (slug: string) => v
             viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            <button type="button" onClick={() => onOpen(p.slug)} className="group block w-full text-left" aria-label={`${p.name}: ${p.type}. Open case study`}>
+            <button type="button" onClick={() => onOpen(p.slug)} className="group block w-full text-left" aria-label={`${p.name}: ${p.type}. ${ready ? "Open case study" : "Case study coming soon"}`}>
               <span className="flex items-center gap-4">
                 <span className={`font-display text-4xl leading-none ${accent.text}`}>{pad(i + 1)}</span>
                 <span className="relative h-px flex-1 bg-cream/15">
@@ -112,9 +117,15 @@ export function WorksList({ onOpen, columns = 1 }: { onOpen: (slug: string) => v
 
               <span className="relative mt-4 block aspect-[16/10] overflow-hidden rounded-2xl border border-cream/10 transition-[border-color,transform] duration-500 group-hover:border-tertiary/40 group-active:scale-[0.99]">
                 <ProjectCover project={p} index={i} />
+                {!ready && (
+                  <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-cream/20 bg-base/70 px-3 py-1 font-mono text-[10px] tracking-[0.18em] text-tertiary backdrop-blur-sm">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-tertiary" aria-hidden="true" />
+                    COMING SOON
+                  </span>
+                )}
                 <span className="absolute bottom-3 right-3 inline-flex translate-y-2 items-center gap-2 rounded-full bg-cream px-4 py-2 font-mono text-[11px] font-medium tracking-[0.15em] text-base opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
-                  <RollText text="VIEW CASE STUDY" />
-                  <ArrowRight size={13} aria-hidden="true" />
+                  <RollText text={ready ? "VIEW CASE STUDY" : "COMING SOON..."} />
+                  {ready && <ArrowRight size={13} aria-hidden="true" />}
                 </span>
               </span>
 
@@ -151,8 +162,8 @@ export function CaseStudy({
   const rise = (d: number) =>
     reduceMotion ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5, delay: d, ease: [0.2, 0.8, 0.2, 1] as const } };
 
-  // Caira and NexusCore have their own, richer case studies
-  const Rich = p.slug === cairaStudy.slug ? CairaStudy : p.slug === nexusStudy.slug ? NexusStudy : null;
+  // Caira, NexusCore, and TokenForge have their own, richer case studies
+  const Rich = p.slug === cairaStudy.slug ? CairaStudy : p.slug === nexusStudy.slug ? NexusStudy : p.slug === tokenStudy.slug ? TokenStudy : null;
   if (Rich) {
     return (
       <article className="pb-4">
@@ -197,62 +208,37 @@ export function CaseStudy({
         {p.summary}
       </motion.p>
 
-      <motion.section {...rise(0.2)} className="mt-8">
-        <h3 className="font-mono text-xs tracking-[0.25em] text-amber">WHAT I DID</h3>
-        {p.did.length > 0 ? (
-          <ul className="mt-4 space-y-3">
-            {p.did.map((d) => (
-              <li key={d} className="flex gap-3 text-[16px] leading-relaxed text-cream/85">
-                <Check size={18} aria-hidden="true" className="mt-1 shrink-0 text-amber" />
-                {d}
-              </li>
+      {/* The full case study isn't written yet */}
+      <motion.section {...rise(0.2)} aria-label="Case study coming soon" className="relative mt-10 overflow-hidden rounded-3xl border border-dashed border-tertiary/40 bg-base/30 px-6 py-10 text-center">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_50%_0%,rgba(240,147,122,0.18),transparent_70%)]" />
+        <p className="relative font-mono text-[11px] tracking-[0.25em] text-amber">CASE STUDY</p>
+        <p className="text-stroke relative mt-3 font-display text-6xl uppercase leading-none sm:text-7xl">
+          Coming soon
+          <span aria-hidden="true" className="inline-flex">
+            {[0, 1, 2].map((d) => (
+              <motion.span
+                key={d}
+                className="text-primary-soft [-webkit-text-stroke:0]"
+                animate={reduceMotion ? undefined : { opacity: [0.2, 1, 0.2] }}
+                transition={{ duration: 1.2, repeat: Infinity, delay: d * 0.2 }}
+              >
+                .
+              </motion.span>
             ))}
-          </ul>
-        ) : (
-          <p className="mt-4 text-[16px] text-cream/70">The full case study is on the way.</p>
-        )}
-      </motion.section>
-
-      {p.outcome && (
-        <motion.section {...rise(0.24)} className="mt-8">
-          <h3 className="font-mono text-xs tracking-[0.25em] text-amber">OUTCOME</h3>
-          <p className="mt-3 text-[16px] leading-relaxed text-cream/85">{p.outcome}</p>
-        </motion.section>
-      )}
-
-      <motion.section {...rise(0.28)} className="mt-8">
-        <h3 className="font-mono text-xs tracking-[0.25em] text-amber">FOCUS</h3>
-        <ul className="mt-3 flex flex-wrap gap-2">
-          {p.tags.map((t) => (
-            <li key={t} className="rounded-full border border-cream/20 px-3 py-1 font-mono text-[11px] tracking-[0.1em] text-tertiary">
-              {t}
-            </li>
-          ))}
-        </ul>
-      </motion.section>
-
-      <motion.div {...rise(0.32)} className="mt-10 flex flex-wrap items-center gap-3">
-        {p.url && (
-          <a
-            href={p.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-magnetic="0.2"
-            className="fx-spotlight group inline-flex items-center gap-2 rounded-full bg-cream px-5 py-2.5 font-mono text-xs font-medium tracking-[0.15em] text-base transition-colors hover:bg-tertiary active:bg-primary active:text-cream"
-          >
-            <RollText text={`VISIT ${p.name.toUpperCase()}`} />
-            <ArrowUpRight size={14} aria-hidden="true" />
-          </a>
-        )}
+          </span>
+        </p>
+        <p className="relative mx-auto mt-4 max-w-[40ch] text-[15px] leading-relaxed text-cream/75">
+          The full story of {p.name} is being written. In the meantime, I'm happy to walk you through it.
+        </p>
         <button
           type="button"
           onClick={onLetsWork}
           data-magnetic="0.2"
-          className="fx-spotlight group inline-flex items-center gap-2 rounded-full border border-cream/25 px-5 py-2.5 font-mono text-xs font-medium tracking-[0.15em] text-cream transition-colors hover:border-tertiary hover:bg-tertiary hover:text-base active:border-primary active:bg-primary active:text-cream"
+          className="fx-spotlight group relative mt-6 inline-flex items-center gap-2 rounded-full border border-cream/25 px-5 py-2.5 font-mono text-xs font-medium tracking-[0.15em] text-cream transition-colors hover:border-tertiary hover:bg-tertiary hover:text-base active:border-primary active:bg-primary active:text-cream"
         >
-          <RollText text="START SOMETHING SIMILAR" />
+          <RollText text="ASK ME ABOUT IT" />
         </button>
-      </motion.div>
+      </motion.section>
 
       <NextProject next={next} onOpen={onOpen} />
     </article>

@@ -35,6 +35,14 @@
   --font-dmsans: "DM Sans", system-ui, sans-serif;
   --font-fira: "Fira Code", "Cascadia Code", monospace;
 
+  /* TokenForge's own palette and type, used only inside the TokenForge case study (TokenStudy.tsx) */
+  --color-tf-ink: #0f0f12;     /* page */
+  --color-tf-panel: #18181d;   /* raised surface */
+  --color-tf-violet: #9f46e5;  /* brand: fills and large text only (3.9:1 on ink) */
+  --color-tf-grey: #9fa1a9;    /* muted text: 7.4:1 on ink */
+  --color-tf-lav: #dee4fe;     /* accent text: 15:1 on ink */
+  --font-inter: "Inter", system-ui, sans-serif;
+
   --animate-marquee: marquee 40s linear infinite;
 
   @keyframes marquee {
