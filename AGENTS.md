@@ -135,6 +135,9 @@ Search `src/content.ts` for `TODO`:
 ## Rules for changes
 
 - Keep content in `src/content.ts`; components should read from it.
+- Copy style: US English (color, behavior, program; proper names such as "OYNA … Programme" keep their own spelling),
+  serial (Oxford) comma, curly quotes and apostrophes (’ “ ”), en-dash ranges with no spaces ("2024–Present", "2025–2026"),
+  spaced em dashes in prose (" — "), times as "11 p.m." in prose and "9:04 AM" in interface mock-ups.
 - Keep accessibility intact: focus trap and Escape-to-close in the drawer, labelled form fields,
   `sr-only` text for animated headings (the hero h1 is one stable sentence; the scramble is `aria-hidden`), reduced-motion
   handling (the global CSS rule stops animations; JS demos must render their final state when motion is reduced).

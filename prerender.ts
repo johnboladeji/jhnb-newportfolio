@@ -30,11 +30,11 @@ function bodyHtml() {
 <main>
 <h1>${esc(headlineSentence())}</h1>
 <p>${esc(hero.bio)} ${esc(hero.bioSignoff)}</p>
-<nav aria-label="Sections"><a href="#/work">Selected works</a> <a href="#/about">About me</a> <a href="#/writing/content-design">Content design</a> <a href="#/writing/articles">Articles</a> <a href="#/resume">Resume</a> <a href="#/contact">Let's work</a></nav>
-<section><h2>About me</h2><p>${esc(about.headline)}</p></section>
-<section><h2>Selected works</h2><ul>${projectItems}</ul></section>
+<nav aria-label="Sections"><a href="#/work">Selected Works</a> <a href="#/about">About Me</a> <a href="#/writing/content-design">Content Design</a> <a href="#/writing/articles">Articles</a> <a href="#/resume">Resume</a> <a href="#/contact">Let’s Work</a></nav>
+<section><h2>About Me</h2><p>${esc(about.headline)}</p></section>
+<section><h2>Selected Works</h2><ul>${projectItems}</ul></section>
 <section><h2>Articles</h2><ul>${articleItems}</ul></section>
-<section><h2>Let's work</h2><p><a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a></p></section>
+<section><h2>Let’s Work</h2><p><a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a></p></section>
 </main>
 </div>`;
 }

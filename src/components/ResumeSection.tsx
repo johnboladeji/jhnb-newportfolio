@@ -304,7 +304,7 @@ export default function ResumeSection({ full, onOpenCase, onLetsWork }: { full: 
             data-magnetic="0.2"
             className="fx-spotlight group inline-flex items-center gap-2 rounded-full border border-cream/25 px-5 py-2.5 font-mono text-xs font-medium tracking-[0.15em] text-cream transition-colors hover:border-tertiary hover:bg-tertiary hover:text-base active:border-primary active:bg-primary active:text-cream"
           >
-            <RollText text="LET'S WORK" />
+            <RollText text="LET’S WORK" />
           </button>
         </div>
       </div>

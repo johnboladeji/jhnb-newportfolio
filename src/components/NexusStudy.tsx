@@ -46,7 +46,7 @@ const NX_LIVE: LiveAccent = {
   on: "text-nx-indigo",
   tint: "bg-[radial-gradient(120%_160%_at_0%_0%,rgba(186,213,50,0.2),transparent_60%)]",
 };
-const CHAPTERS = ["Overview", "The problem", "The product", "Design decisions", "Architecture", "What it taught me", "Where it stands", "What it's really about"];
+const CHAPTERS = ["Overview", "The problem", "The product", "Design decisions", "Architecture", "What it taught me", "Where it stands", "What it’s really about"];
 
 const naira = (n: number) => `₦${Math.round(n).toLocaleString("en-NG")}`;
 
@@ -668,7 +668,7 @@ function EscalateVisual() {
       <div className="mt-4 grid gap-2 @xl:grid-cols-2">
         <div className="rounded-xl bg-nx-plum p-3">
           <p className="font-fira text-[9px] tracking-[0.15em] text-nx-mist">TO THE BUYER</p>
-          <p className="mt-1 font-dmsans text-[13px] text-nx-lilac">&ldquo;I'm connecting you with the team.&rdquo;</p>
+          <p className="mt-1 font-dmsans text-[13px] text-nx-lilac">&ldquo;I’m connecting you with the team.&rdquo;</p>
         </div>
         <div className="rounded-xl bg-nx-lime p-3 text-nx-indigo">
           <p className="font-fira text-[9px] tracking-[0.15em] opacity-70">TO HER OWN WHATSAPP</p>
@@ -800,7 +800,7 @@ function Journey() {
           );
         })}
       </ol>
-      <p className="mt-3 font-dmsans text-xs text-nx-mist">Gemini 2.0 Flash takes over automatically if DeepSeek doesn't answer within 30 seconds.</p>
+      <p className="mt-3 font-dmsans text-xs text-nx-mist">Gemini 2.0 Flash takes over automatically if DeepSeek doesn’t answer within 30 seconds.</p>
     </div>
   );
 }
@@ -1057,7 +1057,7 @@ export default function NexusStudy({ scrollRef, onLetsWork }: { scrollRef?: RefO
           </Reveal>
         </div>
 
-        <p className="mt-12 font-fira text-[11px] tracking-[0.2em] text-cream/55">WHAT SHE'D CONSIDERED</p>
+        <p className="mt-12 font-fira text-[11px] tracking-[0.2em] text-cream/55">WHAT SHE’D CONSIDERED</p>
         <ul className="mt-3 grid gap-3 @xl:grid-cols-3">
           {P.tried.map((t, i) => (
             <Reveal key={t.name} delay={i * 0.08} y={16}>

@@ -39,7 +39,7 @@ const PAGES: Page[] = [
     Icon: ICONS[p.icon],
   })),
   { kind: "highlights", kicker: "At a glance", title: about.highlightsTitle, Icon: BarChart3 },
-  { kind: "closing", kicker: "What's next", title: about.closing.title, Icon: Send },
+  { kind: "closing", kicker: "What’s next", title: about.closing.title, Icon: Send },
 ];
 
 const WHEEL_STEP = 40; // px of wheel travel that turns one page
@@ -290,7 +290,7 @@ export default function AboutDeck({ onLetsWork }: { onLetsWork: () => void }) {
         </div>
       </div>
       <p className="mt-3 font-mono text-[11px] tracking-[0.15em] text-cream/45" aria-hidden="true">
-        SCROLL, SWIPE OR USE ← → TO TURN THE PAGE
+        SCROLL, SWIPE, OR USE ← → TO TURN THE PAGE
       </p>
     </div>
   );

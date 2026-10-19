@@ -51,7 +51,7 @@ const LAGOS = "Africa/Lagos";
 const CHAPTERS = [
   "Overview",
   "The challenge",
-  "Who it's for",
+  "Who it’s for",
   "Key decisions",
   "The product",
   "Visual language",
@@ -161,12 +161,12 @@ function offsetMin(d: Date, zone: string) {
   return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour % 24, +p.minute) - d.getTime()) / 60000;
 }
 function momentIn(h: number) {
-  if (h >= 5 && h < 8) return ["Early morning in Lagos.", "Mum's day is just starting."];
+  if (h >= 5 && h < 8) return ["Early morning in Lagos.", "Mum’s day is just starting."];
   if (h >= 8 && h < 12) return ["Morning in Lagos.", "A good time for her first check-in."];
   if (h >= 12 && h < 16) return ["Afternoon in Lagos.", "Lunch, medicine, and a short rest."];
   if (h >= 16 && h < 20) return ["Evening in Lagos.", "A good time to call home."];
   if (h >= 20 && h < 23) return ["Night in Lagos.", "The house is winding down."];
-  return ["It's late in Lagos.", "Mum is probably asleep, and you'll still see her morning check-in."];
+  return ["It’s late in Lagos.", "Mum is probably asleep, and you’ll still see her morning check-in."];
 }
 
 /* ------------------------------------------------------------------------------------------------ */
@@ -429,7 +429,7 @@ function ChatDemo() {
     <div
       ref={ref}
       className="relative w-full rounded-3xl border border-[#e8dcc4] bg-paper p-4 font-figtree text-night shadow-[0_22px_48px_-26px_rgba(0,0,0,0.6)] @xl:p-5"
-      aria-label="Example: siblings in Houston, Lagos and London aren't sure whether their mother has been called or taken her medicine. A Caira update answers both questions."
+      aria-label="Example: siblings in Houston, Lagos, and London aren’t sure whether their mother has been called or taken her medicine. A Caira update answers both questions."
       role="img"
     >
       <div className="mb-4 flex items-center justify-between border-b border-[#e8dcc4] pb-3 text-sm text-[#5e5a52]">
@@ -775,7 +775,7 @@ function TabsDemo() {
         </AnimatePresence>
       </div>
       {/* Bottom navigation, like the app's */}
-      <div role="tablist" aria-label="Caira's four tabs" className="relative mt-4 grid grid-cols-4 gap-1 rounded-2xl bg-night-deep p-1.5">
+      <div role="tablist" aria-label="Caira’s four tabs" className="relative mt-4 grid grid-cols-4 gap-1 rounded-2xl bg-night-deep p-1.5">
         {C.product.tabs.map((t, i) => {
           const Icon = TAB_ICONS[t.icon] ?? Home;
           const on = i === active;
@@ -1014,7 +1014,7 @@ function Swatches() {
   };
   return (
     <div className="mt-8">
-      <ul className="flex h-56 gap-2 @xl:h-64" aria-label="Caira colour palette">
+      <ul className="flex h-56 gap-2 @xl:h-64" aria-label="Caira color palette">
         {C.visual.colours.map((c, i) => {
           const light = c.hex === "#FDF5E6" || c.hex === "#D4A373";
           return (
@@ -1109,7 +1109,7 @@ function Thinking() {
       >
         <span>
           <span className="block font-fraunces text-xl font-semibold text-cream">Rhetoric &amp; engineering</span>
-          <span className="block font-figtree text-sm text-cream/65">The academic layer: CARF, and how it's built.</span>
+          <span className="block font-figtree text-sm text-cream/65">The academic layer: CARF, and how it’s built.</span>
         </span>
         <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-cream/20 text-cream transition-all duration-300 group-hover:border-ochre group-hover:bg-ochre group-hover:text-night ${open ? "rotate-180" : ""}`}>
           <ChevronDown size={18} aria-hidden="true" />

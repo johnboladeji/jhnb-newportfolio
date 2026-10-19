@@ -47,18 +47,18 @@ export function hashToRoute(hash: string): Route | null {
 const SITE_TITLE = "John B. Oladeji (JHNB) — Product Designer & Design Engineer";
 const VIEW_TITLES: Record<DrawerView, string> = {
   menu: "Menu",
-  projects: "Selected works",
-  caseStudy: "Case study",
-  about: "About me",
-  contentDesign: "Content design",
+  projects: "Selected Works",
+  caseStudy: "Case Study",
+  about: "About Me",
+  contentDesign: "Content Design",
   articles: "Articles",
   resume: "Resume",
-  contact: "Let's work",
+  contact: "Let’s Work",
 };
 
 /** Browser-tab title for a route (or the landing page when null). */
 export function routeTitle(route: Route | null): string {
   if (!route) return SITE_TITLE;
-  const label = route.view === "caseStudy" ? (projects.find((p) => p.slug === route.slug)?.name ?? "Case study") : VIEW_TITLES[route.view];
+  const label = route.view === "caseStudy" ? (projects.find((p) => p.slug === route.slug)?.name ?? "Case Study") : VIEW_TITLES[route.view];
   return `${label} · John B. Oladeji (JHNB)`;
 }

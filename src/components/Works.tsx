@@ -36,7 +36,7 @@ const ACCENTS: Record<Project["accent"], { glow: string; text: string }> = {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-/** Projects with a full case study; the rest show "Coming soon..." until theirs is written. */
+/** Projects with a full case study; the rest show "Coming soon…" until theirs is written. */
 const RICH_SLUGS = [cairaStudy.slug, nexusStudy.slug, tokenStudy.slug, carfStudy.slug];
 export const hasCaseStudy = (slug: string) => RICH_SLUGS.includes(slug);
 
@@ -230,7 +230,7 @@ export function CaseStudy({
           </span>
         </p>
         <p className="relative mx-auto mt-4 max-w-[40ch] text-[15px] leading-relaxed text-cream/75">
-          The full story of {p.name} is being written. In the meantime, I'm happy to walk you through it.
+          The full story of {p.name} is being written. In the meantime, I’m happy to walk you through it.
         </p>
         <button
           type="button"

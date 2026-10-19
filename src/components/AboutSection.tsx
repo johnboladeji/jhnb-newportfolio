@@ -57,7 +57,7 @@ export default function AboutSection({ full, onLetsWork, onOpenCase }: { full: b
       {/* Title always top-left; in full screen only the headline centres over both segments */}
       <header className="shrink-0">
         <h2 id="drawer-title" className="text-stroke font-display text-5xl uppercase leading-none sm:text-6xl">
-          About me
+          About Me
         </h2>
         <TypeLoop
           text={about.headline}

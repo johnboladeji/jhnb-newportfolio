@@ -68,7 +68,7 @@ export const hero = {
   headline: "DESIGN WITH",
   /** Rotating bottom line, changes every 4 seconds */
   rotatingWords: ["RHETORIC", "CULTURE", "CODE"],
-  bio: "I’m John-B — a Nigerian-born product designer, design engineer and rhetorician. I design, write and code products that speak the language of the people they serve, shaped by six years leading brands across Nigeria and the UK and by my research into culturally attentive UX writing. One conviction drives it all: technology should adapt to culture, never the other way round.",
+  bio: "I’m John-B — a Nigerian-born product designer, design engineer, and rhetorician. I design, write, and code products that speak the language of the people they serve, shaped by more than six years leading brands across Nigeria and the UK and by my research into culturally attentive UX writing. One conviction drives it all: technology should adapt to culture, never the other way around.",
   /** Sign-off, always typed on its own line after the bio */
   bioSignoff: "— Just Hold No Bounds.",
   /** Small accent line under the headline (desktop) */
@@ -102,10 +102,10 @@ export const menu = [
     ],
   },
   { view: "resume", label: "Resume" },
-  { view: "contact", label: "Let's Work" },
+  { view: "contact", label: "Let’s Work" },
 ] as const;
 
-export const marquee = "JHNB - JUST HOLD NO BOUNDS // JHNB - JUST HOLD NO BOUNDS // ";
+export const marquee = "JHNB — JUST HOLD NO BOUNDS // JHNB — JUST HOLD NO BOUNDS // ";
 
 export interface Project {
   slug: string;
@@ -138,12 +138,12 @@ export const projects: Project[] = [
     name: "Caira",
     type: "Eldercare coordination for families abroad",
     role: "Founder, sole designer & engineer",
-    year: "2024 — Today",
+    year: "2024–Present",
     url: "https://cairacare.com",
     icon: "heart-handshake",
     accent: "coral",
     tags: ["Brand", "Research plan", "PRD", "UX & UI", "Microcopy", "Full-stack build"],
-    summary: "A private care circle that helps families abroad look after an ageing parent back home.",
+    summary: "A private care circle that helps families abroad look after an aging parent back home.",
     did: [
       "Designed and built it end to end, alone: brand, product strategy, requirements, UX, UI, microcopy, the Android app, the backend, and the website.",
       "Designed the coordination model: role-based access, Elder Mode, coordinator voting, and consent before anything else.",
@@ -155,12 +155,12 @@ export const projects: Project[] = [
     name: "NexusCore",
     type: "AI sales assistant for the Nigerian WhatsApp inbox",
     role: "Founder, designer & full-stack build lead",
-    year: "2025 — Today",
+    year: "2025–Present",
     url: "https://nexuscorenew.vercel.app",
     icon: "cpu",
     accent: "amber",
     tags: ["Product design", "UX writing", "Systems engineering", "AI", "Payments"],
-    summary: "A WhatsApp-native AI assistant that answers customers, closes sales, and sends payment links in the seller's own voice.",
+    summary: "A WhatsApp-native AI assistant that answers customers, closes sales, and sends payment links in the seller’s own voice.",
     did: [
       "Designed and built it end to end: product, UX writing, the bot engine, seller WhatsApp commands, billing, and payouts.",
     ],
@@ -185,7 +185,7 @@ export const projects: Project[] = [
     name: "CARF",
     type: "Culturally Attentive Rhetorical Framework",
     role: "Researcher, M.A. thesis",
-    year: "2025 — 2026",
+    year: "2025–2026",
     url: "",
     icon: "book-open",
     accent: "amber",
@@ -204,8 +204,8 @@ export const projects: Project[] = [
     icon: "truck",
     accent: "peach",
     tags: ["Logistics", "Marketplace", "Design engineering"],
-    summary: "A coordinated fulfilment platform for last-mile delivery in Lagos.",
-    did: ["Designing the platform that connects vendors, delivery riders and customers in one coordinated flow."],
+    summary: "A coordinated fulfillment platform for last-mile delivery in Lagos.",
+    did: ["Designing the platform that connects vendors, delivery riders, and customers in one coordinated flow."],
   },
   {
     slug: "unelo",
@@ -241,20 +241,20 @@ export const articles = {
       read: "7 min read",
       url: "https://medium.com/@johnboladeji/auto-layout-mental-models-mastering-responsive-design-in-figma-5d963121d6a6",
       summary:
-        "Auto Layout isn't unpredictable; we just bring the wrong mental model to it. Four simple models make its behaviour predictable, and turn pixel-pushing into systems thinking.",
+        "Auto Layout isn’t unpredictable; we just bring the wrong mental model to it. Four simple models make its behavior predictable, and turn pixel-pushing into systems thinking.",
       tags: ["Figma", "Auto Layout", "Design systems", "Responsive design"],
       // Interactive explainer: the four models (each has a live demo in Articles.tsx)
       models: [
         { id: "belt", name: "The Conveyor Belt", idea: "Direction and flow", text: "A frame flows one way at a time: a row or a column. Pick the direction first; spacing, padding, and alignment all follow from it." },
-        { id: "container", name: "The Smart Container", idea: "Parent vs. child", text: "The parent sets the rules (padding, alignment, spacing) and every child obeys at once. If you're nudging gaps by hand, set them on the parent." },
-        { id: "dictator", name: "The Content Dictator", idea: "Resizing behaviour", text: "Fixed is a brick wall, Hug is a glove, Fill is a rubber band. Ask who's the boss of the size: you, the content, or the container." },
-        { id: "nesting", name: "Nested Alternation", idea: "Building 2D layouts", text: "Every time the direction changes, nest a new frame with the opposite flow, like stacking Lego blocks. Outline View (Shift + L) shows the structure." },
+        { id: "container", name: "The Smart Container", idea: "Parent vs. child", text: "The parent sets the rules (padding, alignment, spacing) and every child obeys at once. If you’re nudging gaps by hand, set them on the parent." },
+        { id: "dictator", name: "The Content Dictator", idea: "Resizing behavior", text: "Fixed is a brick wall, Hug is a glove, Fill is a rubber band. Ask who’s the boss of the size: you, the content, or the container." },
+        { id: "nesting", name: "Nested Alternation", idea: "Building 2D layouts", text: "Every time the direction changes, nest a new frame with the opposite flow, like stacking LEGO bricks. Outline mode (Ctrl/Cmd + Y) shows the structure." },
       ],
       rule: "Fixed when stability matters. Hug when the content should set the size. Fill when the container should.",
       pitfalls: [
         { title: "Inconsistent spacing", fix: "Define spacing once on the parent and trust it; nest a frame when one item needs different spacing." },
-        { title: "Fill that won't fill", fix: "A child can't fill a parent that hugs. Give the parent a size, or let it fill its own container." },
-        { title: "Lost in nested frames", fix: "Name your layers, use Outline View, and debug from the innermost child outward." },
+        { title: "Fill that won’t fill", fix: "A child can’t fill a parent that hugs. Give the parent a size, or let it fill its own container." },
+        { title: "Lost in nested frames", fix: "Name your layers, use Outline mode, and debug from the innermost child outward." },
       ],
       takeaway: "Stop pushing pixels; define rules and relationships, and let the layout adapt itself.",
     },
@@ -263,22 +263,22 @@ export const articles = {
       short: "Vibe coding",
       kicker: "Article 02",
       topic: "AI · Product strategy",
-      title: "The Vibe Coder's Secret Weapon: Why Your PRD is Now Your Most Powerful Prompt",
+      title: "The Vibe Coder’s Secret Weapon: Why Your PRD is Now Your Most Powerful Prompt",
       date: "Feb 3, 2026",
       read: "3 min read",
       url: "https://medium.com/@johnboladeji/the-vibe-coders-secret-weapon-why-your-prd-is-now-your-most-powerful-prompt-8f7169a529c9",
       summary:
-        "Vibe coding makes the how almost instant, which makes the what and the why matter more. The PRD isn't obsolete; it's become the prompt that keeps human and machine pointed the same way.",
+        "Vibe coding makes the how almost instant, which makes the what and the why matter more. The PRD isn’t obsolete; it’s become the prompt that keeps human and machine pointed the same way.",
       tags: ["Vibe coding", "AI", "PRD", "Product strategy"],
       split: { ai: "The how", human: "The what, and the why" },
       reasons: [
         { title: "It prevents hallucination at scale", text: "Without constraints and user stories, AI can build perfectly working code for the wrong product." },
-        { title: "It answers what AI can't", text: "Which problem is worth solving, for whom, and how you'll know it worked: that's still human work." },
-        { title: "It's the foundation for good prompts", text: "Clear acceptance criteria and user flows are exactly the detail precise prompts need." },
+        { title: "It answers what AI can’t", text: "Which problem is worth solving, for whom, and how you’ll know it worked: that’s still human work." },
+        { title: "It’s the foundation for good prompts", text: "Clear acceptance criteria and user flows are exactly the detail precise prompts need." },
         { title: "It keeps the team aligned", text: "When cycles shrink from weeks to hours, one source of truth keeps product, design, and leadership in step." },
       ],
       modern: ["Concise", "Outcome-oriented", "Strategic"],
-      takeaway: "Don't let the vibe become a drift.",
+      takeaway: "Don’t let the vibe become a drift.",
     },
   ] as const,
 };
@@ -337,11 +337,11 @@ export interface WritingSample {
 export const writing = {
   /** The struck-out first draft above the typed headline */
   draft: "I write UX copy.",
-  headline: "I write interface words for people the product wasn't first built for.",
+  headline: "I write interface words for people the product wasn’t first built for.",
   intro: [
-    "I'm Nigerian, I spent six years as a brand and creative lead for companies in Nigeria and the UK, and I now live in New Mexico. Working across those places made me notice how often a product assumes one kind of reader. \"Try again\" is good advice on a failed transfer in Chicago. In Lagos it can cost someone their money twice.",
-    "I'm finishing an M.A. in English at New Mexico Highlands University in December 2026. My thesis is about UX writing in Nigerian and American fintech, and how the words on a screen carry cultural meaning. I also teach first-year writing and work in the university's Writing Center, so most of my week goes to helping people say what they mean to a particular reader. And I build, in Figma and in React Native and Next.js, so I know what happens to a string after it leaves the doc.",
-    "Below are three case studies and two shorter pieces. Two come from products I'm building, Caira and NexusCore, and the Caira copy is now live in the app. The rest are concept projects I set for myself. I've kept my first draft in each one, because the changes are the interesting part.",
+    "I’m Nigerian. I spent more than six years as a brand and creative lead for companies in Nigeria and the UK, and I now live in New Mexico, in the United States.Working across those places made me notice how often a product assumes one kind of reader. “Try again” is good advice on a failed transfer in Chicago. In Lagos it can cost someone their money twice.",
+    "I’m finishing an M.A. in English at New Mexico Highlands University in December 2026. My thesis is about UX writing in Nigerian and American fintech, and how the words on a screen carry cultural meaning. I also teach first-year writing and work in the university’s Writing Center, so most of my week goes to helping people say what they mean to a particular reader. And I build in Figma, React Native, and Next.js, so I know what happens to a string after it leaves the doc.",
+    "Below are three case studies and two shorter pieces. Two come from products I’m building, Caira and NexusCore, and the Caira copy is now live in the app. The rest are concept projects I set for myself. I’ve kept my first draft in each one, because the changes are the interesting part.",
   ],
   glance: [
     { n: 3, label: "Case studies" },
@@ -352,13 +352,13 @@ export const writing = {
   howIWork: {
     title: "How I work",
     habits: [
-      { title: "Start with the reader's first question.", text: "Like \"Where's my money?\" or \"Why wasn't my ad approved?\"" },
-      { title: "Use their words, not the system's.", text: "That's how \"care recipient\" became \"Mummy\" and \"lifetime budget\" became \"total budget.\"" },
-      { title: "Don't let copy promise what the product can't back up.", text: "A variable sits where a real number should go until someone confirms it." },
+      { title: "Start with the reader’s first question.", text: "Like “Where’s my money?” or “Why wasn’t my ad approved?”" },
+      { title: "Use their words, not the system’s.", text: "That’s how “care recipient” became “Mummy” and “lifetime budget” became “total budget.”" },
+      { title: "Don’t let copy promise what the product can’t back up.", text: "A variable sits where a real number should go until someone confirms it." },
       { title: "Keep the first drafts.", text: "Showing what I changed is more useful than pretending I got it right the first time." },
     ],
     feedback:
-      "Feedback is a normal part of my week. Between the Writing Center and teaching first-year composition, I give and take critique on writing all the time, and I'm used to revising fast.",
+      "Feedback is a normal part of my week. Between the Writing Center and teaching first-year composition, I give and take critique on writing all the time, and I’m used to revising fast.",
   },
   samples: [
     {
@@ -372,7 +372,7 @@ export const writing = {
       snapshot: "Concept project, September 2026. Loop is a short-video app I made up for this brief.",
       blocks: [
         { kind: "p", text: "On Loop, small-business owners can turn one of their videos into an ad. In my scenario, a lot of them quit at the budget step, and most ads that get turned down never come back. I rewrote the budget step and the three system messages around it, then wrote a terminology list to keep the words consistent." },
-        { kind: "p", text: "The person I had in mind runs a bakery in Houston and sets up the ad between orders. She knows her customers well. She doesn't know what \"bid strategy\" means, and she's uneasy about spending money on something she doesn't understand." },
+        { kind: "p", text: "The person I had in mind runs a bakery in Houston and sets up the ad between orders. She knows her customers well. She doesn’t know what “bid strategy” means, and she’s uneasy about spending money on something she doesn’t understand." },
         {
           kind: "versions",
           versions: [
@@ -380,7 +380,7 @@ export const writing = {
               label: "First draft",
               rows: [
                 { label: "Label", text: "Budget type: Daily budget / Lifetime budget" },
-                { label: "Helper text", text: "Select a budget optimization strategy for your campaign's delivery." },
+                { label: "Helper text", text: "Select a budget optimization strategy for your campaign’s delivery." },
                 { label: "Field", text: "Bid strategy: Lowest cost / Cost cap" },
                 { label: "Button", text: "Submit" },
                 { label: "After submitting", text: "Ad submitted. Status: Pending review." },
@@ -395,20 +395,20 @@ export const writing = {
                 { label: "Option", text: "**Daily budget.** Spend up to this amount each day.", count: "12 + 33" },
                 { label: "Option", text: "**Total budget.** Spend this amount over the whole run of your ad.", count: "12 + 48" },
                 { label: "Amount helper", text: "You can change or pause this anytime.", count: "37" },
-                { label: "Bid strategy", text: "Moved under \"Advanced settings (optional)\"" },
+                { label: "Bid strategy", text: "Moved under “Advanced settings (optional)”" },
                 { label: "Button", text: "Submit for review", count: "17" },
-                { label: "After submitting", text: "Your ad is in review. We'll let you know when it's approved.", count: "60" },
-                { label: "Ad turned down", text: "**Your ad wasn't approved.** The video uses a song that isn't cleared for ads. Pick a sound from the ads music library and resubmit. The rest of your ad is saved. Buttons: Edit ad, See ad policies", count: "Title 23" },
-                { label: "Budget spent", text: "**Today's budget is used up.** Your ad will start showing again tomorrow. Buttons: Raise budget, OK", count: "25 + 42" },
+                { label: "After submitting", text: "Your ad is in review. We’ll let you know when it’s approved.", count: "60" },
+                { label: "Ad turned down", text: "**Your ad wasn’t approved.** The video uses a song that isn’t cleared for ads. Pick a sound from the ads music library and resubmit. The rest of your ad is saved. Buttons: Edit ad, See ad policies", count: "Title 23" },
+                { label: "Budget spent", text: "**Today’s budget is used up.** Your ad will start showing again tomorrow. Buttons: Raise budget, OK", count: "25 + 42" },
               ],
             },
           ],
         },
         { kind: "h", text: "What bothered me" },
-        { kind: "p", text: "\"Lifetime budget\" was the first thing to go. The lifetime of what? The ad, the account, the business? \"Optimization strategy\" and \"bid strategy\" are terms for people who run ads for a living, and she isn't one of them." },
-        { kind: "p", text: "\"Submit\" doesn't tell her the ad goes to review before anyone sees it. \"Rejected\" with a policy number gives her a code instead of a reason, and nothing to do next. And \"depleted\" and \"halted\" sound like something broke, when spending the budget is the whole point." },
+        { kind: "p", text: "“Lifetime budget” was the first thing to go. The lifetime of what? The ad, the account, the business? “Optimization strategy” and “bid strategy” are terms for people who run ads for a living, and she isn’t one of them." },
+        { kind: "p", text: "“Submit” doesn’t tell her the ad goes to review before anyone sees it. “Rejected” with a policy number gives her a code instead of a reason, and nothing to do next. And “depleted” and “halted” sound like something broke, when spending the budget is the whole point." },
         { kind: "h", text: "Second pass" },
-        { kind: "p", text: "I went back through every string with the terminology list open beside it and caught two words I'd stopped seeing: \"pending\" and \"rejected.\" I also checked the button in Spanish, since short interface text tends to grow in translation." },
+        { kind: "p", text: "I went back through every string with the terminology list open beside it and caught two words I’d stopped seeing: “pending” and “rejected.” I also checked the button in Spanish, since short interface text tends to grow in translation." },
         { kind: "chars", items: [{ lang: "English", text: "Submit for review" }, { lang: "Spanish", text: "Enviar a revisión" }], note: "Both 17 characters, so it fits as is." },
         {
           kind: "compare",
@@ -421,36 +421,36 @@ export const writing = {
           items: [
             { src: "/writing/ad-in-review.webp", alt: "Ads list with an In review status and the message: Your ad is in review. We will let you know when it is approved.", label: "In review" },
             { src: "/writing/ad-not-approved.webp", alt: "Ad details with a Not approved status and a message explaining the song is not cleared for ads, with Edit ad and See ad policies", label: "Not approved" },
-            { src: "/writing/ad-budget-used.webp", alt: "Bottom sheet: Today's budget is used up. Your ad will start showing again tomorrow. Raise budget or OK", label: "Budget used up" },
+            { src: "/writing/ad-budget-used.webp", alt: "Bottom sheet: Today’s budget is used up. Your ad will start showing again tomorrow. Raise budget or OK", label: "Budget used up" },
           ],
           caption: "The three system messages in the final version. Concept screens I designed for this sample.",
         },
-        { kind: "p", text: "For screen readers, each option's helper text is tied to its label, so \"Daily budget: Spend up to this amount each day\" is read as one item. When an ad isn't approved, focus moves to the message title so it gets announced, and no status depends on colour alone." },
+        { kind: "p", text: "For screen readers, each option’s helper text is tied to its label, so “Daily budget: Spend up to this amount each day” is read as one item. When an ad isn’t approved, focus moves to the message title so it gets announced, and no status depends on color alone." },
         { kind: "h", text: "The terminology list" },
         {
           kind: "terms",
           rows: [
             { use: "ad", instead: ["creative", "promotion"], why: "One word for one thing, everywhere" },
-            { use: "in review", instead: ["pending"], why: "Says what's happening and who's doing it" },
+            { use: "in review", instead: ["pending"], why: "Says what’s happening and who’s doing it" },
             { use: "not approved", instead: ["rejected", "violation"], why: "Describes the ad, not the person" },
-            { use: "total budget", instead: ["lifetime budget"], why: "Plain, and it pairs with \"daily budget\"" },
+            { use: "total budget", instead: ["lifetime budget"], why: "Plain, and it pairs with “daily budget”" },
             { use: "used up", instead: ["depleted", "exhausted"], why: "Neutral. The budget did its job" },
             { use: "paused", instead: ["stopped", "halted"], why: "Only when the advertiser chose to pause" },
           ],
         },
-        { kind: "h", text: "What I'd need to agree with the team" },
+        { kind: "h", text: "What I’d need to agree with the team" },
         {
           kind: "decisions",
           head: ["Decision", "What it costs"],
           rows: [
-            { title: "Hide bid strategy under \"Advanced settings\"", text: "Experts need one more tap, but beginners stop seeing a term they can't use. PM and engineering would have to sign off." },
-            { title: "Say exactly why an ad wasn't approved", text: "Policy and engineering have to pass the real reason into the message instead of a code." },
-            { title: "Don't promise a review time", text: "I'd add a {review_time} variable only once the team commits to a real number." },
+            { title: "Hide bid strategy under “Advanced settings”", text: "Experts need one more tap, but beginners stop seeing a term they can’t use. PM and engineering would have to sign off." },
+            { title: "Say exactly why an ad wasn’t approved", text: "Policy and engineering have to pass the real reason into the message instead of a code." },
+            { title: "Don’t promise a review time", text: "I’d add a {review_time} variable only once the team commits to a real number." },
           ],
         },
-        { kind: "h", text: "What I'd test" },
-        { kind: "p", text: "I'd show ten small-business owners either the first draft or the final, five each, and ask them to explain \"daily budget\" and \"total budget\" in their own words. For the not-approved message I'd run a cloze test, blanking every sixth word and asking people to fill the gaps. An average of 60% or better usually means readers understand the text. I'd also just ask each person what they'd do next." },
-        { kind: "quote", text: "The words I trusted least were the ones I'd written on autopilot. I only noticed \"pending\" because the terminology list made me look at it again." },
+        { kind: "h", text: "What I’d test" },
+        { kind: "p", text: "I’d show ten small-business owners either the first draft or the final, five each, and ask them to explain “daily budget” and “total budget” in their own words. For the not-approved message I’d run a cloze test, blanking every sixth word and asking people to fill the gaps. An average of 60% or better usually means readers understand the text. I’d also just ask each person what they’d do next." },
+        { kind: "quote", text: "The words I trusted least were the ones I’d written on autopilot. I only noticed “pending” because the terminology list made me look at it again." },
       ],
     },
     {
@@ -464,15 +464,15 @@ export const writing = {
       snapshot: "Spec scenario based on my thesis research, September 2026.",
       blocks: [
         { kind: "p", text: "A money app works in Nigeria and the US. A bank transfer fails, and the team has shipped one error message for both markets. I wrote two, because the person reading it in Lagos is worried about something different from the person reading it in Chicago." },
-        { kind: "p", text: "In Nigeria, many people have watched money leave their account on a failed transfer and then waited for a \"reversal.\" So their first question is whether the money is gone. For the US version I assumed the money hadn't moved, which makes the question simpler: can I try again?" },
+        { kind: "p", text: "In Nigeria, many people have watched money leave their account on a failed transfer and then waited for a “reversal.” So their first question is whether the money is gone. For the US version I assumed the money hadn’t moved, which makes the question simpler: can I try again?" },
         {
           kind: "specimen",
           label: "The message that shipped",
           text: "**Transaction failed.** Error code 91: Issuer or switch inoperative. Please try again later.",
           marks: ["Error code 91: Issuer or switch inoperative.", "Please try again later."],
         },
-        { kind: "h", text: "What's wrong with it" },
-        { kind: "p", text: "It never says where the money is, and that's the first thing both readers want to know. \"Issuer or switch inoperative\" is a log message, not a sentence. \"Try again\" is risky too: if the first attempt was debited, a second one can take the money twice. And nobody is named, so the reader can't tell whether the bank, the app, or they did something wrong." },
+        { kind: "h", text: "What’s wrong with it" },
+        { kind: "p", text: "It never says where the money is, and that’s the first thing both readers want to know. “Issuer or switch inoperative” is a log message, not a sentence. “Try again” is risky too: if the first attempt was debited, a second one can take the money twice. And nobody is named, so the reader can’t tell whether the bank, the app, or they themselves made the mistake." },
         { kind: "h", text: "Two versions" },
         {
           kind: "markets",
@@ -481,9 +481,9 @@ export const writing = {
               code: "NG",
               name: "Nigeria",
               rows: [
-                { label: "Headline", text: "Your transfer to Chidi Okafor didn't go through" },
-                { label: "First line", text: "If ₦25,000 left your account, it will come back automatically within {reversal_time}. You don't need to do anything." },
-                { label: "Guidance", text: "Please wait before sending again, so the money isn't taken twice." },
+                { label: "Headline", text: "Your transfer to Chidi Okafor didn’t go through" },
+                { label: "First line", text: "If ₦25,000 left your account, it will come back automatically within {reversal_time}. You don’t need to do anything." },
+                { label: "Guidance", text: "Please wait before sending again, so the money isn’t taken twice." },
                 { label: "Buttons", text: "Check status, Talk to us" },
               ],
             },
@@ -491,20 +491,20 @@ export const writing = {
               code: "US",
               name: "United States",
               rows: [
-                { label: "Headline", text: "Your transfer to Jordan Lee didn't go through" },
-                { label: "First line", text: "Your money hasn't moved. $250.00 is still in your checking account." },
+                { label: "Headline", text: "Your transfer to Jordan Lee didn’t go through" },
+                { label: "First line", text: "Your money hasn’t moved. $250.00 is still in your checking account." },
                 { label: "Guidance", text: "You can try again now." },
                 { label: "Buttons", text: "Try again, Get help" },
               ],
             },
           ],
         },
-        { kind: "h", text: "Why they're different" },
-        { kind: "p", text: "The Nigerian version opens with the reversal, because that's the fear, and it asks people to wait before sending again. The US version can be shorter. The money never moved, so it goes straight to the fix. Both name the recipient, since people are sending money to someone they know." },
-        { kind: "p", text: "{reversal_time} is a variable on purpose. I don't know the real window, and a number in an error message is a promise. Product and compliance would fill it in before this ships." },
-        { kind: "h", text: "What I'd test" },
-        { kind: "p", text: "Whether Nigerian users believe \"You don't need to do anything,\" or call support anyway. Support tickets after this error are the number I'd watch." },
-        { kind: "quote", text: "The same error can need opposite advice. \"Try again\" helps in one market and can cost someone money in the other." },
+        { kind: "h", text: "Why they’re different" },
+        { kind: "p", text: "The Nigerian version opens with the reversal, because that’s the fear, and it asks people to wait before sending again. The US version can be shorter. The money never moved, so it goes straight to the fix. Both name the recipient, since people are sending money to someone they know." },
+        { kind: "p", text: "{reversal_time} is a variable on purpose. I don’t know the real window, and a number in an error message is a promise. Product and compliance would fill it in before this ships." },
+        { kind: "h", text: "What I’d test" },
+        { kind: "p", text: "Whether Nigerian users believe “You don’t need to do anything,” or call support anyway. Support tickets after this error are the number I’d watch." },
+        { kind: "quote", text: "The same error can need opposite advice. “Try again” helps in one market and can cost someone money in the other." },
       ],
     },
     {
@@ -513,12 +513,12 @@ export const writing = {
       kicker: "Case study 03",
       topic: "Conversation design",
       status: "Product",
-      title: "A sales chat that understands \"abeg\"",
+      title: "A sales chat that understands “abeg”",
       summary: "Conversation design for a WhatsApp sales assistant",
-      snapshot: "A product I'm building. Copy written for this portfolio, September 2026.",
+      snapshot: "A product I’m building. Copy written for this portfolio, September 2026.",
       blocks: [
-        { kind: "p", text: "NexusCore is an AI assistant I'm building that answers WhatsApp sales chats for small businesses in Nigeria. For this sample I used a made-up fabric shop in Aba called Adaeze Fabrics, with made-up prices." },
-        { kind: "p", text: "The buyer is on their phone, has just seen a post, and wants a price. They might write in Nigerian English, Pidgin, or both in one message. They think they're talking to a person, and they expect to haggle." },
+        { kind: "p", text: "NexusCore is an AI assistant I’m building that answers WhatsApp sales chats for small businesses in Nigeria. For this sample I used a made-up fabric shop in Aba called Adaeze Fabrics, with made-up prices." },
+        { kind: "p", text: "The buyer is on their phone, has just seen a post, and wants a price. They might write in Nigerian English, Pidgin, or both in one message. They think they’re talking to a person, and they expect to haggle." },
         {
           kind: "chat",
           versions: [
@@ -527,40 +527,40 @@ export const writing = {
               messages: [
                 { from: "bot", text: "Hello! I am NexusCore AI Assistant. How may I assist you today? Please select an option: 1. Browse products 2. Check order status 3. Speak to agent" },
                 { from: "buyer", text: "abeg how much for the blue ankara wey you post yesterday" },
-                { from: "bot", text: "I'm sorry, I didn't understand that. Please select an option from 1 to 3." },
+                { from: "bot", text: "I’m sorry, I didn’t understand that. Please select an option from 1 to 3." },
               ],
             },
             {
               label: "Final",
               messages: [
-                { from: "bot", text: "Hi, welcome to Adaeze Fabrics. I'm the shop's assistant, and I'm an AI. Ask me about prices, sizes, or delivery. Adaeze can join the chat anytime." },
+                { from: "bot", text: "Hi, welcome to Adaeze Fabrics. I’m the shop’s assistant, and I’m an AI. Ask me about prices, sizes, or delivery. Adaeze can join the chat anytime." },
                 { from: "buyer", text: "abeg how much for the blue ankara wey you post yesterday" },
                 { from: "bot", text: "The blue Ankara (6 yards) is ₦18,500. We have 4 left. Should we deliver it, or will you pick it up in Aba?" },
                 { from: "buyer", text: "deliver to Enugu" },
-                { from: "bot", text: "Delivery to Enugu is ₦3,000, so your total is ₦21,500. Here's your payment link: [link]. Once you pay, Adaeze will confirm your order right here." },
+                { from: "bot", text: "Delivery to Enugu is ₦3,000, so your total is ₦21,500. Here’s your payment link: [link]. Once you pay, Adaeze will confirm your order right here." },
                 { from: "buyer", text: "fit reduce am?" },
-                { from: "bot", text: "I can't change prices, but I'll ask Adaeze for you now. She'll reply in this chat." },
+                { from: "bot", text: "I can’t change prices, but I’ll ask Adaeze for you now. She’ll reply in this chat." },
               ],
             },
           ],
         },
         { kind: "h", text: "What was wrong" },
-        { kind: "p", text: "The buyer thinks they're messaging Adaeze Fabrics, and the bot opens by introducing my software. Then it offers a numbered menu, which isn't how anyone uses WhatsApp. When the buyer asked in Pidgin, the bot didn't understand and told them to pick a number, so the failure landed on the buyer. And \"speak to agent\" is call-centre language for a shop run by one woman." },
+        { kind: "p", text: "The buyer thinks they’re messaging Adaeze Fabrics, and the bot opens by introducing my software. Then it offers a numbered menu, which isn’t how anyone uses WhatsApp. When the buyer asked in Pidgin, the bot didn’t understand and told them to pick a number, so the failure landed on the buyer. And “speak to agent” is call-center language for a shop run by one woman." },
         { kind: "h", text: "The decisions behind it" },
         {
           kind: "decisions",
           head: ["Decision", "Why"],
           rows: [
-            { title: "Say \"I'm an AI\" in the first message", text: "Buyers expect a person. Being upfront now protects the shop's trust later." },
-            { title: "Understand Pidgin, reply in plain Nigerian English", text: "A bot that copies Pidgin can come across as mocking. I'd test this rather than assume it." },
-            { title: "Hand haggling to the owner", text: "Haggling is part of the sale. A flat \"no\" from a bot ends it." },
-            { title: "One question per message", text: "Short turns suit a phone and a buyer who's half paying attention." },
+            { title: "Say “I’m an AI” in the first message", text: "Buyers expect a person. Being upfront now protects the shop’s trust later." },
+            { title: "Understand Pidgin, reply in plain Nigerian English", text: "A bot that copies Pidgin can come across as mocking. I’d test this rather than assume it." },
+            { title: "Hand haggling to the owner", text: "Haggling is part of the sale. A flat “no” from a bot ends it." },
+            { title: "One question per message", text: "Short turns suit a phone and a buyer who’s half paying attention." },
             { title: "Give the full total before the payment link", text: "Nobody likes a surprise at the payment step." },
           ],
         },
-        { kind: "h", text: "What I'd test" },
-        { kind: "p", text: "How many chats reach the payment link, and whether buyers who see \"I'm an AI\" leave sooner. With shop owners' agreement, I'd also try a version that replies in Pidgin." },
-        { kind: "quote", text: "Some problems aren't about wording. Haggling needed a handoff to the owner, and no amount of polishing would have made the bot's \"no\" work." },
+        { kind: "h", text: "What I’d test" },
+        { kind: "p", text: "How many chats reach the payment link, and whether buyers who see “I’m an AI” leave sooner. With shop owners’ agreement, I’d also try a version that replies in Pidgin." },
+        { kind: "quote", text: "Some problems aren’t about wording. Haggling needed a handoff to the owner, and no amount of polishing would have made the bot’s “no” work." },
       ],
     },
     {
@@ -571,10 +571,10 @@ export const writing = {
       status: "Shipped",
       title: "Onboarding that speaks like family",
       summary: "Real onboarding copy, shipped in the live app and shaped by a user survey",
-      snapshot: "A product I'm building. Both the before and the after come from the live app. The new copy shipped in October 2026, informed by a small survey I ran in July 2026.",
+      snapshot: "A product I’m building. Both the before and the after come from the live app. The new copy shipped in October 2026, informed by a small survey I ran in July 2026.",
       blocks: [
-        { kind: "p", text: "Caira helps families coordinate care for someone they love. Its splash screens already had the voice I wanted (\"Close to home, from anywhere\"), so I left them alone. The trouble was in the first two setup screens: guidance hidden inside the fields, a label people could misread, and a lot of questions before the app had earned any trust." },
-        { kind: "p", text: "In July I sent a short discovery survey to people helping care for a parent. Six people answered, and one early tester sent separate feedback. That's a small group, so I read it as direction rather than proof." },
+        { kind: "p", text: "Caira helps families coordinate care for someone they love. Its splash screens already had the voice I wanted (“Close to home, from anywhere”), so I left them alone. The trouble was in the first two setup screens: guidance hidden inside the fields, a label people could misread, and a lot of questions before the app had earned any trust." },
+        { kind: "p", text: "In July I sent a short discovery survey to people helping care for a parent. Six people answered, and one early tester sent separate feedback. That’s a small group, so I read it as direction rather than proof." },
         {
           kind: "dots",
           total: 6,
@@ -586,20 +586,20 @@ export const writing = {
           note: "Six survey respondents, July 2026",
         },
         { kind: "p", text: "When I asked what would make them trust an app with this, the answers were words like integrity and legitimate. So the setup form had to feel careful, not nosy." },
-        { kind: "p", text: "The survey also checked an assumption of mine. I'd been thinking of Caira as a product for families abroad, but all six respondents live in Nigeria. The splash line \"across cities or oceans\" already covers both groups, so it stayed." },
+        { kind: "p", text: "The survey also checked an assumption of mine. I’d been thinking of Caira as a product for families abroad, but all six respondents live in Nigeria. The splash line “across cities or oceans” already covers both groups, so it stayed." },
         {
           kind: "redline",
           beforeLabel: "Before",
           afterLabel: "After (shipped)",
           rows: [
-            { label: "Choose a path", before: "No — Create a circle. Start a new care circle for your loved one. / Yes — I have an invite code. Join a circle you've been invited to. Emoji icons and a separate Continue button.", after: "Start a new circle. For someone you're caring for. / Join with an invite code. If someone in your family invited you. Real icons, and tapping a card moves you on." },
+            { label: "Choose a path", before: "No — Create a circle. Start a new care circle for your loved one. / Yes — I have an invite code. Join a circle you’ve been invited to. Emoji icons and a separate Continue button.", after: "Start a new circle. For someone you’re caring for. / Join with an invite code. If someone in your family invited you. Real icons, and tapping a card moves you on." },
             { label: "Form heading", before: "About the circle. Who is this care circle for?", after: "Who is this circle for?" },
             { label: "Their name", before: "A hint inside the field only: e.g. Mama Adeyemi", after: "Below the field: *Use what the family calls them, like Mama, Baba, or Aunty Funke.*" },
-            { label: "Their email", before: "A hint inside the field only: If they'll use the app", after: "Under \"Add more details (optional),\" with the hint below the field: *Only if they'll use Caira themselves.*" },
+            { label: "Their email", before: "A hint inside the field only: If they’ll use the app", after: "Under “Add more details (optional),” with the hint below the field: *Only if they’ll use Caira themselves.*" },
             { label: "Family name", before: "Family name (e.g. Adeyemi Family)", after: "Name your circle. *This is how your circle will appear in the app.*" },
             { label: "Privacy", before: "Nothing", after: "*Only people you invite can see this circle.*" },
-            { label: "Language", before: "English, next to a greyed-out \"More coming soon\" chip", after: "Removed until a second language ships" },
-            { label: "Create circle", before: "Greyed out, with no reason given", after: "Greyed out, with *Add their name and your relationship to continue* underneath" },
+            { label: "Language", before: "English, next to a grayed-out “More coming soon” chip", after: "Removed until a second language ships" },
+            { label: "Create circle", before: "Grayed out, with no reason given", after: "Grayed out, with *Add their name and your relationship to continue* underneath" },
           ],
         },
         {
@@ -616,9 +616,9 @@ export const writing = {
           ],
           caption: "The create-circle form in the live Caira app.",
         },
-        { kind: "p", text: "The biggest change is where the help lives. A hint inside a field disappears the moment you start typing, and screen readers don't reliably announce it, so every hint moved below its field. \"Family name\" reads like a surname, so it became \"Name your circle.\" Email, phone, and location went behind an optional expander, which takes the form from six text fields down to three before anything is saved. And the \"No —\" and \"Yes —\" choices now lead with the action, so nobody has to translate yes or no into what happens next." },
-        { kind: "p", text: "One line changed on the way to release. I'd drafted \"Everyone you invite will see this\" under the circle name, but I couldn't confirm the app works exactly that way, so the shipped helper only says what's certain. The privacy line went in the same way: only after checking that invited members really are the only people who can see a circle." },
-        { kind: "p", text: "The splash screens are next. I want \"Close to home, from anywhere\" to open the carousel instead of closing it, and the Skip button needs a backing so it stays readable over the photos." },
+        { kind: "p", text: "The biggest change is where the help lives. A hint inside a field disappears the moment you start typing, and screen readers don’t reliably announce it, so every hint moved below its field. “Family name” reads like a surname, so it became “Name your circle.” Email, phone, and location went behind an optional expander, which takes the form from six text fields down to three before anything is saved. And the “No —” and “Yes —” choices now lead with the action, so nobody has to translate yes or no into what happens next." },
+        { kind: "p", text: "One line changed on the way to release. I’d drafted “Everyone you invite will see this” under the circle name, but I couldn’t confirm the app works exactly that way, so the shipped helper only says what’s certain. The privacy line went in the same way: only after checking that invited members really are the only people who can see a circle." },
+        { kind: "p", text: "The splash screens are next. I want “Close to home, from anywhere” to open the carousel instead of closing it, and the Skip button needs a scrim behind it so it stays legible over the photos." },
       ],
     },
     {
@@ -629,9 +629,9 @@ export const writing = {
       status: "Concept",
       title: "A policy page students will read",
       summary: "Plain language, with a measured readability change",
-      snapshot: "Concept project, September 2026. Modelled on common writing-center policies, not my university's actual one.",
+      snapshot: "Concept project, September 2026. Modeled on common writing-center policies, not my university’s actual one.",
       blocks: [
-        { kind: "p", text: "A lot of booking policies open with the penalty. For a first-generation student who's already nervous about their writing, that's the first thing they read. I rewrote it to start with what happens in a session." },
+        { kind: "p", text: "A lot of booking policies open with the penalty. For a first-generation student who’s already nervous about their writing, that’s the first thing they read. I rewrote it to start with what happens in a session." },
         {
           kind: "readability",
           before: {
@@ -640,8 +640,8 @@ export const writing = {
           },
           after: [
             { title: "Book a session", text: "Sessions are free and last 45 minutes. Book at least a day ahead. Bring your assignment prompt and whatever you have, even just notes." },
-            { title: "What we will do together", text: "We will work on your ideas, your structure, and the patterns in your writing. We won't edit your paper for you. We will show you how to find and fix errors yourself." },
-            { title: "If you can't make it", text: "Cancel in the app, even at the last minute. It frees the slot for another student. If you miss 3 sessions in a semester without cancelling, you can still come to drop-in hours for the rest of that semester." },
+            { title: "What we will do together", text: "We will work on your ideas, your structure, and the patterns in your writing. We won’t edit your paper for you. We will show you how to find and fix errors yourself." },
+            { title: "If you can’t make it", text: "Cancel in the app, even at the last minute. It frees the slot for another student. If you miss 3 sessions in a semester without canceling, you can still come to drop-in hours for the rest of that semester." },
           ],
           measures: [
             { label: "Words", before: 69, after: 108, max: 120, better: "none" },
@@ -649,7 +649,7 @@ export const writing = {
             { label: "Flesch reading ease (higher is easier)", before: 26, after: 86, max: 100, better: "higher" },
           ],
         },
-        { kind: "p", text: "I scored both versions with the textstat Python library, counting headings as sentences, so anyone can rerun the numbers. The new version is longer because it answers what the old one skipped: what to bring and what happens in the session. The line I'm happiest with is the last one. \"Scheduling privileges suspended\" became \"you can still come to drop-in hours.\" Same rule, but the student keeps a way back in." },
+        { kind: "p", text: "I scored both versions with the textstat Python library, counting headings as sentences, so anyone can rerun the numbers. The new version is longer because it answers what the old one skipped: what to bring and what happens in the session. The line I’m happiest with is the last one. “Scheduling privileges suspended” became “you can still come to drop-in hours.” Same rule, but the student keeps a way back in." },
       ],
     },
   ] as WritingSample[],
@@ -670,8 +670,8 @@ export const about = {
       /** Opening statement, set larger than the body */
       lead: "I build software that takes culture seriously.",
       body: [
-        "My work sits where design, engineering and language meet. It started in 2016 with brand and packaging design in Nigeria, grew into leading creative teams in the UK, and pulled me into code the day I wanted to ship the products I was designing.",
-        "Today I'm finishing an M.A. at New Mexico Highlands University, studying how interfaces persuade, include, or quietly shut people out. Most people pick one lane. The problems I care about live where the lanes cross.",
+        "My work sits where design, engineering, and language meet. It started in 2016 with brand and packaging design in Nigeria, grew into leading creative teams in the UK, and pulled me into code the day I wanted to ship the products I was designing.",
+        "Today I’m finishing an M.A. at New Mexico Highlands University, studying how interfaces persuade, include, or quietly shut people out. Most people pick one lane. The problems I care about live where the lanes cross.",
       ],
     },
     {
@@ -679,17 +679,17 @@ export const about = {
       icon: "layers",
       title: "Blank page to shipped system",
       body: [
-        "That range is the offer, not a footnote. I carry products from an empty page to a shipped system — strategy, brand, interface and code — without losing the thread in the handoffs.",
-        "For Caira, a platform for families coordinating eldercare across borders, I designed the brand, ran the research, built the app and stood up the backend myself.",
+        "That range is the offer, not a footnote. I carry products from an empty page to a shipped system — strategy, brand, interface, and code — without losing the thread in the handoffs.",
+        "For Caira, a platform for families coordinating eldercare across borders, I designed the brand, ran the research, built the app, and stood up the backend myself.",
       ],
     },
     {
-      kicker: "What I'm building",
+      kicker: "What I’m building",
       icon: "hammer",
       title: "Products for the overlooked",
       body: [
         "NexusCore: an AI-powered sales and payments assistant for the Nigerian SMBs the formal economy overlooks. MOVA: a last-mile logistics marketplace for Lagos.",
-        "And as volunteer lead facilitator for the OYNA youth software programme's first cohort, I wrote the curriculum and took students from their first commit to a deployed marketplace app — real products, not classroom demos.",
+        "And as volunteer lead facilitator for the OYNA youth software program’s first cohort, I wrote the curriculum and took students from their first commit to a deployed marketplace app — a real product, not a classroom demo.",
       ],
     },
     {
@@ -698,7 +698,7 @@ export const about = {
       title: "Every interface takes a side",
       body: [
         "That conviction — technology should adapt to culture — is one I can defend in a seminar and prove in a repo. A fintech onboarding flow, a care app for loved ones an ocean away, a checkout built for a market its designers never imagined: each encodes assumptions about who its user is.",
-        "The Culturally Attentive Rhetorical Framework (CARF) I developed in my M.A. research makes those assumptions deliberate instead of accidental: real people, real cultural contexts, not a flattened global default.",
+        "The Culturally Attentive Rhetorical Framework (CARF), which I’m developing in my M.A. research, makes those assumptions deliberate instead of accidental: real people, real cultural contexts, not a flattened global default.",
       ],
     },
     {
@@ -707,7 +707,7 @@ export const about = {
       title: "Fast, without trading craft",
       body: [
         "AI tools like Claude and Antigravity are part of how I work, shrinking the distance between a decision and working software while I stay obsessed with the details — the interactions, the systems, the moment an interface finally feels right.",
-        "From New Mexico, I build across American, Nigerian and diaspora markets — for the users most product teams struggle to reach, with technical seriousness and cultural fluency at once.",
+        "From New Mexico, I build across American, Nigerian, and diaspora markets — for the users most product teams struggle to reach, with technical seriousness and cultural fluency at once.",
       ],
     },
   ] as const,
@@ -721,25 +721,25 @@ export const about = {
   ],
   /** Final page */
   closing: {
-    title: "Let's build what's next",
+    title: "Let’s build what’s next",
     body: "Products that need clarity, research that needs a builder, and teams ready to ship something that means something.",
-    cta: "LET'S WORK",
+    cta: "LET’S WORK",
   },
   availability: "Live limitless — Just Hold No Bounds.",
 };
 
 /** About Me → Experience timeline (newest first). `icon` picks the glyph; `current` adds the live pulse. */
 export const experience = [
-  { period: "2024 — Today", role: "Founder & Product Designer", org: "Caira", icon: "heart-handshake", current: true },
-  { period: "2025 — Today", role: "Full-Stack Product Lead", org: "NexusCore", icon: "cpu", current: true },
-  { period: "2025 — Today", role: "Design Engineer", org: "MOVA", icon: "truck", current: true },
+  { period: "2024–Present", role: "Founder & Product Designer", org: "Caira", icon: "heart-handshake", current: true },
+  { period: "2025–Present", role: "Full-Stack Product Lead", org: "NexusCore", icon: "cpu", current: true },
+  { period: "2025–Present", role: "Design Engineer", org: "MOVA", icon: "truck", current: true },
   // TODO [confirm years]: volunteer role for the first cohort
-  { period: "2025 — 2026", role: "Lead Facilitator & Trainer (volunteer), first cohort", org: "OYNA Youth Software Development Programme", icon: "graduation-cap", current: false },
-  { period: "2023 — 2025", role: "Creative Lead", org: "GRAMEF Digital Agency", icon: "sparkles", current: false },
-  { period: "2022 — 2023", role: "Group Brand & Packaging Designer", org: "SUMAL Foods", icon: "package", current: false },
-  { period: "2020 — 2021", role: "Lead Brand Designer", org: "CHECKERS Africa", icon: "pen-tool", current: false },
-  { period: "2018 — 2022", role: "Brand Strategist", org: "AFRIKRAFT Studios", icon: "megaphone", current: false },
-  { period: "2016 — 2020", role: "Early design experience", org: "Print & graphic design roles", icon: "printer", current: false },
+  { period: "2025–2026", role: "Lead Facilitator & Trainer (volunteer), first cohort", org: "OYNA Youth Software Development Programme", icon: "graduation-cap", current: false },
+  { period: "2023–2025", role: "Creative Lead", org: "GRAMEF Digital Agency", icon: "sparkles", current: false },
+  { period: "2022–2023", role: "Group Brand & Packaging Designer", org: "SUMAL Foods", icon: "package", current: false },
+  { period: "2020–2021", role: "Lead Brand Designer", org: "CHECKERS Africa", icon: "pen-tool", current: false },
+  { period: "2018–2022", role: "Brand Strategist", org: "AFRIKRAFT Studios", icon: "megaphone", current: false },
+  { period: "2016–2020", role: "Early design experience", org: "Print & graphic design roles", icon: "printer", current: false },
 ] as const;
 
 /**
@@ -749,16 +749,16 @@ export const experience = [
 export const researchTeaching = {
   title: "Research & Teaching",
   statement:
-    "I study how interfaces persuade, include, or quietly shut people out, and I teach students to write for the screens they'll spend their lives on.",
+    "I study how interfaces persuade, include, or quietly shut people out, and I teach students to write for the screens they’ll spend their lives on.",
   teaching: [
-    { period: "Aug 2026 — Today", role: "Instructor, First-Year Rhetoric and Composition", org: "Department of English, New Mexico Highlands University", text: "I teach first-year rhetoric, writing, and composition, from drafting through revision." },
-    { period: "Jan 2025 — Today", role: "Writing Center Tutor", org: "New Mexico Highlands University", text: "One-to-one and workshop support for student writers across disciplines." },
+    { period: "Aug 2026–Present", role: "Instructor, First-Year Rhetoric and Composition", org: "Department of English, New Mexico Highlands University", text: "I teach first-year rhetoric, writing, and composition, from drafting through revision." },
+    { period: "Jan 2025–Present", role: "Writing Center Tutor", org: "New Mexico Highlands University", text: "One-on-one and workshop support for student writers across disciplines." },
     // TODO [confirm years]
-    { period: "2025 — 2026", role: "Lead Facilitator and Trainer (volunteer), first cohort", org: "OYNA Youth Software Development Programme", text: "Designed the full curriculum, including handbooks, prompt sheets, and slide decks, built around a real product requirements document students build from." },
+    { period: "2025–2026", role: "Lead Facilitator & Trainer (volunteer), first cohort", org: "OYNA Youth Software Development Programme", text: "Designed the full curriculum (handbooks, prompt sheets, and slide decks) around a real product requirements document (PRD) that students build from." },
   ],
   research: [
-    { period: "2025 — Today", role: "M.A. thesis: CARF", org: "New Mexico Highlands University", text: "A framework for culturally attentive UX writing in Nigerian and American fintech.", slug: "carf" },
-    { period: "Jan 2026 — Today", role: "Digital Publishing and Editorial Development", org: "New Mexico Review, the university's literary journal", text: "Designed and built the journal's website from start to finish, including its digital editorial workflow.", slug: "" },
+    { period: "2025–Present", role: "M.A. thesis: CARF", org: "New Mexico Highlands University", text: "A framework for culturally attentive UX writing in Nigerian and American fintech.", slug: "carf" },
+    { period: "Jan 2026–Present", role: "Digital Publishing and Editorial Development", org: "New Mexico Review, the university’s literary journal", text: "Designed and built the journal’s website from start to finish, including its digital editorial workflow.", slug: "" },
   ],
   presentations: [
     { year: "2026", title: "Trapped in the Algorithm: How Echo Chambers and Cognitive Biases Fuel Misinformation", venue: "Southwest Popular/American Culture Association, 47th Annual Conference" },
@@ -767,7 +767,7 @@ export const researchTeaching = {
   manuscripts: [
     "The Rhetoric of Fintech: How Digital Platforms Shape Public Perception of Financial Services and Trust in Accounting Systems",
     "Navigating Authenticity: Digital Code-Switching and Multilingual Identity on TikTok in Nigeria and the United States",
-    "Language, Ideology, and Satirical Resistance in Wole Soyinka's The Lion and the Jewel: A Stylistic Reading of the Opening Sidi-Lakunle Dialogue",
+    "Language, Ideology, and Satirical Resistance in Wole Soyinka’s The Lion and the Jewel: A Stylistic Reading of the Opening Sidi–Lakunle Dialogue",
     "Balancing Human Creativity and Artificial Intelligence Productivity: An Empirical Analysis of the Evolving Digital Economy",
   ],
   recognition: [{ year: "2026", what: "OYNA Intellectual Excellence Award" }],
@@ -787,11 +787,11 @@ export const resume = {
   /** Rendered by ResumeSection.tsx. Work history stays in the PDF; the page shows the shape of it. */
   headline: "Proven expertise. Relentless execution. Transformative results.",
   intro:
-    "Ten years across language, design, and code: brand studios in Nigeria and the UK, products I've founded and built, and research into how interfaces carry culture. The full CV has the details.",
+    "Ten years across language, design, and code: brand studios in Nigeria and the UK, products I’ve founded and built, and research into how interfaces carry culture. The full CV has the details.",
   stats: [
     { n: 10, suffix: "+", label: "Years designing" },
     { n: 3, suffix: "", label: "Countries worked across" },
-    { n: 4, suffix: "", label: "Ventures & programmes led" },
+    { n: 4, suffix: "", label: "Ventures & programs led" },
     { n: 2, suffix: "", label: "Conference papers" },
     { n: 4, suffix: "", label: "Manuscripts in preparation" },
   ],
@@ -815,7 +815,7 @@ export const resume = {
       items: ["Critical Technocultural Discourse Analysis", "Value Sensitive Design", "Digital ethnography", "User research & usability", "Participatory & co-design", "Qualitative & content analysis", "Multimodal discourse analysis", "Rhetorical & stylistic critique"],
     },
     { area: "Writing", items: ["UX writing & microcopy", "Content strategy", "Technical writing", "Academic writing", "Editorial development"] },
-    { area: "Teaching", items: ["Writing instruction", "Curriculum development", "Workshop facilitation", "One-to-one tutoring", "Technical writing"] },
+    { area: "Teaching", items: ["Writing instruction", "Curriculum development", "Workshop facilitation", "One-on-one tutoring", "Technical writing"] },
   ],
   research: {
     thesis: "Decolonizing the Interface: A Rhetorical Framework for Culturally Attentive UX Writing in Nigerian and American Fintech Platforms",
@@ -824,7 +824,7 @@ export const resume = {
     manuscripts: [
       "The Rhetoric of Fintech: How Digital Platforms Shape Public Perception of Financial Services and Trust in Accounting Systems",
       "Navigating Authenticity: Digital Code-Switching and Multilingual Identity on TikTok in Nigeria and the United States",
-      "Language, Ideology, and Satirical Resistance in Wole Soyinka's The Lion and the Jewel",
+      "Language, Ideology, and Satirical Resistance in Wole Soyinka’s The Lion and the Jewel",
       "Balancing Human Creativity and Artificial Intelligence Productivity: An Empirical Analysis of the Evolving Digital Economy",
     ],
     talks: [
@@ -867,43 +867,43 @@ export const cairaStudy = {
   tagline: "Care. Together.",
   headline: "Far from home. Close to Mum.",
   intro:
-    "Caira helps families abroad coordinate care for an ageing parent back home. I designed and built it end to end, alone: brand, product strategy, requirements, UX, UI, microcopy, the mobile app, the backend, and the website.",
+    "Caira helps families abroad coordinate care for an aging parent back home. I designed and built it end to end, alone: brand, product strategy, requirements, UX, UI, microcopy, the mobile app, the backend, and the website.",
   status: "Pre-launch · Android app live (testing)",
   logo: "/work/caira/logo-light.webp",
   // Optional framing: set `origin` to null to keep the story private
   origin: {
     kicker: "Why Caira exists",
-    text: "A friend lost her mother. The care had fallen between time zones and group chats, and when the emergency came, it reached the family too late. Distance shouldn't mean a loved one goes uncared for. Coordination — knowing, together, in time — can be designed.",
+    text: "A friend lost her mother. The care had fallen between time zones and group chats, and when the emergency came, it reached the family too late. Distance shouldn’t mean a loved one goes uncared for. Coordination — knowing, together, in time — can be designed.",
   } as { kicker: string; text: string } | null,
   facts: [
     { label: "Role", value: "Founder, sole product designer and full-stack engineer" },
     { label: "Type", value: "Mobile app (Android) and website, B2C" },
     { label: "Industry", value: "Eldercare, health tech" },
-    { label: "Timeline", value: "2024 to today" },
+    { label: "Timeline", value: "2024–present" },
     { label: "Scope", value: "Brand, research plan, PRD, UX, UI, microcopy, full-stack build, deployment" },
     { label: "Live", value: "cairacare.com", url: "https://cairacare.com" },
   ],
   challenge: {
     title: "The family group chat was never built for this.",
-    body: "Care for a parent back home runs on scattered WhatsApp threads and late-night calls. One sibling ends up carrying everything, and there's no calm, shared place to see how Mum is really doing.",
-    insight: "The real problem isn't tracking. It's trust, consent, and coordination among people who love the same person but live in different worlds.",
+    body: "Care for a parent back home runs on scattered WhatsApp threads and late-night calls. One sibling ends up carrying everything, and there’s no calm, shared place to see how Mum is really doing.",
+    insight: "The real problem isn’t tracking. It’s trust, consent, and coordination among people who love the same person but live in different worlds.",
     // The group chat that plays out, then the Caira update that answers it
     chat: [
       { who: "Tunde, Houston", text: "Did anyone call Mummy today?", me: false },
-      { who: "Kemi, Lagos", text: "I thought you did. I've been at work since 6.", me: false },
+      { who: "Kemi, Lagos", text: "I thought you did. I’ve been at work since 6.", me: false },
       { who: "You, London", text: "Has she taken her BP medicine?", me: true },
-      { who: "Tunde, Houston", text: "Not sure. I'll try her tonight.", me: false },
+      { who: "Tunde, Houston", text: "Not sure. I’ll try her tonight.", me: false },
     ],
     update: {
       time: "9:04 AM in Lagos",
       title: "Mummy checked in:",
-      quote: "“I'm okay today.”",
+      quote: "“I’m okay today.”",
       rows: ["BP medicine taken at 8:30 AM", "Next: clinic visit, Thursday at 10:00 AM"],
     },
   },
   audience: {
-    title: "Who it's for",
-    body: "Nigerians in the US, the UK and Canada first. Positioned for any family abroad: Western markets primary, Africa secondary.",
+    title: "Who it’s for",
+    body: "Nigerians in the US, the UK, and Canada first. Positioned for any family abroad: Western markets primary, Africa secondary.",
     from: ["US", "UK", "Canada"],
     to: "Nigeria",
     roles: [
@@ -939,7 +939,7 @@ export const cairaStudy = {
     title: "The product",
     body: "Four tabs, cut down from five. One account can belong to several circles, and push notifications keep everyone in sync.",
     tabs: [
-      { icon: "home", name: "Home", text: "Hero card, today's summary, recent updates, and circle members." },
+      { icon: "home", name: "Home", text: "Hero card, today’s summary, recent updates, and circle members." },
       { icon: "clipboard", name: "Care", text: "Tasks and medications." },
       { icon: "activity", name: "Updates", text: "A shared activity feed." },
       { icon: "users", name: "Circle", text: "Members, invitations, and requests to join that the coordinator approves." },
@@ -951,20 +951,20 @@ export const cairaStudy = {
     ],
     flow: [
       { src: "/work/caira/screen-start.webp", alt: "Does your family already use Caira? Start a new circle, or join with an invite code.", caption: "Start or join a circle" },
-      { src: "/work/caira/screen-about-circle.webp", alt: "About the circle: who it's for, family name, and language.", caption: "About the circle" },
-      { src: "/work/caira/screen-who.webp", alt: "Who is this circle for? Their name, your relationship, and the circle's name.", caption: "Who it's for, in the family's words" },
+      { src: "/work/caira/screen-about-circle.webp", alt: "About the circle: who it’s for, family name, and language.", caption: "About the circle" },
+      { src: "/work/caira/screen-who.webp", alt: "Who is this circle for? Their name, your relationship, and the circle’s name.", caption: "Who it’s for, in the family’s words" },
       { src: "/work/caira/screen-details.webp", alt: "Optional details: where they live, their email, and phone.", caption: "Optional details, never required" },
     ],
     elder: {
       greeting: "Good morning, Mama.",
       ask: "How are you feeling today?",
       choices: [
-        { label: "I'm okay", tone: "ok", reply: "Thank you, Mama. Your family will see that you're okay today." },
+        { label: "I’m okay", tone: "ok", reply: "Thank you, Mama. Your family will see that you’re okay today." },
         { label: "Not feeling great", tone: "meh", reply: "Thank you for telling us. Your family will check in with you today." },
       ],
-      reach: { label: "Reach My Family", reply: "We're letting your whole circle know now." },
+      reach: { label: "Reach My Family", reply: "We’re letting your whole circle know now." },
     },
-    next: "An escalation engine for missed check-ins, timed to the elder's local time zone, with quiet hours.",
+    next: "An escalation engine for missed check-ins, timed to the elder’s local time zone, with quiet hours.",
   },
   visual: {
     title: "Visual language",
@@ -990,14 +990,14 @@ export const cairaStudy = {
         "Consent in English and Nigerian Pidgin (the Pidgin copy is waiting on native-speaker review).",
         "Family hierarchy is respected, not flattened.",
         "“Reach My Family,” not “Emergency”: ochre and a heart icon instead of red and a siren.",
-        "Time on the elder's terms: everything is scheduled in their local time zone.",
+        "Time on the elder’s terms: everything is scheduled in their local time zone.",
       ],
     },
     engineering: {
       title: "Engineering",
       stack: [
         { layer: "App", items: ["React Native", "Expo SDK 54", "Android via EAS", "OTA updates"] },
-        { layer: "API", items: ["Fastify", "Node 20", "Railway", "Zod contracts"] },
+        { layer: "API", items: ["Fastify", "Node.js 20", "Railway", "Zod contracts"] },
         { layer: "Data", items: ["Neon Postgres", "Row-level security"] },
         { layer: "Signals", items: ["Expo push", "FCM"] },
         { layer: "Web", items: ["Static site", "Vercel", "Early-access signup"] },
@@ -1023,7 +1023,7 @@ export const cairaStudy = {
     "Get the Pidgin copy reviewed",
   ],
   lessons: [
-    { title: "The hard parts live at the edges.", text: "Consent, escalation, offline, and who's allowed to see what took more design than any screen." },
+    { title: "The hard parts live at the edges.", text: "Consent, escalation, offline, and who’s allowed to see what took more design than any screen." },
     { title: "Words are a feature.", text: "“Reach My Family” does work that “Emergency” never could." },
     { title: "Building alone needs a system.", text: "Shared contracts, type-checks, and a review habit kept one person shipping like a team." },
   ],
@@ -1055,18 +1055,18 @@ export const nexusStudy = {
     { label: "Discipline", value: "Product design, UX writing, systems engineering, culturally attentive rhetoric" },
     { label: "Live demo", value: "nexuscorenew.vercel.app", url: "https://nexuscorenew.vercel.app", note: "Sandbox-credentialed for review; production rollout underway" },
   ],
-  stack: ["Next.js 16", "TypeScript", "Postgres (Neon)", "Prisma", "Upstash Redis", "Meta Cloud API", "DeepSeek-V3", "Gemini 2.0 Flash", "Flutterwave", "Africa's Talking", "Cloudflare R2", "Inngest", "Vercel"],
+  stack: ["Next.js 16", "TypeScript", "Postgres (Neon)", "Prisma", "Upstash Redis", "WhatsApp Cloud API", "DeepSeek-V3", "Gemini 2.0 Flash", "Flutterwave", "Africa’s Talking", "Cloudflare R2", "Inngest", "Vercel"],
   problem: {
-    title: "The problem, framed from the user's actual day",
+    title: "The problem, framed from the user’s actual day",
     story:
-      "A woman in Lagos runs a growing fashion label through Instagram and WhatsApp. By 11pm she has 180 unread customer messages. Half of them are variations of the same four questions. The other half are buying-intent messages she will answer too late — the customer will have already moved on to a competitor who replied in three minutes.",
+      "A woman in Lagos runs a growing fashion label through Instagram and WhatsApp. By 11 p.m. she has 180 unread customer messages. Half of them are variations of the same four questions. The other half are buying-intent messages she will answer too late — the customer will have already moved on to a competitor who replied in three minutes.",
     questions: ["Is this available?", "How much?", "Do you deliver to Lekki?", "Do you accept transfer?"],
     tried: [
-      { name: "Intercom & Zendesk", why: "Cost more than her monthly rent, and weren't built for WhatsApp." },
-      { name: "Local broadcast tools", why: "Glorified broadcast senders." },
+      { name: "Intercom & Zendesk", why: "Cost more than her monthly rent, and weren’t built for WhatsApp." },
+      { name: "Local broadcast tools", why: "Little more than bulk-message senders." },
       { name: "Twilio wrappers", why: "Priced in dollars." },
     ],
-    voice: "None of them understand that her customers write “Abeg how much na?” and expect a reply that doesn't sound like a bank.",
+    voice: "None of them understand that her customers write “Abeg how much na?” and expect a reply that doesn’t sound like a bank.",
     insight: "This is not a messaging problem. It is an infrastructure gap — the operating layer for a specific kind of African small business does not exist, so sellers run the business from their thumbs, badly, until they burn out.",
     answer: "NexusCore is the attempt to build that layer.",
   },
@@ -1076,9 +1076,9 @@ export const nexusStudy = {
       { step: "Sign up", text: "With a phone number. No email." },
       { step: "20-minute wizard", text: "Products, prices, delivery zones, and FAQ answers." },
       { step: "Connect payouts", text: "A Flutterwave payout account." },
-      { step: "Go live", text: "Every customer message answered within five seconds, in the seller's voice." },
-      { step: "“I'll take it”", text: "A Flutterwave payment link, the moment the customer says it." },
-      { step: "Step aside", text: "Escalates to the seller's personal WhatsApp for complaints, high-value decisions, or low confidence." },
+      { step: "Go live", text: "Every customer message answered within five seconds, in the seller’s voice." },
+      { step: "“I’ll take it”", text: "A Flutterwave payment link, the moment the customer says it." },
+      { step: "Step aside", text: "Escalates to the seller’s personal WhatsApp for complaints, high-value decisions, or low confidence." },
       { step: "Sunday summary", text: "A performance summary every Sunday morning." },
     ],
     // Copy from the NexusCore content-design sample (made-up shop and prices)
@@ -1086,7 +1086,7 @@ export const nexusStudy = {
       { from: "buyer", text: "abeg how much for the blue ankara wey you post yesterday" },
       { from: "bot", text: "The blue Ankara (6 yards) is ₦18,500. We have 4 left. Should we deliver it, or will you pick it up in Aba?" },
       { from: "buyer", text: "deliver to Enugu" },
-      { from: "bot", text: "Delivery to Enugu is ₦3,000, so your total is ₦21,500. Here's your payment link. Once you pay, Adaeze will confirm your order right here." },
+      { from: "bot", text: "Delivery to Enugu is ₦3,000, so your total is ₦21,500. Here’s your payment link. Once you pay, Adaeze will confirm your order right here." },
     ] as { from: "bot" | "buyer"; text: string }[],
     payment: { label: "Pay ₦21,500", via: "Flutterwave" },
     commands: {
@@ -1099,7 +1099,7 @@ export const nexusStudy = {
   decisions: [
     {
       title: "WhatsApp-native, not web-native",
-      text: "The dashboard is a convenience, not the product. The seller's hands are already on WhatsApp sixteen hours a day; making her open a browser tab to update a price is friction she will not accept. So every operational action had to be expressible as a natural-language WhatsApp command.",
+      text: "The dashboard is a convenience, not the product. The seller’s hands are already on WhatsApp sixteen hours a day; making her open a browser tab to update a price is friction she will not accept. So every operational action had to be expressible as a natural-language WhatsApp command.",
       visual: "command",
     },
     {
@@ -1114,17 +1114,17 @@ export const nexusStudy = {
     },
     {
       title: "The bot never invents prices",
-      text: "The LLM is a reply generator, not a quote generator. Prices come strictly from the catalog table, enforced in the prompt and in the signal-parsing step after the LLM responds. A bot that occasionally hallucinates ₦5,000 off a dress destroys the seller's margin and her trust at once.",
+      text: "The LLM is a reply generator, not a quote generator. Prices come strictly from the catalog table, enforced in the prompt and in the signal-parsing step after the LLM responds. A bot that occasionally hallucinates ₦5,000 off a dress destroys the seller’s margin and her trust at once.",
       visual: "catalog",
     },
     {
       title: "Escalation as a trust mechanism",
-      text: "Not what happens when the bot fails — what happens when the system decides the human should be involved. The buyer hears “I'm connecting you with the team”; the seller gets a summary and a wa.me link and takes over from her own phone. The AI knew when to step aside.",
+      text: "Not what happens when the bot fails — what happens when the system decides the human should be involved. The buyer hears “I’m connecting you with the team”; the seller gets a summary and a wa.me link and takes over from her own phone. The AI knew when to step aside.",
       visual: "escalate",
     },
     {
       title: "Self-serve or nothing",
-      text: "No sales calls, no onboarding specialists. If a seller can't get live in twenty minutes with no human help, we fix the wizard, not the funnel. At a ₦30,000 price point, every manual onboarding hour is a hole in the business model.",
+      text: "No sales calls, no onboarding specialists. If a seller can’t get live in twenty minutes with no human help, we fix the wizard, not the funnel. At a ₦30,000 price point, every manual onboarding hour is a hole in the business model.",
       visual: "wizard",
     },
   ],
@@ -1138,14 +1138,14 @@ export const nexusStudy = {
   architecture: {
     title: "Every tool chosen for a constraint, not a trend",
     // The path one customer message takes
-    journey: ["WhatsApp", "Meta Cloud API", "Next.js on Vercel", "Redis context", "DeepSeek-V3", "Catalog check", "Payment link"],
+    journey: ["WhatsApp", "WhatsApp Cloud API", "Next.js on Vercel", "Redis context", "DeepSeek-V3", "Catalog check", "Payment link"],
     tools: [
-      { name: "Meta Cloud API", tag: "Messaging", why: "Direct, no BSP. Platform fees would compound against a ₦30,000 subscription. The trade-off: a 1–3 week Meta review, then zero markup forever." },
-      { name: "DeepSeek-V3 + Gemini 2.0 Flash", tag: "LLM", why: "DeepSeek is 5–10x cheaper per token than GPT-4o-class models; Gemini is a warm fallback after 30 seconds, so an outage doesn't take the bot offline. Behind LiteLLM, a provider swap is a config change. Data residency is disclosed at signup." },
+      { name: "WhatsApp Cloud API", tag: "Messaging", why: "Direct, no BSP. Platform fees would compound against a ₦30,000 subscription. The trade-off: a 1–3 week Meta review, then zero markup forever." },
+      { name: "DeepSeek-V3 + Gemini 2.0 Flash", tag: "LLM", why: "DeepSeek is 5–10× cheaper per token than GPT-4o-class models; Gemini is a warm fallback after 30 seconds, so an outage doesn’t take the bot offline. Behind LiteLLM, a provider swap is a config change. Data residency is disclosed at signup." },
       { name: "Postgres · Prisma · Neon", tag: "Data", why: "Nine relational models designed for the full product from day one. Serverless scales to zero pre-revenue; type-safe queries stop a class of bugs at compile time." },
       { name: "Upstash Redis", tag: "Context", why: "Conversation context, OTP storage, and rate limiting. Three jobs, one tool." },
       { name: "Flutterwave", tag: "Payments", why: "Subscriptions and buyer payments in one integration. Subaccounts pay sellers directly, not through escrow: the money is theirs the moment it arrives." },
-      { name: "Africa's Talking", tag: "SMS OTP", why: "The only provider with reliable deliverability to every Nigerian network." },
+      { name: "Africa’s Talking", tag: "SMS OTP", why: "Reliable OTP deliverability across every major Nigerian network." },
       { name: "Cloudflare R2", tag: "Media", why: "Zero egress fees, for voice notes and product images at scale." },
       { name: "Inngest", tag: "Jobs", why: "Weekly summaries, billing renewals, NDPR cleanup, webhook replays, and dunning, on durable execution instead of raw cron." },
       { name: "Next.js on Vercel", tag: "Platform", why: "API routes, marketing page, dashboard, and admin panel ship as one artifact that deploys on git push. One mental model, one bill." },
@@ -1153,7 +1153,7 @@ export const nexusStudy = {
   },
   lessons: [
     { title: "The product-engineering boundary is a lie at this scale.", text: "Storing money as BigInt kobo is a product decision expressed in a schema. Defaulting the bot to Naija English is a rhetorical decision that lives in a system prompt. The work is one thing." },
-    { title: "Scope discipline is the hardest craft skill.", text: "An AI coding agent over-built three times and twice shipped work I'd scoped out. Smaller tasks, tighter fences, verify by reading before committing." },
+    { title: "Scope discipline is the hardest craft skill.", text: "An AI coding agent over-built three times and twice shipped work I’d scoped out. Smaller tasks, tighter fences, verify by reading before committing." },
     { title: "Culturally attentive design has a cost structure.", text: "WhatsApp-native, Pidgin-first, no-email is right for the seller, and it rules out the standard SaaS acquisition playbook. I had to build acquisition from first principles." },
     { title: "Trust compounds through small details.", text: "A bot that defers when it should. A payment link in sixty seconds instead of a pasted account number. A system that runs its own setup diagnostics." },
     { title: "A live payment system is a different nervous system.", text: "Ninety-nine percent success on activation means one in a hundred sellers pays and gets nothing. Idempotency, retries, webhook replays, and reconciliation, because sellers lose faith on the first failure." },
@@ -1164,12 +1164,12 @@ export const nexusStudy = {
     phases: 10,
     live: ["Marketing page", "Auth", "Onboarding wizard", "Dashboard (six tabs)", "Bot engine", "Seller WhatsApp commands", "Billing", "Admin panel", "Public storefronts", "Direct seller payouts"],
     proof: ["Trial seller clicks upgrade", "Pays with a test card", "Webhook fires", "Seller found from the transaction reference", "Subscription flips to active", "WhatsApp welcome message"],
-    remaining: ["Live Meta number", "Live Africa's Talking account", "Live Flutterwave keys", "Custom domain nexuscore.africa"],
+    remaining: ["Live WhatsApp Business number", "Live Africa’s Talking account", "Live Flutterwave keys", "Custom domain nexuscore.africa"],
     target: { n: 10, text: "paying sellers retained past 30 days, within 90 days of public launch" },
   },
   about: {
     title: "What this project is really about",
-    text: "NexusCore is a bet that the next wave of African software will not look like American software with a currency change. She does not want to be onboarded; she wants her evening back. She does not want a dashboard; she wants to type “pause bot” to her own number and have it work.",
+    text: "NexusCore is a bet that the next wave of African software will not look like American software with a currency change. The seller does not want to be onboarded; she wants her evening back. She does not want a dashboard; she wants to type “pause bot” to her own number and have it work.",
     refused: ["Email verification", "English-first copy", "Dollar-denominated pricing", "High-touch onboarding", "Stripe-shaped payment flows"],
     thesis: "If this works for the first hundred sellers, there is a market for software built to this reality, not translated into it.",
   },
@@ -1183,7 +1183,7 @@ export const tokenStudy = {
   slug: "tokenforge",
   kicker: "AI · Design systems · Dev & Design Academy capstone",
   headline: ["Describe your brand to generate", "a design system"],
-  oneLine: "TokenForge helps designers, developers and teams go from brand idea to production-ready design tokens in seconds.",
+  oneLine: "TokenForge helps designers, developers, and teams go from brand idea to production-ready design tokens in seconds.",
   statusPill: "Shipped · 2026 · Team of ten",
   url: "https://token-forge-three.vercel.app",
   behance: "https://www.behance.net/gallery/255008197/TOKENFORGE-AI-Powered-Design-System-Token-Generator",
@@ -1196,7 +1196,7 @@ export const tokenStudy = {
     { label: "Live", value: "token-forge-three.vercel.app", url: "https://token-forge-three.vercel.app" },
   ],
   problem:
-    "Designers and developers spend hours building design systems from scratch: defining colours, typography, spacing, and other foundational decisions. The process is repetitive, hard to keep consistent, and it's easy to overlook accessibility.",
+    "Designers and developers spend hours building design systems from scratch: defining colors, typography, spacing, and other foundational decisions. The process is repetitive, hard to keep consistent, and it’s easy to overlook accessibility.",
   solution:
     "TokenForge uses AI to turn a simple brand description into a complete, production-ready design system in seconds. Users preview and refine their tokens visually, check accessibility, remix variations, and export straight to CSS, Tailwind, or JSON.",
   speed: { from: "6+ hours", to: "< 60 seconds", note: "Design-system setup, before and after" },
@@ -1221,7 +1221,7 @@ export const tokenStudy = {
   swot: [
     { key: "S", name: "Strengths", points: ["Setup drops from 6+ hours to under 60 seconds", "A natural-language interface instead of complex panels", "WCAG accessibility checks built in, not bolted on", "Developer-first exports: CSS variables, Tailwind config, JSON"] },
     { key: "W", name: "Weaknesses", points: ["No Figma plugin at first: tokens are copied by hand", "A new brand next to Adobe, Figma, and Canva", "Output quality depends on prompting and the DeepSeek API", "No learning loop from user corrections in the MVP"] },
-    { key: "O", name: "Opportunities", points: ["Most small businesses and freelancers can't afford a design system", "Become the source-of-truth plugin for Figma, Webflow, and VS Code", "From generator to governor: AI that checks pull requests for design drift"] },
+    { key: "O", name: "Opportunities", points: ["Most small businesses and freelancers can’t afford a design system", "Become the source-of-truth plugin for Figma, Webflow, and VS Code", "From generator to governor: AI that checks pull requests for design drift"] },
     { key: "T", name: "Threats", points: ["Figma or Canva could ship a native “Generate Styles” button", "Cheaper AI inference squeezes pricing", "Weak early outputs could hurt trust in the brand"] },
   ],
   personas: [
@@ -1229,20 +1229,20 @@ export const tokenStudy = {
       name: "Lily Williams",
       who: "28 · UI/UX designer",
       motivation: "Create polished, consistent design systems quickly, without spending hours defining foundational tokens before product design.",
-      goals: ["Set up colours, type, spacing, and components fast", "Explore several visual directions for a brand", "Adjust without rebuilding from scratch"],
-      pains: ["Manual token creation is repetitive", "Consistency across foundations is hard", "AI output still needs review before it's trusted"],
+      goals: ["Set up colors, type, spacing, and components fast", "Explore several visual directions for a brand", "Adjust without rebuilding from scratch"],
+      pains: ["Manual token creation is repetitive", "Consistency across foundations is hard", "AI output still needs review before it’s trusted"],
       map: {
-        says: ["I don't want to spend hours setting up tokens", "I need to know if these colours are accessible"],
+        says: ["I don’t want to spend hours setting up tokens", "I need to know if these colors are accessible"],
         thinks: ["There has to be a faster way", "I need control over what the AI generates"],
         feels: ["Overwhelmed starting from scratch", "Confident when she can preview and refine"],
-        does: ["Defines colours, type, spacing, radii", "Reviews and adjusts generated tokens"],
+        does: ["Defines colors, type, spacing, radii", "Reviews and adjusts generated tokens"],
       },
     },
     {
       name: "Alexander Smith",
       who: "25 · Developer",
       motivation: "Get a structured, consistent set of tokens he can implement directly, without translating design decisions by hand.",
-      goals: ["Receive tokens that are ready for development", "Export in formats that fit his workflow", "Keep the product's visual language consistent"],
+      goals: ["Receive tokens that are ready for development", "Export in formats that fit his workflow", "Keep the product’s visual language consistent"],
       pains: ["Translating design to code is tedious and error-prone", "Inconsistent naming creates extra work", "He needs confidence the values are usable"],
       map: {
         says: ["I need tokens I can actually use in my codebase", "The naming needs to be consistent"],
@@ -1254,19 +1254,19 @@ export const tokenStudy = {
   ],
   style: {
     font: "Inter",
-    fontNote: "Designed for digital interfaces: clean, highly legible, precise and flexible.",
-    weights: ["Regular", "Medium", "Semi-Bold", "Bold"],
+    fontNote: "Designed for digital interfaces: clean, highly legible, precise, and flexible.",
+    weights: ["Regular", "Medium", "SemiBold", "Bold"],
     colours: ["#9F46E5", "#9FA1A9", "#DEE4FE", "#FFFFFF"],
   },
   steps: [
     { name: "Describe your brand", text: "Type your vision, audience, and aesthetic; the AI reads the creative direction." },
-    { name: "AI generation", text: "A full system: semantic colour palettes, harmonious type, spacing foundations." },
+    { name: "AI generation", text: "A full system: semantic color palettes, a harmonious type scale, and spacing foundations." },
     { name: "Refine & tweak", text: "A real-time visual editor, with every change shown in the live preview." },
     { name: "Export for production", text: "CSS variables, a Tailwind config, or pure JSON, ready for the codebase." },
   ],
   workstation: [
     { panel: "Editor", text: "Brand description, mood and industry, and manual token controls." },
-    { panel: "Live preview", text: "Colour roles and real components, like a sign-in form, update as you edit." },
+    { panel: "Live preview", text: "Color roles and real components, like a sign-in form, update as you edit." },
     { panel: "Accessibility · Remix · Export", text: "Contrast checks, generated variations, and one-click export." },
   ],
   // The example prompts from the live app, used by the interactive demo
@@ -1296,15 +1296,15 @@ export const carfStudy = {
   question: {
     // Paraphrased from the two onboarding flows the study compares
     lagos: { city: "Lagos", text: "Any information that cannot be matched against external databases may restrict your account.", reading: "A document to be checked" },
-    chicago: { city: "Chicago", text: "We just need to confirm who's signing up. It'll only take a moment.", reading: "A customer to be helped" },
+    chicago: { city: "Chicago", text: "We just need to confirm who’s signing up. It’ll only take a moment.", reading: "A customer to be helped" },
     contrast: "Same regulatory step. Very different relationship.",
     ask: "What does interface language assume about the people it addresses, and what does that cost the users it was never written for?",
   },
   argument: {
-    lead: "Fintech microcopy is not neutral text. It carries the cultural, institutional, and economic assumptions of the place it was designed. When those assumptions travel unexamined, the interface quietly ranks some users' norms as standard and others' as exceptions.",
+    lead: "Fintech microcopy is not neutral text. It carries the cultural, institutional, and economic assumptions of the place it was designed. When those assumptions travel unexamined, the interface quietly ranks some users’ norms as standard and others’ as exceptions.",
     parts: [
       { name: "Cultural", text: "Tone, register, trust signals, and who carries the blame for an error all encode assumptions about who the user is." },
-      { name: "Structural", text: "When one market's communication norms become the default, other markets are positioned as departures from it." },
+      { name: "Structural", text: "When one market’s communication norms become the default, other markets are positioned as departures from it." },
       { name: "Material", text: "Consent and verification screens are where platforms collect user data. Reading them closely means reading who benefits, not only how they sound." },
     ],
   },
@@ -1336,8 +1336,8 @@ export const carfStudy = {
       { name: "Economic", text: "Whether the language assumes a salaried income, and whether consent serves the user or the platform" },
     ],
     pathways: [
-      { name: "Cultural Epistemic Mapping", text: "Surface a flow's assumptions before writing a word" },
-      { name: "Rhetorical Strategy Adaptation", text: "Adapt tone, address, and ordering to the community's traditions" },
+      { name: "Cultural Epistemic Mapping", text: "Surface a flow’s assumptions before writing a word" },
+      { name: "Rhetorical Strategy Adaptation", text: "Adapt tone, address, and ordering to the community’s traditions" },
       { name: "Linguistic Decolonization", text: "Go past translation to local norms of formality and relational address" },
       { name: "Trust Architecture Design", text: "Calibrate trust signals to the audience instead of universalizing them" },
       { name: "Continuous Cultural Feedback", text: "Involve affected communities in every revision" },
@@ -1392,5 +1392,5 @@ export const contact = {
   /** TODO: match these to your rate card service lines. */
   projectTypes: ["Brand identity", "Packaging", "Product / UX design", "Design systems", "Social content", "Something else"],
   budgets: ["Under $1k", "$1k – $5k", "$5k – $15k", "$15k+", "Not sure yet"],
-  replyTime: "I reply to every enquiry within two working days.",
+  replyTime: "I reply to every inquiry within two business days.",
 };

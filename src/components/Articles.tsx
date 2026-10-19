@@ -181,7 +181,7 @@ function AutoLayoutCover() {
             <text x="583" y={144.5 + i * 30} textAnchor="middle" fontSize="9.5" fill="#ffd0a1">{v}</text>
           </g>
         ))}
-        <text x="502" y="296" fontSize="8.5" fill="#f1e6ce" fillOpacity="0.4">⇧ L  OUTLINE VIEW</text>
+        <text x="502" y="296" fontSize="8.5" fill="#f1e6ce" fillOpacity="0.4">⌘ Y  OUTLINE MODE</text>
       </g>
 
       {/* A cursor drifting over to adjust the gap */}
@@ -287,7 +287,7 @@ function PrdCover() {
         <text x="26" y="300">PRD =</text>
         <text x="26" y="352">PROMPT</text>
       </g>
-      <text x="402" y="300" fontFamily={MONO} fontSize="11" letterSpacing="3" fill="#ffd0a1">DON&apos;T LET THE VIBE</text>
+      <text x="402" y="300" fontFamily={MONO} fontSize="11" letterSpacing="3" fill="#ffd0a1">DON’T LET THE VIBE</text>
       <text x="402" y="318" fontFamily={MONO} fontSize="11" letterSpacing="3" fill="#ffd0a1">BECOME A DRIFT</text>
     </svg>
   );
@@ -420,7 +420,7 @@ function NestingDemo() {
     <div ref={ref}>
       <div className="mb-4 flex gap-2">
         <Pill on={outline} onClick={() => { setTook(true); setOutline((o) => !o); }}>
-          OUTLINE VIEW · SHIFT + L
+          OUTLINE MODE · CTRL/⌘ + Y
         </Pill>
       </div>
       <div className="flex min-h-[11rem] items-center justify-center rounded-xl bg-base/40 p-4">
@@ -543,7 +543,7 @@ function Pitfalls() {
 function WhoDoesWhat() {
   const reduce = useReducedMotion();
   const code = ["export function Checkout() {", "  const cart = useCart();", "  return <Summary items={cart} />;", "}", "// …generated in seconds"];
-  const prd = ["Who is this for?", "What problem is worth solving?", "What does success look like?", "What's out of scope?"];
+  const prd = ["Who is this for?", "What problem is worth solving?", "What does success look like?", "What’s out of scope?"];
   return (
     <div className="my-8 grid gap-3 @xl:grid-cols-2">
       <div className="rounded-2xl border border-cream/10 bg-base/40 p-4">

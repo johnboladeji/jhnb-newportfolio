@@ -27,13 +27,13 @@ interface InfoDrawerProps {
 
 const TITLES: Record<DrawerView, string> = {
   menu: "Menu",
-  projects: "Selected works",
-  caseStudy: "Case study",
-  about: "About me",
-  contentDesign: "Content design",
+  projects: "Selected Works",
+  caseStudy: "Case Study",
+  about: "About Me",
+  contentDesign: "Content Design",
   articles: "Articles",
   resume: "Resume",
-  contact: "Let's work",
+  contact: "Let’s Work",
 };
 
 // -----------------------------------------------------------------------------
@@ -420,14 +420,14 @@ function ContactView() {
       setStatus("sent");
     } catch {
       setStatus("error");
-      setError(`Your enquiry didn't send. Check your connection and try again, or email ${contact.email}.`);
+      setError(`Your inquiry wasn’t sent. Check your connection and try again, or email ${contact.email}.`);
     }
   };
 
   if (status === "sent") {
     return (
       <div role="status" className="space-y-3">
-        <p className="font-display text-4xl uppercase text-tertiary">Enquiry sent</p>
+        <p className="font-display text-4xl uppercase text-tertiary">Inquiry sent</p>
         <p className="text-cream/80">Thanks — {contact.replyTime.charAt(0).toLowerCase() + contact.replyTime.slice(1)}</p>
         <button
           type="button"
@@ -488,7 +488,7 @@ function ContactView() {
         data-magnetic="0.15"
         className="fx-spotlight group w-full bg-primary py-4 font-mono text-sm font-medium tracking-[0.2em] text-cream transition-colors hover:bg-tertiary hover:text-base active:bg-cream active:text-base disabled:opacity-60 sm:w-auto sm:px-12"
       >
-        {status === "sending" ? "SENDING…" : <RollText text="SEND ENQUIRY" />}
+        {status === "sending" ? "SENDING…" : <RollText text="SEND INQUIRY" />}
       </button>
     </form>
   );

@@ -30,7 +30,7 @@ const TF_LIVE: LiveAccent = {
   on: "text-white",
   tint: "bg-[radial-gradient(120%_160%_at_0%_0%,rgba(159,70,229,0.28),transparent_60%)]",
 };
-const CHAPTERS = ["Overview", "Problem & solution", "Who it's for", "Process", "The market", "Personas", "Visual language", "The product", "The team"];
+const CHAPTERS = ["Overview", "Problem & solution", "Who it’s for", "Process", "The market", "Personas", "Visual language", "The product", "The team"];
 
 function Chapter(props: { n: number; title?: string; onEnter: (n: number) => void; children: ReactNode }) {
   return <StudyChapter id="tokenforge" chapters={CHAPTERS} tone={TF_TONE} {...props} />;
@@ -469,7 +469,7 @@ function StyleGuide() {
       </Reveal>
       <Reveal delay={0.1}>
         <div className="h-full rounded-2xl border border-white/10 bg-tf-ink p-5">
-          <p className="font-mono text-[10px] tracking-[0.2em] text-tf-grey">COLOUR · TAP TO COPY</p>
+          <p className="font-mono text-[10px] tracking-[0.2em] text-tf-grey">COLOR · TAP TO COPY</p>
           <div className="mt-3 grid grid-cols-4 gap-2">
             {T.style.colours.map((c, i) => (
               <motion.button
@@ -495,7 +495,7 @@ function StyleGuide() {
           <p className="sr-only" aria-live="polite">{copied ? `Copied ${copied}` : ""}</p>
           <div className="mt-5 flex items-center gap-4">
             <Burst className="h-16 w-16" />
-            <p className="font-inter text-[13px] leading-relaxed text-tf-grey">The spoke burst: the case study's recurring motif, a system radiating from one idea.</p>
+            <p className="font-inter text-[13px] leading-relaxed text-tf-grey">The spoke burst: the case study’s recurring motif, a system radiating from one idea.</p>
           </div>
         </div>
       </Reveal>
@@ -560,7 +560,7 @@ function Generator() {
         {/* Generated system */}
         <div key={run} className="bg-tf-ink p-4 @xl:p-5">
           <p className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.2em] text-tf-grey">
-            <Palette size={11} aria-hidden="true" /> COLOUR ROLES
+            <Palette size={11} aria-hidden="true" /> COLOR ROLES
           </p>
           <div className="mt-2 grid grid-cols-5 gap-1.5">
             {Object.entries(s.palette).map(([k, v], n) => (
@@ -714,11 +714,11 @@ export default function TokenStudy({ scrollRef, onLetsWork }: { scrollRef?: RefO
         <Speed />
       </Chapter>
 
-      <Chapter n={3} title="Built for three kinds of builder" onEnter={setChapter}>
+      <Chapter n={3} title="Built for three kinds of builders" onEnter={setChapter}>
         <Audiences />
       </Chapter>
 
-      <Chapter n={4} title="User-centred, and iterative" onEnter={setChapter}>
+      <Chapter n={4} title="User-centered and iterative" onEnter={setChapter}>
         <Process />
       </Chapter>
 
