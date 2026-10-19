@@ -339,7 +339,7 @@ export const writing = {
   draft: "I write UX copy.",
   headline: "I write interface words for people the product wasn’t first built for.",
   intro: [
-    "I’m Nigerian. I spent more than six years as a brand and creative lead for companies in Nigeria and the UK, and I now live in New Mexico, in the United States.Working across those places made me notice how often a product assumes one kind of reader. “Try again” is good advice on a failed transfer in Chicago. In Lagos it can cost someone their money twice.",
+    "I’m a Nigerian. I spent more than six years as a brand and creative lead for companies in Nigeria and the UK, and I now live in New Mexico, in the United States. Working across those places made me notice how often a product assumes one kind of reader. “Try again” is good advice on a failed transfer in Chicago. In Lagos it can cost someone their money twice.",
     "I’m finishing an M.A. in English at New Mexico Highlands University in December 2026. My thesis is about UX writing in Nigerian and American fintech, and how the words on a screen carry cultural meaning. I also teach first-year writing and work in the university’s Writing Center, so most of my week goes to helping people say what they mean to a particular reader. And I build in Figma, React Native, and Next.js, so I know what happens to a string after it leaves the doc.",
     "Below are three case studies and two shorter pieces. Two come from products I’m building, Caira and NexusCore, and the Caira copy is now live in the app. The rest are concept projects I set for myself. I’ve kept my first draft in each one, because the changes are the interesting part.",
   ],
