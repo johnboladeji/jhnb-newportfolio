@@ -54,7 +54,14 @@ export default function ParticleBackground() {
     let width = window.innerWidth;
     let height = window.innerHeight;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
+    // Without WebGL (old devices, some in-app browsers, blocked GPUs) the constructor throws: keep the plain page colour
+    // instead of letting the error take the whole app down
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
+    } catch {
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(width, height);
     mount.appendChild(renderer.domElement);

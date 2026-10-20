@@ -3,6 +3,7 @@ import ParticleBackground from "./components/ParticleBackground";
 import Header from "./components/Header";
 import HeroContent from "./components/HeroContent";
 import HeroImage from "./components/HeroImage";
+import SafeBoundary from "./components/SafeBoundary";
 import FooterMarquee from "./components/FooterMarquee";
 import InfoDrawer, { type DrawerView } from "./components/InfoDrawer";
 import InteractionFX from "./components/InteractionFX";
@@ -50,8 +51,8 @@ export default function App() {
   // Exactly one viewport tall: 100vh, refined to 100dvh where supported so mobile browser bars never push content off-screen
   return (
     <div className="relative flex h-screen flex-col overflow-hidden bg-base text-cream supports-[height:100dvh]:h-dvh">
-      <ParticleBackground />              {/* z-0  */}
-      <HeroImage />                       {/* z-10 */}
+      <SafeBoundary><ParticleBackground /></SafeBoundary>   {/* z-0  */}
+      <SafeBoundary><HeroImage /></SafeBoundary>            {/* z-10 */}
       <Header onMenu={() => openDrawer("menu")} menuOpen={!!route} />          {/* z-30 */}
       <HeroContent onViewProjects={() => openDrawer("projects")} onViewAbout={() => openDrawer("about")} /> {/* z-20 */}
       <FooterMarquee />                   {/* z-30 */}

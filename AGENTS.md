@@ -60,6 +60,8 @@ output `dist`). Only committed files go live, so anything git-ignored (`public/h
   `favicon.png` (256px) and `apple-touch-icon.png` (180px), both from `JHNB IDENTITY ICON wt BG 2.png`. Brand source files (`JHNB IDENTITY *.png`) and raw photos (`hero/`) also live here.
 - `src/components/`
   - `ParticleBackground.tsx` — Three.js scene (z-0). Disposes everything on unmount.
+    Without WebGL it skips itself (try/catch around the renderer); App wraps it and HeroImage in `SafeBoundary.tsx`, so a
+    crash in decoration never blanks the page. Test with WebGL off (e.g. stub `getContext` before the app loads).
   - `HeroImage.tsx` — cut-out photos sliding right → left (z-10). Skips any that fail to load.
   - `WarpPortrait.tsx` — WebGL portrait: head/eyes/hand follow the cursor (rig data in `hero.images[].rig`).
   - `InteractionFX.tsx`, `RollText.tsx` — cursor follower, magnetic buttons, spotlight, click burst, letter roll.
