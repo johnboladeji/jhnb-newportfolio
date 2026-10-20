@@ -42,8 +42,12 @@ output `dist`). Only committed files go live, so anything git-ignored (`public/h
 - Every panel has an address in the URL hash (`src/routes.ts`): `#/menu`, `#/work`, `#/work/<slug>`, `#/about`,
   `#/writing/content-design`, `#/writing/articles`, `#/resume`, `#/contact`. App.tsx owns the drawer state and keeps
   it in sync with the hash; Back steps between panels; the tab title follows the panel.
-- `prerender.ts` (a Vite plugin) writes the real headline, bio, projects, articles and contact into `index.html` at
-  build time, plus canonical and Open Graph / Twitter tags, all from `content.ts`. React replaces it on mount.
+- `prerender.ts` (a Vite plugin) writes a complete, visible, styled static page into `#root` at build time (headline,
+  bio, About Me, Selected Works, Research & Teaching, Writing, Resume, contact, profiles; about 1,500 words), plus
+  canonical, Open Graph / Twitter tags and schema.org `Person` JSON-LD, all from `content.ts`. React replaces it on
+  mount; an inline script adds `html.js`, which keeps the static page invisible for 4 seconds so visitors never see a
+  flash, and it appears only if the app never mounts. Never hide it with clipping or `display:none` (reader tools and
+  unfurlers then drop it). `public/robots.txt` and `public/sitemap.xml` point crawlers at the site.
   `public/og-image.png` (1200×630) is the share image. Set `site.url` when moving to a custom domain.
 
 ## Where things live
@@ -123,7 +127,8 @@ Search `src/content.ts` for `TODO`:
 2. ~~CV~~ Done: `public/resume.pdf`.
 3. Projects: links, outcomes, real cover images (`cover`), and Unelo / TokenForge details (see TODOs in `projects`).
 4. ~~Missing years in resume roles~~ The Resume page no longer lists roles. TokenForge: name your part in the team (`role` TODO in `projects`).
-5. Real GitHub, LinkedIn, X, Instagram and Google Scholar URLs (`socials`).
+5. ~~Social links~~ Done: LinkedIn, GitHub, X (@thejohnboladeji), and Instagram. Add Google Scholar to `socials` once
+   that profile exists (its icon is still in `SocialIcon.tsx`).
 9. To confirm (marked TODO in content.ts): OYNA years (2025 — 2026?), the exact M.A. title from the transcript,
    your role on TokenForge, and that the friend's-mother story in the Caira study is fine to keep public.
 10. Before sharing with faculty: move to a custom domain (update `site.url`).

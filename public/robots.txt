@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jhnb-newportfolio.vercel.app/sitemap.xml

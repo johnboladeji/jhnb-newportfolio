@@ -855,14 +855,16 @@ export const resume = {
   recognition: [{ year: "2026", what: "OYNA Intellectual Excellence Award" }],
 };
 
-/** Header (top-left) and About links. `icon` picks the glyph. TODO: add your real profile URLs. */
-export const socials = [
-  { label: "GitHub", icon: "github", url: "https://github.com/" },
-  { label: "LinkedIn", icon: "linkedin", url: "https://linkedin.com/in/" },
-  { label: "X", icon: "x", url: "https://x.com/" },
-  { label: "Instagram", icon: "instagram", url: "https://instagram.com/" },
-  { label: "Google Scholar", icon: "scholar", url: "https://scholar.google.com/" },
-] as const;
+/**
+ * Header (top-left), About, and the crawler page. `icon` picks the glyph. Only real profiles go here: add Google Scholar
+ * once there is a profile (its icon still exists in SocialIcon.tsx).
+ */
+export const socials: { label: string; icon: "github" | "linkedin" | "x" | "instagram" | "scholar"; url: string }[] = [
+  { label: "LinkedIn", icon: "linkedin", url: "https://www.linkedin.com/in/johnboladeji-787b8b140/" },
+  { label: "GitHub", icon: "github", url: "https://github.com/johnboladeji" },
+  { label: "X", icon: "x", url: "https://x.com/thejohnboladeji" },
+  { label: "Instagram", icon: "instagram", url: "https://www.instagram.com/johnboladeji/" },
+];
 
 /**
  * Caira: the full case study (rendered by CairaStudy.tsx instead of the plain case-study layout).
