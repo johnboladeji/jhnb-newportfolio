@@ -142,9 +142,13 @@ Search `src/content.ts` for `TODO`:
   `sr-only` text for animated headings (the hero h1 is one stable sentence; the scramble is `aria-hidden`), reduced-motion
   handling (the global CSS rule stops animations; JS demos must render their final state when motion is reduced).
 - The hero bio (`TypewriterBio.tsx`) reveals word by word on every visit (blur → sharp rise, about 9 seconds; on phones the
-  sign-off follows the three visible lines at about 4 seconds). `hero.bioHighlights` phrases land in `tertiary`; only the sign-off is bold. A reading
-  light (`.bio-word`, CSS var `--g` in index.css) warms words near the pointer or finger; a tap while revealing shows it all;
-  a replay button follows the sign-off. The full text is always in the page for screen readers; reduced motion shows it still.
+  sign-off follows the three visible lines at about 4 seconds) and loops on its own 10 seconds after each run (`LOOP_MS`).
+  The body is one colour (cream, regular weight); only the sign-off is bold `tertiary`. `hero.bioHighlights` phrases glow
+  every 6.5 seconds (`bio-hi-glow` animates the registered `--hg`). A reading light (`--g`) warms words near the pointer or
+  finger; hovering holds the loop and sends a ripple outward from the pointer (`.bio-rippling`, per-word `--d`); a tap while
+  revealing shows it all. The full text is always in the page for screen readers; reduced motion shows it still.
+- From lg, `HeroImage.tsx` (`fitPhoto`) slides, and if needed shrinks, the photo so its right edge stays 24px left of the
+  bio (`[data-hero-bio]`); below lg the photo starts under the text (`--hero-text-bottom`).
 - No remote images in production; put assets in `public/`.
 - Keep the page free of scrollbars on mobile (root uses `h-dvh`).
 - Don't add new dependencies without saying why.

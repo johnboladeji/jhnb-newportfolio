@@ -250,17 +250,39 @@ body {
   }
 }
 
-/* Hero bio reading light: TypewriterBio writes --g (0–1) on each word near the pointer */
+/* Hero bio. The reading light writes --g (0–1) on words near the pointer; highlighted phrases animate --hg (0–1) to glow
+   every few seconds. --hg is registered so it interpolates; each word shows whichever is brighter. */
+@property --hg {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
 .bio-word {
   --g: 0;
-  color: color-mix(in srgb, var(--color-tertiary) calc(var(--g) * 100%), currentColor);
+  color: color-mix(in srgb, var(--color-tertiary) calc(max(var(--g), var(--hg)) * 100%), currentColor);
   transform: translateY(calc(var(--g) * -2px));
-  text-shadow: 0 0 calc(var(--g) * 16px) rgb(255 208 161 / calc(var(--g) * 0.6)), 0 1px 12px rgb(21 6 0 / 0.95);
+  text-shadow: 0 0 calc(max(var(--g), var(--hg)) * 16px) rgb(255 208 161 / calc(max(var(--g), var(--hg)) * 0.7)), 0 1px 12px rgb(21 6 0 / 0.95);
   transition: color 0.3s ease, transform 0.3s ease, text-shadow 0.3s ease;
 }
-.bio-word.bio-hi {
-  color: color-mix(in srgb, var(--color-cream) calc(var(--g) * 100%), var(--color-tertiary));
+@keyframes bio-hi-glow {
+  0%, 60%, 100% { --hg: 0; }
+  72%, 84% { --hg: 1; }
 }
+.bio-word.bio-hi { animation: bio-hi-glow 6.5s ease-in-out var(--hd, 0ms) infinite; }
+
+/* Hover ripple: each word lifts, swells, and flashes in turn, delayed by its distance from the pointer (--d) */
+@keyframes bio-ripple {
+  0% { transform: translateY(0) scale(1); }
+  30% {
+    transform: translateY(-0.3em) scale(1.09);
+    color: var(--color-tertiary);
+    text-shadow: 0 0 18px rgb(255 208 161 / 0.8), 0 1px 12px rgb(21 6 0 / 0.95);
+  }
+  60% { transform: translateY(0.06em) scale(0.98); }
+  100% { transform: translateY(0) scale(1); }
+}
+.bio-rippling .bio-word { animation: bio-ripple 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms); }
 @media (prefers-reduced-motion: reduce) {
   .bio-word { transform: none; }
+  .bio-word.bio-hi, .bio-rippling .bio-word { animation: none; }
 }

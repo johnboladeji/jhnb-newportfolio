@@ -101,7 +101,7 @@ export default function HeroContent({ onViewProjects, onViewAbout }: HeroContent
         </button>
       </div>
 
-      <div ref={bioRef} className="pointer-events-auto mt-4 sm:mt-6 lg:mt-0 lg:w-[19rem] lg:self-end xl:w-[22rem]">
+      <div ref={bioRef} data-hero-bio className="pointer-events-auto mt-4 sm:mt-6 lg:mt-0 lg:w-[19rem] lg:self-end xl:w-[22rem]">
         <TypewriterBio onTyped={() => setBioTyped(true)} />
         {/* Below md the bio is clamped; this opens the full story in the About Me panel. It keeps its space
             (visibility, not display) so the photo below doesn't jump, and fades up once the sign-off is typed. */}

@@ -1,14 +1,14 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { RotateCcw } from "lucide-react";
 import { hero } from "../content";
 
 /**
  * The hero bio, revealed word by word at a reading pace: each word rises out of a soft blur, the key phrases
- * (`hero.bioHighlights`) land in the accent colour, and the sign-off follows on its own line after a beat.
+ * (`hero.bioHighlights`) glow in the accent colour every few seconds, and the sign-off follows on its own line.
  *
- * Interaction: a reading light follows the pointer (or a finger) and warms the words around it; tapping or clicking
- * the text while it reveals shows it all at once; once it has finished, a replay button runs it again.
+ * It loops on its own: 10 seconds after a run ends it plays again. Hovering holds the loop and sends a ripple through
+ * the words, outward from the pointer. A reading light follows the pointer (or a finger) and warms the words around
+ * it; tapping the text while it reveals shows it all at once.
  * Screen readers get the full text at once (visually hidden copy); the animated words are aria-hidden.
  * Under reduced motion the text is simply there.
  */
@@ -52,6 +52,8 @@ const TOTAL_MS = Math.round((delayOf(bioWords.length + signWords.length - 1) + D
 // On phones only three lines show, so the sign-off follows them instead of waiting for the hidden words
 const COMPACT_QUERY = "(max-width: 767px)";
 const SIGN_SHIFT = Math.max(0, delayOf(bioWords.length) - 3.4);
+// Pause between the end of one run and the start of the next
+const LOOP_MS = 10000;
 
 function Words({ words, mode, shift = 0 }: { words: Word[]; mode: "play" | "still"; shift?: number }) {
   return (
@@ -67,7 +69,9 @@ function Words({ words, mode, shift = 0 }: { words: Word[]; mode: "play" | "stil
             {/* The reading light writes --g (0–1) here */}
             <span
               data-word
-              className={`bio-word inline-block ${w.hi ? "bio-hi text-tertiary" : ""}`}
+              className={`bio-word inline-block ${w.hi ? "bio-hi" : ""}`}
+              // Highlighted phrases glow every few seconds, as a sweep through each phrase
+              style={w.hi ? ({ "--hd": `${w.i * 45}ms` } as React.CSSProperties) : undefined}
             >
               {w.text}
             </span>
@@ -127,6 +131,36 @@ export default function TypewriterBio({ onTyped }: TypewriterBioProps) {
     setRun((r) => r + 1);
   };
 
+  // Loop: 10 seconds after a run finishes, it plays again, unless the pointer (or keyboard focus) is on the bio
+  const [held, setHeld] = useState(false);
+  useEffect(() => {
+    if (reduceMotion || !done || held) return;
+    const id = window.setTimeout(replay, LOOP_MS);
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done, held, reduceMotion]);
+
+  // Hovering sends a ripple through the words, outward from the pointer (and holds the loop, above)
+  const rippleEnd = useRef(0);
+  const ripple = (x: number, y: number) => {
+    const box = boxRef.current;
+    if (!box || reduceMotion) return;
+    let far = 0;
+    box.querySelectorAll<HTMLElement>("[data-word]").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      const d = Math.hypot(x - (r.left + r.width / 2), (y - (r.top + r.height / 2)) * 1.6) * 1.4;
+      far = Math.max(far, d);
+      el.style.setProperty("--d", `${Math.round(d)}ms`);
+    });
+    // Restart the animation even if a ripple is still running
+    box.classList.remove("bio-rippling");
+    void box.offsetWidth;
+    box.classList.add("bio-rippling");
+    window.clearTimeout(rippleEnd.current);
+    rippleEnd.current = window.setTimeout(() => box.classList.remove("bio-rippling"), far + 1000);
+  };
+  useEffect(() => () => window.clearTimeout(rippleEnd.current), []);
+
   // A tap or click while revealing shows the whole text at once
   const finish = () => {
     if (!done) setMode("still");
@@ -157,19 +191,26 @@ export default function TypewriterBio({ onTyped }: TypewriterBioProps) {
   // Below md the body shows three lines and fades out on the third (words never split); the full text is always in
   // the page (visually hidden copy) and "View more" opens About Me
   const bodyClass =
-    "block max-md:max-h-[calc(1.65em*3)] max-md:overflow-hidden max-md:[mask-image:linear-gradient(to_bottom,#000_55%,transparent)]";
+    "block max-md:max-h-[calc(1.5em*3)] max-md:overflow-hidden max-md:[mask-image:linear-gradient(to_bottom,#000_55%,transparent)]";
 
   return (
     <p
       ref={boxRef}
       // Full-strength cream (15:1 on the base colour) plus a soft dark halo so it stays legible over the particles and photo edges
-      className={`mx-auto max-w-[34rem] touch-pan-y text-center font-sans text-[14px] font-normal leading-[1.65] tracking-[0.005em] text-cream [text-shadow:0_1px_12px_rgba(21,6,0,0.95)] sm:text-[15px] lg:mx-0 lg:text-right xl:text-[15.5px] ${done ? "" : "cursor-pointer"}`}
+      className={`mx-auto max-w-[34rem] touch-pan-y text-center font-sans text-[14px] font-normal leading-[1.5] tracking-[0.005em] text-cream [text-shadow:0_1px_12px_rgba(21,6,0,0.95)] sm:text-[15px] lg:mx-0 lg:text-right xl:text-[15.5px] ${done ? "" : "cursor-pointer"}`}
       onPointerMove={(e) => light(e.clientX, e.clientY)}
       onPointerDown={(e) => {
         finish();
         light(e.clientX, e.clientY);
       }}
-      onPointerLeave={dim}
+      onPointerEnter={(e) => {
+        setHeld(true);
+        ripple(e.clientX, e.clientY);
+      }}
+      onPointerLeave={() => {
+        setHeld(false);
+        dim();
+      }}
       onPointerCancel={dim}
       onPointerUp={(e) => {
         if (e.pointerType !== "mouse") window.setTimeout(dim, 700);
@@ -179,28 +220,9 @@ export default function TypewriterBio({ onTyped }: TypewriterBioProps) {
       <span key={`b${run}`} aria-hidden="true" className={`${bodyClass} select-none`}>
         <Words words={bioWords} mode={mode} />
       </span>
-      {/* The sign-off always sits on its own line, with the replay control after it */}
-      <span className="mt-2.5 flex items-center justify-center gap-2.5 lg:justify-end">
-        <span key={`s${run}`} aria-hidden="true" className="select-none font-bold tracking-wide text-tertiary">
-          <Words words={signWords} mode={mode} shift={shift} />
-        </span>
-        {!reduceMotion && (
-          <motion.button
-            type="button"
-            onClick={replay}
-            onPointerDown={(e) => e.stopPropagation()}
-            initial={false}
-            animate={done ? { opacity: 1, scale: 1, rotate: 0 } : { opacity: 0, scale: 0.6, rotate: 90 }}
-            transition={{ duration: 0.45, ease: EASE }}
-            style={{ visibility: done ? "visible" : "hidden" }}
-            aria-label="Replay the bio animation"
-            title="Replay"
-            data-magnetic="0.3"
-            className="group inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-cream/25 bg-base/50 text-cream/75 backdrop-blur-sm transition-colors duration-200 hover:border-tertiary hover:bg-tertiary hover:text-base"
-          >
-            <RotateCcw size={13} aria-hidden="true" className="transition-transform duration-500 group-hover:-rotate-180" />
-          </motion.button>
-        )}
+      {/* The sign-off always sits on its own line, in the accent colour */}
+      <span key={`s${run}`} aria-hidden="true" className="mt-2 block select-none font-bold tracking-wide text-tertiary">
+        <Words words={signWords} mode={mode} shift={shift} />
       </span>
     </p>
   );

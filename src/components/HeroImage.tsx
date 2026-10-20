@@ -8,6 +8,21 @@ import WarpPortrait from "./WarpPortrait";
 const WHEEL_THRESHOLD = 40;
 const WHEEL_COOLDOWN_MS = 900;
 
+const GAP = 24; // px between the photo's right edge and the bio
+
+/** At lg+, the photo's centre and height (px) so its right edge stays left of the bio; undefined below lg. */
+function fitPhoto(box: { w: number; h: number; bioLeft: number }, aspect: number | undefined) {
+  if (!aspect || box.w < 1024 || box.h === 0) return undefined;
+  // Defaults match the classes: lg 80% tall and centred; xl 103.5% tall at 56%
+  let height = box.w >= 1280 ? box.h * 1.035 : box.h * 0.8;
+  let centre = box.w >= 1280 ? box.w * 0.56 : box.w * 0.5;
+  const right = box.bioLeft - GAP;
+  if (height * aspect > right) height = right / aspect;
+  const width = height * aspect;
+  if (centre + width / 2 > right) centre = right - width / 2;
+  return { left: Math.round(centre), height: Math.round(height) };
+}
+
 /**
  * Cut-out photos that take turns sliding sideways. They advance on a timer (right → left), and the mouse
  * wheel drives them too: scroll down for the next photo, up for the previous one (left → right).
@@ -23,12 +38,38 @@ export default function HeroImage() {
     [images.length],
   );
 
-  // Warm the cache so the next photo doesn't pop in half-loaded
+  // Warm the cache so the next photo doesn't pop in half-loaded, and note each photo's aspect ratio
+  const [aspects, setAspects] = useState<Record<string, number>>({});
   useEffect(() => {
     hero.images.forEach(({ src }) => {
       const img = new Image();
+      img.onload = () => setAspects((a) => ({ ...a, [src]: img.naturalWidth / img.naturalHeight }));
       img.src = src;
     });
+  }, []);
+
+  // From lg the bio sits at the right. Keep the photo's right edge clear of it: slide the photo left, and if it
+  // still doesn't fit, shrink it. Below lg the photo already starts under the text (see --hero-text-bottom).
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [box, setBox] = useState({ w: 0, h: 0, bioLeft: 0 });
+  useEffect(() => {
+    const stage = stageRef.current;
+    const bio = document.querySelector<HTMLElement>("[data-hero-bio]");
+    if (!stage) return;
+    const update = () => {
+      const s = stage.getBoundingClientRect();
+      const b = bio?.getBoundingClientRect();
+      setBox({ w: s.width, h: s.height, bioLeft: b ? b.left - s.left : s.width });
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(stage);
+    if (bio) ro.observe(bio);
+    window.addEventListener("resize", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
   }, []);
 
   // Auto-advance; restarts after every change, so a wheel-driven slide gets a full interval too
@@ -58,9 +99,10 @@ export default function HeroImage() {
 
   if (images.length === 0) return null;
   const { src, rig } = images[index % images.length];
+  const fit = fitPhoto(box, aspects[src]);
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
+    <div ref={stageRef} className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={src}
@@ -80,7 +122,7 @@ export default function HeroImage() {
               always runs off the bottom of the page. Below lg it starts under the text (--hero-text-bottom). */}
           <span
             className="pointer-events-auto absolute bottom-[calc((100%-var(--hero-text-bottom,19.5rem)-0.75rem)*-0.2)] left-1/2 block h-[calc((100%-var(--hero-text-bottom,19.5rem)-0.75rem)*1.2)] -translate-x-1/2 transition-transform duration-700 ease-out hover:scale-[1.04] lg:bottom-0 lg:h-[80%] xl:bottom-[-13.5%] xl:left-[56%] xl:h-[103.5%]"
-            style={{ transformOrigin: "bottom center" }}
+            style={{ transformOrigin: "bottom center", ...fit }}
           >
             {/* Head, eyes and hand turn toward the cursor (WebGL warp), toned black-and-white in the shader */}
             <WarpPortrait src={src} rig={rig} alt={hero.imageAlt} onError={() => setFailed((f) => [...f, src])} />
