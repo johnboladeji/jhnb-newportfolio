@@ -53,7 +53,7 @@ output `dist`). Only committed files go live, so anything git-ignored (`public/h
 - `index.html` — page title, meta description, Google Fonts link, favicon.
 - `public/` — static files: `hero-1.webp` / `hero-2.webp` (hero slider cut-outs), `resume.pdf`,
   `jhnb-icon.png` (header logo), `jhnb-wordmark.png` (not currently used),
-  `favicon.png`. Brand source files (`JHNB IDENTITY *.png`) and raw photos (`hero/`) also live here.
+  `favicon.png` (256px) and `apple-touch-icon.png` (180px), both from `JHNB IDENTITY ICON wt BG 2.png`. Brand source files (`JHNB IDENTITY *.png`) and raw photos (`hero/`) also live here.
 - `src/components/`
   - `ParticleBackground.tsx` — Three.js scene (z-0). Disposes everything on unmount.
   - `HeroImage.tsx` — cut-out photos sliding right → left (z-10). Skips any that fail to load.
@@ -147,8 +147,9 @@ Search `src/content.ts` for `TODO`:
   every 6.5 seconds (`bio-hi-glow` animates the registered `--hg`). A reading light (`--g`) warms words near the pointer or
   finger; hovering holds the loop and sends a ripple outward from the pointer (`.bio-rippling`, per-word `--d`); a tap while
   revealing shows it all. The full text is always in the page for screen readers; reduced motion shows it still.
-- From lg, `HeroImage.tsx` (`fitPhoto`) slides, and if needed shrinks, the photo so its right edge stays 24px left of the
-  bio (`[data-hero-bio]`); below lg the photo starts under the text (`--hero-text-bottom`).
+- The hero photo keeps its place (centred at lg, 56% at xl). Where the bio overlaps it on narrower desktops, a soft
+  radial scrim behind the bio (a `before:` layer in `HeroContent.tsx`) keeps the text legible; below lg the photo starts
+  under the text (`--hero-text-bottom`).
 - No remote images in production; put assets in `public/`.
 - Keep the page free of scrollbars on mobile (root uses `h-dvh`).
 - Don't add new dependencies without saying why.

@@ -221,7 +221,7 @@ export default function TypewriterBio({ onTyped }: TypewriterBioProps) {
         <Words words={bioWords} mode={mode} />
       </span>
       {/* The sign-off always sits on its own line, in the accent colour */}
-      <span key={`s${run}`} aria-hidden="true" className="mt-2 block select-none font-bold tracking-wide text-tertiary">
+      <span key={`s${run}`} aria-hidden="true" className="mt-2.5 block select-none text-[1.08em] font-bold tracking-wide text-tertiary">
         <Words words={signWords} mode={mode} shift={shift} />
       </span>
     </p>
