@@ -50,6 +50,12 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
   useEffect(() => {
     if (!open) setFull(false);
   }, [open]);
+  // The Writing pages are made for reading, so they open full screen however they're reached (menu, link, or a shared
+  // #/writing/... address); the toggle still shrinks them back
+  const writingView = view === "contentDesign" || view === "articles";
+  useEffect(() => {
+    if (open && writingView) setFull(true);
+  }, [open, writingView]);
   const canExpand = view !== "menu";
   const isFull = full && canExpand;
   // About and Projects share a layout: pinned header, own inner scroller, full width (no max-width) in full screen

@@ -71,6 +71,8 @@ output `dist`). Only committed files go live, so anything git-ignored (`public/h
   - `SocialIcon.tsx` — inline SVG brand glyphs used in the header.
   - `FooterMarquee.tsx` — outlined marquee plus the © / email footer line (z-30).
   - `InfoDrawer.tsx` — side drawer (z-50): menu (Home, Projects, About Me, Writing ▸ Content Design / Articles, Resume, Let's Work), sub-views, contact form.
+    The Writing pages (Content Design, Articles) open full screen by default, however they're reached (menu, link, or a
+    shared `#/writing/...` address); the toggle still shrinks them. Other panels open at drawer width.
   - `DrawerPortraits.tsx` — studio portraits blended into the drawer's right edge, sliding right → left (`drawerImages`).
   - `TravellingPen.tsx` — the Writing pages' travelling fountain pen, drawn in code and never still: it flies in with a
     twirl, scribbles at rest (`.pen-scribble`), glints, travels down a right-hand gutter as you scroll while leaning into
