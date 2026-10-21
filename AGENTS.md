@@ -35,7 +35,8 @@ Run `npm run build` after changes to confirm nothing broke.
 Live at **https://jhnb-newportfolio.vercel.app**. Vercel project `jhnb-newportfolio` is connected to the GitHub repo
 `johnboladeji/jhnb-newportfolio` (private): every push to `main` redeploys automatically (Vite preset: `npm run build`,
 output `dist`). Only committed files go live, so anything git-ignored (`public/hero/`, `private/`, `.env*`) stays private.
-`public/resume.pdf` is the redacted CV (no home address or phones); the original is in the git-ignored `private/` folder.
+`public/resume.pdf` is the redacted CV (2 pages, from `John_B_Oladeji_CV.pdf`, October 2026; phone number removed, city kept); the
+original is in the git-ignored `private/` folder. Always strip phone numbers and street addresses before publishing a new CV.
 
 ## Links, crawlers, and share previews
 

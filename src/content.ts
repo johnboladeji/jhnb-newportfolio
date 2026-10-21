@@ -789,7 +789,7 @@ export const resume = {
   pdfUrl: "/resume.pdf",
   /** File name visitors get when they download the CV */
   pdfFileName: "John-B-Oladeji-CV.pdf",
-  pages: 3,
+  pages: 2,
   /** Rendered by ResumeSection.tsx. Work history stays in the PDF; the page shows the shape of it. */
   headline: "Proven expertise. Relentless execution. Transformative results.",
   intro:
