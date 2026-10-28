@@ -86,28 +86,25 @@ export const hero = {
 };
 
 /**
- * The welcome gate and intro show (Intro.tsx), played once per visit. Greetings cycle in the gate; the visitor chooses
- * to enter with or without sound (the sound is synthesized in src/lib/sound.ts).
+ * The welcome (Intro.tsx), once per visit. In about two seconds it says who John is, in the site's own colours:
+ * the J. mark, a Yoruba welcome, the name, "designs with rhetoric, culture, and code" (the hero's three words), and the
+ * three roles. Then the visitor enters with sound or quietly (it enters by itself, quietly, after a few seconds).
+ * The sound is synthesized in src/lib/sound.ts.
  */
 export const intro = {
-  greetings: [
-    { text: "Ẹ káàbọ̀", language: "Yoruba", lang: "yo" },
-    { text: "Nnọọ", language: "Igbo", lang: "ig" },
-    { text: "Barka da zuwa", language: "Hausa", lang: "ha" },
-    { text: "Una welcome", language: "Naija Pidgin", lang: "pcm" },
-    { text: "Welcome", language: "English", lang: "en" },
-  ],
-  kicker: "JHNB · Design with rhetoric, culture, and code",
+  greeting: "Ẹ káàbọ̀",
+  greetingLang: "yo",
+  greetingMeaning: "Welcome",
+  /** Between the name and the hero's three words: "John B. Oladeji designs with rhetoric · culture · code" */
+  lead: "designs with",
   enterWithSound: "ENTER WITH SOUND",
-  enterQuietly: "ENTER QUIETLY",
-  note: "Talking drum, shekere, and agidigbo, all played in code. Headphones welcome.",
-  /** Shown word by word as the intro's drum plays */
-  words: ["JUST", "HOLD", "NO", "BOUNDS"],
+  enterQuietly: "Enter quietly",
+  /** Followed by the seconds left, e.g. "Entering in 4" */
+  autoEnter: "Entering in",
   /** Small hint on the landing page, gone after the first tap */
   playHint: "Tap anywhere to play the talking drum",
   soundOn: "SOUND ON",
   soundOff: "SOUND OFF",
-  skip: "SKIP",
   /** For screen readers: what the welcome dialog is */
   title: "Welcome to the portfolio of John B. Oladeji (JHNB)",
 };

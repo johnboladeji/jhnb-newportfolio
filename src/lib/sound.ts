@@ -1,12 +1,16 @@
 import { useSyncExternalStore } from "react";
 
 /**
- * The site's sound, synthesized in code with the Web Audio API (no audio files, no dependencies): a small Yoruba-
- * flavoured ensemble.
+ * The site's sound, synthesized in code with the Web Audio API (no audio files, no dependencies). Three Yoruba
+ * instruments, the core of jùjú, fújì, and àpàlà:
  *
- *   - dùndún (talking drum): a membrane tone whose pitch glides, the way the drummer squeezes the drum's cords;
- *   - ṣẹ̀kẹ̀rẹ̀ (shekere): a beaded-gourd shaker, short bursts of filtered noise;
- *   - agidigbo (Yoruba thumb piano): a plucked tine with a bright, quickly fading overtone.
+ *   - agogo: the iron double bell. It plays the West African standard bell pattern (the 12/8 timeline every other
+ *     part locks to), which is the sound most listeners recognise as West African within a bar. Synthesized with FM
+ *     (an inharmonic modulator gives the clangy, iron ring), a low bell and a high bell a fifth apart.
+ *   - gángan / dùndún: the talking drum. Its pitch follows Yoruba speech tones, because that is what the drum does:
+ *     the welcome phrase is the drum saying "Ẹ káàbọ̀" (mid, high, low, low). A skin tone that bends as the cords
+ *     are squeezed, a resonant noise layer for the skin, and the slap of the curved stick.
+ *   - ṣẹ̀kẹ̀rẹ̀: the beaded gourd, a swish of band-passed noise.
  *
  * Sound is off until the visitor turns it on (browsers only allow audio after a click or tap anyway), and the choice
  * is remembered (`jhnb-sound` in localStorage). Every function here is a no-op while sound is off.
@@ -57,7 +61,7 @@ export function useSound(): [boolean, (on: boolean) => void] {
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
 let noise: AudioBuffer | null = null;
-const VOLUME = 0.55;
+const VOLUME = 0.6;
 
 /** Create or resume the audio context. Call from a click or tap. */
 export function unlock() {
@@ -67,12 +71,18 @@ export function unlock() {
       if (!AC) return;
       ctx = new AC();
       const comp = ctx.createDynamicsCompressor();
-      comp.threshold.value = -16;
-      comp.ratio.value = 4;
+      comp.threshold.value = -14;
+      comp.ratio.value = 3;
+      // A short, warm room so the instruments sit together instead of sounding like dry beeps
+      const room = ctx.createConvolver();
+      room.buffer = roomImpulse(ctx);
+      const wet = ctx.createGain();
+      wet.gain.value = 0.18;
       master = ctx.createGain();
       master.gain.value = VOLUME;
-      master.connect(comp).connect(ctx.destination);
-      // One second of white noise, reused by the shaker and the drum's slap
+      master.connect(comp);
+      master.connect(room).connect(wet).connect(comp);
+      comp.connect(ctx.destination);
       noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
       const data = noise.getChannelData(0);
       for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
@@ -82,6 +92,17 @@ export function unlock() {
   } catch {
     ctx = null;
   }
+}
+
+/** A 0.6-second decaying noise tail: a small wooden room. */
+function roomImpulse(c: AudioContext) {
+  const len = Math.floor(c.sampleRate * 0.6);
+  const buf = c.createBuffer(2, len, c.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = buf.getChannelData(ch);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+  }
+  return buf;
 }
 
 /** Silence everything already scheduled (e.g. when the intro is skipped), then restore the volume `seconds` later. */
@@ -98,167 +119,183 @@ const now = () => (ctx ? ctx.currentTime : 0);
 
 // ---- Instruments ------------------------------------------------------------------------------------------------
 
-/** Talking drum: `from` → `to` Hz glide (the "talk"), with a skin slap on the attack. */
-export function drum(from = 180, to = from * 0.8, at = 0, vel = 1, length = 0.42) {
+/** Agogo: one stroke of the iron double bell. `high` picks the smaller bell. */
+export function bell(high = false, at = 0, vel = 0.7) {
   if (!ready()) return;
   const c = ctx!;
   const t = now() + at;
-  const body = c.createOscillator();
-  body.type = "sine";
-  body.frequency.setValueAtTime(from, t);
-  body.frequency.exponentialRampToValueAtTime(Math.max(30, to), t + length * 0.7);
-  const tone = c.createGain();
-  tone.gain.setValueAtTime(0.0001, t);
-  tone.gain.exponentialRampToValueAtTime(0.9 * vel, t + 0.006);
-  tone.gain.exponentialRampToValueAtTime(0.0001, t + length);
-  body.connect(tone).connect(master!);
-  body.start(t);
-  body.stop(t + length + 0.05);
-
-  // A second, softer partial gives the membrane its hollow colour
-  const over = c.createOscillator();
-  over.type = "triangle";
-  over.frequency.setValueAtTime(from * 1.5, t);
-  over.frequency.exponentialRampToValueAtTime(Math.max(40, to * 1.5), t + length * 0.6);
-  const og = c.createGain();
-  og.gain.setValueAtTime(0.0001, t);
-  og.gain.exponentialRampToValueAtTime(0.18 * vel, t + 0.005);
-  og.gain.exponentialRampToValueAtTime(0.0001, t + length * 0.5);
-  over.connect(og).connect(master!);
-  over.start(t);
-  over.stop(t + length);
-
-  // Slap of the curved stick on the skin
-  const slap = c.createBufferSource();
-  slap.buffer = noise;
-  const bp = c.createBiquadFilter();
-  bp.type = "bandpass";
-  bp.frequency.value = 1800;
-  bp.Q.value = 0.8;
-  const sg = c.createGain();
-  sg.gain.setValueAtTime(0.35 * vel, t);
-  sg.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
-  slap.connect(bp).connect(sg).connect(master!);
-  slap.start(t);
-  slap.stop(t + 0.05);
-}
-
-/** Shekere: a short, bright shake. */
-export function shaker(at = 0, vel = 0.5, length = 0.07) {
-  if (!ready()) return;
-  const c = ctx!;
-  const t = now() + at;
-  const src = c.createBufferSource();
-  src.buffer = noise;
+  const f = high ? 932 : 622; // roughly B♭5 and E♭5, a fifth apart like a real agogo pair
+  // FM: an inharmonic modulator gives the iron its clang; the clang settles as the index falls
+  const car = c.createOscillator();
+  car.type = "sine";
+  car.frequency.value = f;
+  const mod = c.createOscillator();
+  mod.type = "sine";
+  mod.frequency.value = f * 1.47;
+  const idx = c.createGain();
+  idx.gain.setValueAtTime(f * 2.4, t);
+  idx.gain.exponentialRampToValueAtTime(f * 0.15, t + 0.25);
+  mod.connect(idx).connect(car.frequency);
+  const amp = c.createGain();
+  amp.gain.setValueAtTime(0.0001, t);
+  amp.gain.exponentialRampToValueAtTime(0.32 * vel, t + 0.002);
+  amp.gain.exponentialRampToValueAtTime(0.0001, t + (high ? 0.45 : 0.6));
+  car.connect(amp).connect(master!);
+  car.start(t);
+  mod.start(t);
+  car.stop(t + 0.7);
+  mod.stop(t + 0.7);
+  // The stick's tick on the iron
+  const tick = c.createBufferSource();
+  tick.buffer = noise;
   const hp = c.createBiquadFilter();
   hp.type = "highpass";
-  hp.frequency.value = 5200;
-  const g = c.createGain();
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(0.32 * vel, t + 0.012);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + length);
-  src.connect(hp).connect(g).connect(master!);
-  src.start(t, Math.random() * 0.5);
-  src.stop(t + length + 0.02);
+  hp.frequency.value = 6000;
+  const tg = c.createGain();
+  tg.gain.setValueAtTime(0.18 * vel, t);
+  tg.gain.exponentialRampToValueAtTime(0.0001, t + 0.015);
+  tick.connect(hp).connect(tg).connect(master!);
+  tick.start(t, Math.random() * 0.5);
+  tick.stop(t + 0.02);
 }
 
-/** Agidigbo (thumb piano): a plucked tine. */
-export function pluck(freq: number, at = 0, vel = 0.6, length = 1.4) {
+/**
+ * Talking drum: a stroke that starts at `from` Hz and bends to `to` Hz, like the drummer squeezing the cords.
+ * Low ≈ 120, mid ≈ 165, high ≈ 225 Hz map to Yoruba's three speech tones.
+ */
+export function drum(from = 165, to = from, at = 0, vel = 1, length = 0.45) {
   if (!ready()) return;
   const c = ctx!;
   const t = now() + at;
-  const tine = c.createOscillator();
-  tine.type = "sine";
-  tine.frequency.value = freq;
-  const g = c.createGain();
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(0.42 * vel, t + 0.004);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + length);
-  tine.connect(g).connect(master!);
-  tine.start(t);
-  tine.stop(t + length + 0.05);
-  // The metallic "ping": an inharmonic overtone that dies fast
-  const ping = c.createOscillator();
-  ping.type = "sine";
-  ping.frequency.value = freq * 5.4;
-  const pg = c.createGain();
-  pg.gain.setValueAtTime(0.0001, t);
-  pg.gain.exponentialRampToValueAtTime(0.12 * vel, t + 0.002);
-  pg.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
-  ping.connect(pg).connect(master!);
-  ping.start(t);
-  ping.stop(t + 0.15);
+  const bendEnd = t + Math.min(0.32, length * 0.7);
+
+  // The skin's tone: a quick overshoot on the strike, then the bend
+  const body = c.createOscillator();
+  body.type = "sine";
+  body.frequency.setValueAtTime(from * 1.18, t);
+  body.frequency.exponentialRampToValueAtTime(from, t + 0.025);
+  body.frequency.exponentialRampToValueAtTime(Math.max(40, to), bendEnd);
+  const bg = c.createGain();
+  bg.gain.setValueAtTime(0.0001, t);
+  bg.gain.exponentialRampToValueAtTime(0.85 * vel, t + 0.005);
+  bg.gain.setTargetAtTime(0.0001, t + 0.05, length / 4);
+  body.connect(bg).connect(master!);
+  body.start(t);
+  body.stop(t + length + 0.3);
+
+  // The skin itself: noise through a resonant band that bends with the tone, which makes it sound like hide, not a beep
+  const skin = c.createBufferSource();
+  skin.buffer = noise;
+  const bp = c.createBiquadFilter();
+  bp.type = "bandpass";
+  bp.Q.value = 9;
+  bp.frequency.setValueAtTime(from * 2.1, t);
+  bp.frequency.exponentialRampToValueAtTime(Math.max(80, to * 2.1), bendEnd);
+  const sg = c.createGain();
+  sg.gain.setValueAtTime(0.0001, t);
+  sg.gain.exponentialRampToValueAtTime(0.9 * vel, t + 0.004);
+  sg.gain.setTargetAtTime(0.0001, t + 0.03, length / 6);
+  skin.connect(bp).connect(sg).connect(master!);
+  skin.start(t, Math.random() * 0.4);
+  skin.stop(t + length);
+
+  // The curved stick's slap
+  const slap = c.createBufferSource();
+  slap.buffer = noise;
+  const sp = c.createBiquadFilter();
+  sp.type = "bandpass";
+  sp.frequency.value = 1400;
+  sp.Q.value = 1.2;
+  const slg = c.createGain();
+  slg.gain.setValueAtTime(0.45 * vel, t);
+  slg.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+  slap.connect(sp).connect(slg).connect(master!);
+  slap.start(t, Math.random() * 0.4);
+  slap.stop(t + 0.04);
 }
 
-// A major pentatonic on D (D E F# A B), the warm, open scale of a lot of West African highlife and juju melody
-const BASE = 293.66;
-const STEPS = [0, 2, 4, 7, 9];
-/** The n-th note of the scale (0 = low D; it climbs through the octaves). */
-export const note = (n: number) => BASE * Math.pow(2, (STEPS[((n % 5) + 5) % 5] + 12 * Math.floor(n / 5)) / 12);
+/** Ṣẹ̀kẹ̀rẹ̀: a swish of the beaded gourd (`long` for the full shake). */
+export function shaker(at = 0, vel = 0.5, long = false) {
+  if (!ready()) return;
+  const c = ctx!;
+  const t = now() + at;
+  const len = long ? 0.22 : 0.09;
+  const src = c.createBufferSource();
+  src.buffer = noise;
+  const bp = c.createBiquadFilter();
+  bp.type = "bandpass";
+  bp.frequency.setValueAtTime(long ? 3200 : 4600, t);
+  bp.frequency.linearRampToValueAtTime(5600, t + len);
+  bp.Q.value = 1.1;
+  const g = c.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.28 * vel, t + (long ? 0.06 : 0.012));
+  g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+  src.connect(bp).connect(g).connect(master!);
+  src.start(t, Math.random() * 0.5);
+  src.stop(t + len + 0.02);
+}
 
 // ---- Phrases ----------------------------------------------------------------------------------------------------
 
-export const BEAT = 0.5357; // seconds per beat at 112 BPM
+/** One pulse of the 12/8 bell at 120 BPM (a dotted quarter = 0.5 s, so an eighth = 1/6 s). */
+const E = 1 / 6;
+// The West African standard bell pattern over 12 eighths: x . x . x x . x . x . x
+const BELL = [0, 2, 4, 5, 7, 9, 11];
+const LOW = 120;
+const MID = 165;
+const HIGH = 225;
 
 /**
- * The intro: two bars of talking drum "speech" over shekere, an agidigbo melody on top, and a closing flourish.
- * Timed to the intro animation (8 beats, then the reveal).
+ * The welcome, about 2 seconds: one bar of agogo timeline over a shekere swish, while the talking drum says
+ * "Ẹ káàbọ̀" (mid, high, low-falling, low), then a low "gbìn" to land on.
  */
-export function playIntro() {
+export function playWelcome() {
   if (!ready()) return;
-  const b = BEAT;
-  // Drum call: low "gbìn", high "gbín", then a quick talking roll that slides up, answered by a falling phrase
-  const call: [number, number, number, number][] = [
-    // [beat, from Hz, to Hz, velocity]
-    [0, 150, 120, 1],
-    [1, 220, 200, 0.9],
-    [1.5, 200, 240, 0.7],
-    [2, 150, 125, 1],
-    [3, 240, 300, 0.85],
-    [3.5, 300, 230, 0.75],
-    [4, 160, 125, 1],
-    [5, 230, 210, 0.9],
-    [5.5, 210, 260, 0.7],
-    [5.75, 260, 300, 0.6],
-    [6, 170, 120, 1],
-    [6.5, 300, 200, 0.8],
-    [7, 140, 90, 1],
-  ];
-  call.forEach(([beat, f, to, v]) => drum(f, to, beat * b, v));
-  // Shekere on every off-beat, accented on the "and" of 2 and 4
-  for (let i = 0; i < 16; i++) if (i % 2) shaker((i / 2) * b, i % 4 === 3 ? 0.75 : 0.45);
-  // Agidigbo melody, answering the drum
-  const tune: [number, number][] = [
-    [0.5, 5], [1, 7], [1.5, 9], [2.5, 8], [3, 7], [3.5, 5],
-    [4.5, 7], [5, 9], [5.5, 10], [6, 9], [6.5, 7], [7, 5],
-  ];
-  tune.forEach(([beat, n]) => pluck(note(n), beat * b, 0.55));
-  // The reveal: a rolling flourish and a bright chord
-  [0, 0.08, 0.16, 0.24].forEach((d, i) => drum(200 + i * 30, 160 + i * 20, 8 * b + d, 0.7));
-  [5, 7, 9, 10, 12].forEach((n, i) => pluck(note(n), 8.4 * b + i * 0.06, 0.5, 2.4));
+  BELL.forEach((s, i) => bell(i === 0 || i === 3, s * E, i === 0 ? 0.85 : 0.6));
+  [0, 3, 6, 9].forEach((s) => shaker(s * E, 0.55, s % 6 === 0));
+  // Ẹ – ká – à – bọ̀
+  drum(MID, MID, 0, 0.8, 0.35);
+  drum(HIGH, HIGH * 1.03, 2 * E, 0.9, 0.35);
+  drum(HIGH * 0.95, LOW * 1.05, 4 * E, 0.85, 0.5);
+  drum(LOW, LOW * 0.9, 7 * E, 0.95, 0.6);
+  // Land: the bell's downbeat again with a deep stroke and a long shake
+  bell(true, 12 * E, 0.8);
+  drum(LOW * 0.92, LOW * 0.75, 12 * E, 1, 0.8);
+  shaker(12 * E, 0.6, true);
 }
 
-/** A tap on the landing page: a drum note pitched by height, with a shake. */
+/** A tap on the landing page: the drum, pitched by height (high near the top), with the bell on every other tap. */
+let taps = 0;
 export function tapDrum(yFraction: number) {
-  const f = 260 - yFraction * 150;
-  drum(f, f * 0.82, 0, 0.8, 0.36);
+  const f = HIGH - yFraction * (HIGH - LOW) * 1.1;
+  drum(f * 1.05, f * 0.92, 0, 0.9, 0.42);
+  if (taps++ % 2 === 0) bell(yFraction < 0.5, 0.01, 0.45);
   shaker(0.02, 0.35);
 }
 
-/** Opening the menu: a quick drum pickup and a rising agidigbo run. */
+/** Opening the menu: a talking-drum pickup that rises, the bell, and a shake. */
 export function openFlourish() {
-  drum(170, 140, 0, 0.7, 0.3);
-  drum(230, 260, 0.11, 0.55, 0.25);
-  [5, 7, 9].forEach((n, i) => pluck(note(n), 0.08 + i * 0.07, 0.4, 1));
+  drum(LOW, MID, 0, 0.75, 0.3);
+  drum(MID, HIGH, E, 0.7, 0.32);
+  bell(false, 2 * E, 0.6);
+  bell(true, 3 * E, 0.5);
+  shaker(0, 0.4, true);
 }
 
-/** Hovering or focusing menu item `i`: one agidigbo note, climbing down the list. */
+/** Hovering or focusing menu item `i`: an agogo stroke, low and high bells alternating down the list. */
 export function menuNote(i: number) {
-  pluck(note(5 + i), 0, 0.35, 0.9);
+  bell(i % 2 === 1, 0, 0.42);
 }
 
-/** Moving between panels: a soft two-note answer. */
+/** Moving between panels: the drum "answers" with a falling two-tone phrase. */
 export function pageTurn() {
-  pluck(note(7), 0, 0.3, 0.8);
-  pluck(note(9), 0.09, 0.3, 1);
+  drum(HIGH, HIGH, 0, 0.55, 0.25);
+  drum(MID, LOW, E, 0.6, 0.35);
+}
+
+/** Turning sound on: the two bells, low then high. */
+export function chime() {
+  bell(false, 0, 0.6);
+  bell(true, E, 0.6);
 }

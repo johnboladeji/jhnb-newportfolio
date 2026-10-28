@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { tapDrum } from "../lib/sound";
-import { CLOTH } from "./Intro";
+import { BRAND } from "./Intro";
 
 /**
  * The landing page is a talking drum: tap or click any open space and it sounds (pitched by height, if sound is on)
- * and throws a burst of Aso-oke-coloured rings and beads. Links, buttons, form fields, the bio, the headline, the
+ * and throws a burst of rings and beads in the brand colours. Links, buttons, form fields, the bio, the headline, the
  * drawer, and the intro keep their own behaviour. Each tap announces itself with a `jhnb:drum` event (the play hint
  * listens). Under reduced motion the burst is a single ring that fades.
  */
@@ -32,7 +32,7 @@ export default function DrumPad() {
       for (let i = 0; i < rings; i++) {
         const ring = document.createElement("i");
         ring.className = "drum-ring";
-        ring.style.setProperty("--c", CLOTH[(hue + i * 2) % CLOTH.length]);
+        ring.style.setProperty("--c", BRAND[(hue + i * 2) % BRAND.length]);
         ring.style.animationDelay = `${i * 90}ms`;
         burst.appendChild(ring);
       }
@@ -45,11 +45,11 @@ export default function DrumPad() {
           const d = 40 + Math.random() * 50;
           bead.style.setProperty("--x", `${Math.cos(a) * d}px`);
           bead.style.setProperty("--y", `${Math.sin(a) * d}px`);
-          bead.style.setProperty("--c", CLOTH[(hue + i) % CLOTH.length]);
+          bead.style.setProperty("--c", BRAND[(hue + i) % BRAND.length]);
           burst.appendChild(bead);
         }
       }
-      hue = (hue + 1) % CLOTH.length;
+      hue = (hue + 1) % BRAND.length;
       document.body.appendChild(burst);
       window.setTimeout(() => burst.remove(), 1400);
     };

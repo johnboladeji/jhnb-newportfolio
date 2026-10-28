@@ -59,19 +59,21 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
 - `public/` — static files: `hero-1.webp` / `hero-2.webp` (hero slider cut-outs), `resume.pdf`,
   `jhnb-icon.png` (header logo), `jhnb-wordmark.png` (not currently used),
   `favicon.png` (256px) and `apple-touch-icon.png` (180px), both from `JHNB IDENTITY ICON wt BG 2.png`. Brand source files (`JHNB IDENTITY *.png`) and raw photos (`hero/`) also live here.
-- `src/lib/sound.ts` — the site's sound, synthesized with Web Audio (no files, no dependencies): dùndún talking drum
-  (gliding pitch + stick slap), ṣẹ̀kẹ̀rẹ̀ shaker (filtered noise), agidigbo thumb piano (D major pentatonic). Off until the
-  visitor turns it on (`jhnb-sound` in localStorage); every call is a no-op while off. `playIntro()` is timed to the intro
-  (112 BPM, 8 beats); `tapDrum`, `openFlourish`, `menuNote`, `pageTurn` serve the interactions; `hush()` silences a skip.
+- `src/lib/sound.ts` — the site's sound, synthesized with Web Audio (no files, no dependencies), Yoruba instruments:
+  agogo double bell (FM, low and high bell a fifth apart) playing the West African 12/8 standard bell pattern;
+  gángan talking drum (bending skin tone + resonant skin noise + stick slap) whose pitch follows Yoruba speech tones
+  (low ≈ 120, mid ≈ 165, high ≈ 225 Hz); ṣẹ̀kẹ̀rẹ̀ swish; a short wooden-room reverb. Off until the visitor turns it on
+  (`jhnb-sound` in localStorage); every call is a no-op while off. `playWelcome()` (≈2 s: one bar of bell, the drum
+  saying "Ẹ káàbọ̀"), `tapDrum`, `openFlourish`, `menuNote` (bell), `pageTurn`, `chime`; `hush()` silences.
 - `src/components/`
-  - `Intro.tsx` — the welcome, once per visit (sessionStorage `jhnb-intro`), z-90: an Adire gate (oniko circles, dots,
-    waves on indigo) with a turning Aso-oke colour ring and greetings in Yoruba, Igbo, Hausa, Naija Pidgin, and English
-    (`intro` in content.ts), then "Enter with sound" / "Enter quietly"; then an 8-beat show in step with the drum: woven
-    bands sweep in, rings burst on each stroke, the J. mark lands, JUST HOLD NO BOUNDS stamps in, the cloth splits open.
-    Escape or Skip leaves; reduced motion skips the show. Fires `jhnb:intro-done` (the bio replays, the play hint shows).
-    `CLOTH` is the shared Aso-oke palette.
-  - `DrumPad.tsx` — taps on open space play the talking drum (pitched by height) and throw coloured rings and shekere
-    beads (`.drum-burst`); skips links, buttons, fields, dialogs, and anything marked `data-no-drum` (the h1, the bio).
+  - `Intro.tsx` — the welcome, once per visit (sessionStorage `jhnb-intro`), z-90, in the brand palette only (`BRAND`).
+    Says who John is in about two seconds: the J. mark with a tertiary ring drawing, "Ẹ káàbọ̀ · Welcome", the name,
+    "designs with" (outlined) + RHETORIC · CULTURE · CODE (the hero's words, primary), the three roles; then "Enter with
+    sound" / "Enter quietly", and it enters quietly by itself after a 6-second countdown. Entering plays `playWelcome`
+    while the page lifts like a curtain with a woven `.aso-band` edge. Escape enters quietly; reduced motion shows it all
+    at once and fades. A faint Adire texture (oniko circles, dots, waves) in brand tones sits behind. Copy: `intro`.
+  - `DrumPad.tsx` — taps on open space play the talking drum (pitched by height) and throw rings and shekere beads in the
+    brand colours (`.drum-burst`); skips links, buttons, fields, dialogs, and anything marked `data-no-drum` (the h1, the bio).
     Fires `jhnb:drum` (hides the hint). Clicking the h1 turns the rotating word on a drum roll.
   - `SoundToggle.tsx` — sound on/off in the footer (`aria-pressed`, dancing `.sound-bars`).
   - `ParticleBackground.tsx` — Three.js scene (z-0). Disposes everything on unmount.
@@ -88,7 +90,7 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
   - `InfoDrawer.tsx` — side drawer (z-50): menu (Home, Projects, About Me, Writing ▸ Content Design / Articles, Resume, Let's Work), sub-views, contact form.
     Sound (when on): `openFlourish` as it opens, `pageTurn` between panels, `menuNote(i)` on hovering or focusing a menu
     item. A woven `.aso-band` runs along the panel's top edge and sweeps in under each menu label on hover or focus.
-    The Header's menu button pulses in Aso-oke colours (`.menu-nudge`) after 9 seconds without interaction.
+    The Header's menu button pulses in the brand colours (`.menu-nudge`) after 9 seconds without interaction.
     The Writing pages (Content Design, Articles) open full screen by default, however they're reached (menu, link, or a
     shared `#/writing/...` address); the toggle still shrinks them. Other panels open at drawer width.
   - `DrawerPortraits.tsx` — studio portraits blended into the drawer's right edge, sliding right → left (`drawerImages`).

@@ -289,13 +289,13 @@ body {
 
 /* ---- Culture layer: Aso-oke weave, the talking-drum pad, sound toggle, menu nudge ---------------------------- */
 
-/* A woven Aso-oke strip: blocks of indigo, gold, terracotta, palm green, magenta, ochre, brand red, cream, with fine
-   warp threads over them. Used as the drawer's top edge and the menu's hover underline. */
+/* A woven Aso-oke strip in the brand colours (primary, tertiary, secondary, primary-soft, amber, cream) with fine warp
+   threads over them. Used as the drawer's top edge, the menu's hover underline, and the intro curtain's edge. */
 .aso-band {
   background-image:
     repeating-linear-gradient(90deg, rgb(255 255 255 / 0.14) 0 1px, transparent 1px 4px),
-    repeating-linear-gradient(90deg, #2b3990 0 18px, #f2a93b 18px 30px, #c8462b 30px 48px, #1f7a4d 48px 60px,
-      #b23a73 60px 74px, #d98c1f 74px 86px, #983a28 86px 102px, #f1e6ce 102px 108px);
+    repeating-linear-gradient(90deg, #983a28 0 22px, #ffd0a1 22px 32px, #4e1d09 32px 50px, #f0937a 50px 62px,
+      #983a28 62px 80px, #f2a65a 80px 92px, #f1e6ce 92px 98px, #4e1d09 98px 108px);
   background-size: auto, 108px 100%;
   animation: aso-drift 6s linear infinite;
 }
@@ -324,15 +324,13 @@ body {
 .sound-bars.is-on i { animation: sound-bar 0.9s ease-in-out infinite alternate; }
 @keyframes sound-bar { from { height: 2px; } to { height: 10px; } }
 
-/* Menu button nudge after a quiet spell: a pulse that cycles through the Aso-oke colours */
+/* Menu button nudge after a quiet spell: a pulse in the brand colours (tertiary, then primary-soft) */
 .menu-nudge { animation: menu-nudge 2.4s ease-out infinite; }
 @keyframes menu-nudge {
-  0% { box-shadow: 0 0 0 0 rgb(242 169 59 / 0.75); }
-  33% { box-shadow: 0 0 0 10px rgb(200 70 43 / 0); }
-  34% { box-shadow: 0 0 0 0 rgb(31 122 77 / 0.7); }
-  66% { box-shadow: 0 0 0 10px rgb(178 58 115 / 0); }
-  67% { box-shadow: 0 0 0 0 rgb(43 57 144 / 0.75); }
-  100% { box-shadow: 0 0 0 10px rgb(43 57 144 / 0); }
+  0% { box-shadow: 0 0 0 0 rgb(255 208 161 / 0.7); }
+  50% { box-shadow: 0 0 0 11px rgb(255 208 161 / 0); }
+  51% { box-shadow: 0 0 0 0 rgb(240 147 122 / 0.6); }
+  100% { box-shadow: 0 0 0 11px rgb(240 147 122 / 0); }
 }
 
 /* The play hint's drum taps in time (112 BPM) */
