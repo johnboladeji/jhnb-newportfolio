@@ -161,6 +161,16 @@ export default function TypewriterBio({ onTyped }: TypewriterBioProps) {
   };
   useEffect(() => () => window.clearTimeout(rippleEnd.current), []);
 
+  // When the welcome intro finishes, the bio starts fresh, so the visitor sees it reveal
+  useEffect(() => {
+    const onIntro = () => {
+      if (!reduceMotion) replay();
+    };
+    window.addEventListener("jhnb:intro-done", onIntro);
+    return () => window.removeEventListener("jhnb:intro-done", onIntro);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduceMotion]);
+
   // A tap or click while revealing shows the whole text at once
   const finish = () => {
     if (!done) setMode("still");

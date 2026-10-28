@@ -286,3 +286,59 @@ body {
   .bio-word { transform: none; }
   .bio-word.bio-hi, .bio-rippling .bio-word { animation: none; }
 }
+
+/* ---- Culture layer: Aso-oke weave, the talking-drum pad, sound toggle, menu nudge ---------------------------- */
+
+/* A woven Aso-oke strip: blocks of indigo, gold, terracotta, palm green, magenta, ochre, brand red, cream, with fine
+   warp threads over them. Used as the drawer's top edge and the menu's hover underline. */
+.aso-band {
+  background-image:
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.14) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, #2b3990 0 18px, #f2a93b 18px 30px, #c8462b 30px 48px, #1f7a4d 48px 60px,
+      #b23a73 60px 74px, #d98c1f 74px 86px, #983a28 86px 102px, #f1e6ce 102px 108px);
+  background-size: auto, 108px 100%;
+  animation: aso-drift 6s linear infinite;
+}
+@keyframes aso-drift { to { background-position: 0 0, 108px 0; } }
+
+/* The drum pad's burst: coloured rings and shekere beads */
+.drum-burst { position: fixed; z-index: 65; width: 0; height: 0; pointer-events: none; }
+.drum-ring {
+  position: absolute; left: -14px; top: -14px; width: 28px; height: 28px; border-radius: 9999px;
+  border: 3px solid var(--c); box-shadow: 0 0 14px var(--c);
+  animation: drum-ring 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes drum-ring { from { transform: scale(0.3); opacity: 1; } to { transform: scale(5); opacity: 0; } }
+.drum-bead {
+  position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 9999px; background: var(--c);
+  animation: drum-bead 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes drum-bead {
+  from { transform: translate(0, 0) scale(1); opacity: 1; }
+  to { transform: translate(var(--x), var(--y)) scale(0.3); opacity: 0; }
+}
+
+/* Sound toggle: four equaliser bars, dancing while sound is on */
+.sound-bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 10px; }
+.sound-bars i { display: block; width: 2px; height: 3px; border-radius: 1px; background: currentColor; }
+.sound-bars.is-on i { animation: sound-bar 0.9s ease-in-out infinite alternate; }
+@keyframes sound-bar { from { height: 2px; } to { height: 10px; } }
+
+/* Menu button nudge after a quiet spell: a pulse that cycles through the Aso-oke colours */
+.menu-nudge { animation: menu-nudge 2.4s ease-out infinite; }
+@keyframes menu-nudge {
+  0% { box-shadow: 0 0 0 0 rgb(242 169 59 / 0.75); }
+  33% { box-shadow: 0 0 0 10px rgb(200 70 43 / 0); }
+  34% { box-shadow: 0 0 0 0 rgb(31 122 77 / 0.7); }
+  66% { box-shadow: 0 0 0 10px rgb(178 58 115 / 0); }
+  67% { box-shadow: 0 0 0 0 rgb(43 57 144 / 0.75); }
+  100% { box-shadow: 0 0 0 10px rgb(43 57 144 / 0); }
+}
+
+/* The play hint's drum taps in time (112 BPM) */
+.drum-hint-icon { animation: drum-hint 0.5357s ease-out infinite; transform-origin: 50% 80%; }
+@keyframes drum-hint { 0% { transform: scale(1.25) rotate(-8deg); } 40% { transform: scale(1) rotate(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .aso-band, .menu-nudge, .drum-hint-icon, .sound-bars.is-on i { animation: none; }
+}

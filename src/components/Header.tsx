@@ -11,6 +11,28 @@ interface HeaderProps {
 }
 
 export default function Header({ onMenu, menuOpen = false }: HeaderProps) {
+  // After a quiet spell on the landing page, the menu button pulses in Aso-oke colours to invite a look inside
+  const [nudge, setNudge] = useState(false);
+  useEffect(() => {
+    if (menuOpen) {
+      setNudge(false);
+      return;
+    }
+    let id = 0;
+    const reset = () => {
+      setNudge(false);
+      window.clearTimeout(id);
+      id = window.setTimeout(() => setNudge(true), 9000);
+    };
+    reset();
+    const events = ["pointerdown", "keydown", "wheel", "touchstart"] as const;
+    events.forEach((e) => window.addEventListener(e, reset, { passive: true }));
+    return () => {
+      window.clearTimeout(id);
+      events.forEach((e) => window.removeEventListener(e, reset));
+    };
+  }, [menuOpen]);
+
   return (
     <header className="relative z-30 grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-8 lg:px-12">
       <div className="justify-self-start">
@@ -30,7 +52,7 @@ export default function Header({ onMenu, menuOpen = false }: HeaderProps) {
       <LogoMorph />
 
       <div className="justify-self-end">
-        <MenuButton onClick={onMenu} expanded={menuOpen} />
+        <MenuButton onClick={onMenu} expanded={menuOpen} nudge={nudge} />
       </div>
     </header>
   );
@@ -173,7 +195,7 @@ function LogoMorph() {
 }
 
 /** Pill with a rolling "View Me" caption and a hamburger whose lines shift; hover fills the pill peach. */
-function MenuButton({ onClick, expanded }: { onClick: () => void; expanded: boolean }) {
+function MenuButton({ onClick, expanded, nudge }: { onClick: () => void; expanded: boolean; nudge: boolean }) {
   return (
     <button
       type="button"
@@ -183,7 +205,7 @@ function MenuButton({ onClick, expanded }: { onClick: () => void; expanded: bool
       aria-controls="site-drawer"
       aria-label={`${menuButtonLabel} — open menu`}
       data-magnetic="0.25"
-      className="fx-spotlight group flex items-center gap-2.5 rounded-full border border-cream/20 py-1 pl-3.5 pr-1 transition-colors duration-300 hover:border-tertiary hover:bg-tertiary focus-visible:border-tertiary focus-visible:bg-tertiary sm:gap-3 sm:py-1.5 sm:pl-5 sm:pr-1.5"
+      className={`${nudge ? "menu-nudge " : ""}fx-spotlight group flex items-center gap-2.5 rounded-full border border-cream/20 py-1 pl-3.5 pr-1 transition-colors duration-300 hover:border-tertiary hover:bg-tertiary focus-visible:border-tertiary focus-visible:bg-tertiary sm:gap-3 sm:py-1.5 sm:pl-5 sm:pr-1.5`}
     >
       {/* The caption rolls forward (left → right): a second copy enters as the first leaves */}
       <span

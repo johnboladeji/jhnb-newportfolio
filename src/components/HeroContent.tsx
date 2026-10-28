@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Drum } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import ScrambleText from "./ScrambleText";
 import TypewriterBio from "./TypewriterBio";
 import RollText from "./RollText";
-import { hero } from "../content";
+import { hero, intro } from "../content";
+import { drum, shaker } from "../lib/sound";
+import { introSeen } from "./Intro";
 
 const WORDS = hero.rotatingWords;
 const ROTATE_MS = 4000;
@@ -30,9 +32,46 @@ export default function HeroContent({ onViewProjects, onViewAbout }: HeroContent
       setWordIndex(STILL_WORD);
       return;
     }
-    const id = window.setInterval(() => setWordIndex((i) => (i + 1) % WORDS.length), ROTATE_MS);
-    return () => window.clearInterval(id);
-  }, [reduceMotion]);
+    // A timeout (not an interval) so a click that skips ahead also restarts the count
+    const id = window.setTimeout(() => setWordIndex((i) => (i + 1) % WORDS.length), ROTATE_MS);
+    return () => window.clearTimeout(id);
+  }, [reduceMotion, wordIndex]);
+
+  // Click the big word: it turns to the next one on a talking-drum roll
+  const nextWord = () => {
+    setWordIndex((i) => (i + 1) % WORDS.length);
+    drum(150, 210, 0, 0.9, 0.3);
+    drum(220, 180, 0.12, 0.7, 0.3);
+    shaker(0.06, 0.4);
+  };
+
+  // "Tap anywhere to play the talking drum": shown once the intro has gone, until the first tap of the visit
+  const [hint, setHint] = useState(false);
+  useEffect(() => {
+    let drummed = false;
+    try {
+      drummed = sessionStorage.getItem("jhnb-drummed") === "1";
+    } catch {
+      /* ignore */
+    }
+    if (drummed) return;
+    const show = () => setHint(true);
+    const hide = () => {
+      setHint(false);
+      try {
+        sessionStorage.setItem("jhnb-drummed", "1");
+      } catch {
+        /* ignore */
+      }
+    };
+    if (introSeen()) show();
+    window.addEventListener("jhnb:intro-done", show);
+    window.addEventListener("jhnb:drum", hide);
+    return () => {
+      window.removeEventListener("jhnb:intro-done", show);
+      window.removeEventListener("jhnb:drum", hide);
+    };
+  }, []);
 
   // Below lg the photo starts where the text ends. Publish the bio's bottom edge as a CSS variable
   // (--hero-text-bottom) that HeroImage sizes against, and keep it current as the layout changes.
@@ -70,7 +109,11 @@ export default function HeroContent({ onViewProjects, onViewAbout }: HeroContent
       <div className="flex flex-col items-center lg:items-start lg:self-center lg:pb-[4vh]">
         {/* Optical alignment: -ml-[0.03em] cancels Anton's left side-bearing so both lines' ink starts on the same edge
             as the tagline and button; -mr-[0.08em] cancels the outline line's trailing letter-spacing so it centres truly. */}
-        <h1 className="pointer-events-auto flex flex-col items-center text-center font-display uppercase leading-[0.9] lg:items-start lg:text-left">
+        <h1
+          data-no-drum
+          onClick={nextWord}
+          className="pointer-events-auto flex cursor-pointer select-none flex-col items-center text-center font-display uppercase leading-[0.9] lg:items-start lg:text-left"
+        >
           <span className="sr-only">{HEADLINE_TEXT}</span>
           {/* The visual headline (outline line + scrambling word) is decoration over the sentence above */}
           <span aria-hidden="true" className="contents">
@@ -99,11 +142,14 @@ export default function HeroContent({ onViewProjects, onViewAbout }: HeroContent
           <RollText text={hero.ctaLabel} />
           <ArrowRight size={14} aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1" />
         </button>
+
+        <PlayHint show={hint} className="mt-5 hidden lg:inline-flex" />
       </div>
 
       {/* From lg the bio can sit over the photo's shoulder on narrower screens: a soft dark scrim behind it keeps it legible */}
       <div
         ref={bioRef}
+        data-no-drum
         className="pointer-events-auto relative isolate mt-4 sm:mt-6 lg:mt-0 lg:w-[17.5rem] lg:self-end lg:before:pointer-events-none lg:before:absolute lg:before:-inset-x-12 lg:before:-inset-y-10 lg:before:-z-10 lg:before:bg-[radial-gradient(closest-side,rgba(21,6,0,0.85),rgba(21,6,0,0.6)_55%,transparent)] lg:before:content-[''] xl:w-[20rem] 2xl:w-[22rem]"
       >
         <TypewriterBio onTyped={() => setBioTyped(true)} />
@@ -125,7 +171,28 @@ export default function HeroContent({ onViewProjects, onViewAbout }: HeroContent
             <ArrowRight size={12} aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5" />
           </motion.button>
         </div>
+        {/* Below lg the hint floats just under the text, so it never pushes the photo down */}
+        <div className="pointer-events-none absolute inset-x-0 top-full mt-2 flex justify-center lg:hidden">
+          <PlayHint show={hint} className="inline-flex" />
+        </div>
       </div>
     </main>
+  );
+}
+
+/** A small invitation to play: a drum that taps in time, and the line from content.ts. */
+function PlayHint({ show, className = "" }: { show: boolean; className?: string }) {
+  return (
+    <motion.p
+      aria-hidden={!show}
+      initial={false}
+      animate={show ? { opacity: 1, y: 0 } : { opacity: 0, y: 6 }}
+      transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
+      style={{ visibility: show ? "visible" : "hidden" }}
+      className={`pointer-events-none items-center gap-2 rounded-full border border-tertiary/30 bg-base/60 px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] text-tertiary backdrop-blur-sm ${className}`}
+    >
+      <Drum size={13} aria-hidden="true" className="drum-hint-icon" />
+      {intro.playHint.toUpperCase()}
+    </motion.p>
   );
 }

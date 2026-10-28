@@ -59,7 +59,21 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
 - `public/` — static files: `hero-1.webp` / `hero-2.webp` (hero slider cut-outs), `resume.pdf`,
   `jhnb-icon.png` (header logo), `jhnb-wordmark.png` (not currently used),
   `favicon.png` (256px) and `apple-touch-icon.png` (180px), both from `JHNB IDENTITY ICON wt BG 2.png`. Brand source files (`JHNB IDENTITY *.png`) and raw photos (`hero/`) also live here.
+- `src/lib/sound.ts` — the site's sound, synthesized with Web Audio (no files, no dependencies): dùndún talking drum
+  (gliding pitch + stick slap), ṣẹ̀kẹ̀rẹ̀ shaker (filtered noise), agidigbo thumb piano (D major pentatonic). Off until the
+  visitor turns it on (`jhnb-sound` in localStorage); every call is a no-op while off. `playIntro()` is timed to the intro
+  (112 BPM, 8 beats); `tapDrum`, `openFlourish`, `menuNote`, `pageTurn` serve the interactions; `hush()` silences a skip.
 - `src/components/`
+  - `Intro.tsx` — the welcome, once per visit (sessionStorage `jhnb-intro`), z-90: an Adire gate (oniko circles, dots,
+    waves on indigo) with a turning Aso-oke colour ring and greetings in Yoruba, Igbo, Hausa, Naija Pidgin, and English
+    (`intro` in content.ts), then "Enter with sound" / "Enter quietly"; then an 8-beat show in step with the drum: woven
+    bands sweep in, rings burst on each stroke, the J. mark lands, JUST HOLD NO BOUNDS stamps in, the cloth splits open.
+    Escape or Skip leaves; reduced motion skips the show. Fires `jhnb:intro-done` (the bio replays, the play hint shows).
+    `CLOTH` is the shared Aso-oke palette.
+  - `DrumPad.tsx` — taps on open space play the talking drum (pitched by height) and throw coloured rings and shekere
+    beads (`.drum-burst`); skips links, buttons, fields, dialogs, and anything marked `data-no-drum` (the h1, the bio).
+    Fires `jhnb:drum` (hides the hint). Clicking the h1 turns the rotating word on a drum roll.
+  - `SoundToggle.tsx` — sound on/off in the footer (`aria-pressed`, dancing `.sound-bars`).
   - `ParticleBackground.tsx` — Three.js scene (z-0). Disposes everything on unmount.
     Without WebGL it skips itself (try/catch around the renderer); App wraps it and HeroImage in `SafeBoundary.tsx`, so a
     crash in decoration never blanks the page. Test with WebGL off (e.g. stub `getContext` before the app loads).
@@ -72,6 +86,9 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
   - `SocialIcon.tsx` — inline SVG brand glyphs used in the header.
   - `FooterMarquee.tsx` — outlined marquee plus the © / email footer line (z-30).
   - `InfoDrawer.tsx` — side drawer (z-50): menu (Home, Projects, About Me, Writing ▸ Content Design / Articles, Resume, Let's Work), sub-views, contact form.
+    Sound (when on): `openFlourish` as it opens, `pageTurn` between panels, `menuNote(i)` on hovering or focusing a menu
+    item. A woven `.aso-band` runs along the panel's top edge and sweeps in under each menu label on hover or focus.
+    The Header's menu button pulses in Aso-oke colours (`.menu-nudge`) after 9 seconds without interaction.
     The Writing pages (Content Design, Articles) open full screen by default, however they're reached (menu, link, or a
     shared `#/writing/...` address); the toggle still shrinks them. Other panels open at drawer width.
   - `DrawerPortraits.tsx` — studio portraits blended into the drawer's right edge, sliding right → left (`drawerImages`).

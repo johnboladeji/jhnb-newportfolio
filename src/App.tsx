@@ -7,12 +7,16 @@ import SafeBoundary from "./components/SafeBoundary";
 import FooterMarquee from "./components/FooterMarquee";
 import InfoDrawer, { type DrawerView } from "./components/InfoDrawer";
 import InteractionFX from "./components/InteractionFX";
+import Intro, { introSeen } from "./components/Intro";
+import DrumPad from "./components/DrumPad";
 import { projects } from "./content";
 import { hashToRoute, routeTitle, routeToHash, type Route } from "./routes";
 
 export default function App() {
   // The drawer's state lives in the URL hash too (see routes.ts), so every panel has a shareable address
   const [route, setRoute] = useState<Route | null>(() => hashToRoute(window.location.hash));
+  // The welcome intro plays once per visit
+  const [introDone, setIntroDone] = useState(introSeen);
   const [lastSlug, setLastSlug] = useState(() => route?.slug ?? projects[0].slug);
 
   // Move to a route and record it in the address bar (a new history entry, so Back steps between panels)
@@ -65,6 +69,8 @@ export default function App() {
         onClose={closeDrawer}
       />
       <InteractionFX />                   {/* z-70: cursor follower, magnetic, bursts */}
+      <DrumPad />                         {/* taps on open space play the talking drum */}
+      {!introDone && <Intro onDone={() => setIntroDone(true)} />} {/* z-90 */}
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowUpRight, ChevronDown, LayoutGrid, Maximize2, Menu, Minimize2, X } from "lucide-react";
 import { contact, menu, projects, worksHeadline } from "../content";
 import RollText from "./RollText";
+import { menuNote, openFlourish, pageTurn } from "../lib/sound";
 import DrawerPortraits from "./DrawerPortraits";
 import AboutSection from "./AboutSection";
 import TypeLoop from "./TypeLoop";
@@ -53,6 +54,18 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
   // The Writing pages are made for reading, so they open full screen however they're reached (menu, link, or a shared
   // #/writing/... address); the toggle still shrinks them back
   const writingView = view === "contentDesign" || view === "articles";
+
+  // Sound (when it's on): a drum pickup as the drawer opens, a soft two-note answer on each move between panels
+  const lastView = useRef<string | null>(null);
+  useEffect(() => {
+    if (!open) {
+      lastView.current = null;
+      return;
+    }
+    if (lastView.current === null) openFlourish();
+    else if (lastView.current !== `${view}:${caseSlug}`) pageTurn();
+    lastView.current = `${view}:${caseSlug}`;
+  }, [open, view, caseSlug]);
   useEffect(() => {
     if (open && writingView) setFull(true);
   }, [open, writingView]);
@@ -148,6 +161,8 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
           >
             {/* Portraits sit behind everything at the panel's right edge; full strength on the menu, dimmed elsewhere */}
             <DrawerPortraits dim={view !== "menu"} />
+            {/* A woven Aso-oke band along the top edge of every panel */}
+            <span aria-hidden="true" className="aso-band pointer-events-none absolute inset-x-0 top-0 z-10 h-1" />
           {/* Top bar: no fill (the portrait shows through it). It sits outside the scroller, so content scrolls
               below it rather than under it. */}
           <div ref={headRef} className="relative z-30 flex shrink-0 items-center justify-between border-b border-cream/5 px-6 py-5 sm:px-10 pt-[max(1.25rem,env(safe-area-inset-top))]">
@@ -293,6 +308,13 @@ function MenuLabel({ text, current = false, thin = false }: { text: string; curr
   return (
     <span className="relative">
       <RollText text={text} />
+      {/* On hover or focus, a woven Aso-oke stripe sweeps in under the label */}
+      <span
+        aria-hidden="true"
+        className={`aso-band absolute inset-x-0 origin-left scale-x-0 rounded-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100 ${
+          thin ? "-bottom-2 h-[3px]" : "-bottom-2.5 h-[5px]"
+        }`}
+      />
       <span
         aria-hidden="true"
         className={`absolute inset-x-0 rounded-full bg-primary transition-opacity duration-150 group-active:opacity-100 ${
@@ -321,6 +343,8 @@ function MenuView({ onNavigate, onClose }: { onNavigate: (v: DrawerView) => void
               <>
                 <button
                   type="button"
+                  onPointerEnter={() => menuNote(i)}
+                  onFocus={() => menuNote(i)}
                   aria-expanded={writingOpen}
                   aria-controls="menu-writing"
                   onClick={() => setWritingOpen((o) => !o)}
@@ -342,10 +366,12 @@ function MenuView({ onNavigate, onClose }: { onNavigate: (v: DrawerView) => void
                       transition={{ duration: 0.3, ease: "easeOut" }}
                       className="ml-9 overflow-hidden border-l border-cream/20 pl-6 sm:ml-10"
                     >
-                      {item.children.map((child) => (
+                      {item.children.map((child, k) => (
                         <li key={child.view}>
                           <button
                             type="button"
+                            onPointerEnter={() => menuNote(i + k + 1)}
+                            onFocus={() => menuNote(i + k + 1)}
                             onClick={() => onNavigate(child.view)}
                             className="group py-1.5 text-left font-sans text-2xl font-bold text-cream transition-[color,transform] duration-300 hover:translate-x-1.5 hover:text-tertiary active:text-cream sm:text-3xl"
                           >
@@ -358,7 +384,14 @@ function MenuView({ onNavigate, onClose }: { onNavigate: (v: DrawerView) => void
                 </AnimatePresence>
               </>
             ) : item.view === "home" ? (
-              <button type="button" onClick={onClose} aria-current="page" className={`${menuItemClass} ${menuItemCurrent}`}>
+              <button
+                type="button"
+                onClick={onClose}
+                onPointerEnter={() => menuNote(i)}
+                onFocus={() => menuNote(i)}
+                aria-current="page"
+                className={`${menuItemClass} ${menuItemCurrent}`}
+              >
                 {/* Current-page marker: a thin rule with a dot */}
                 <span aria-hidden="true" className="absolute left-0 top-1/2 h-[70%] w-[3px] -translate-y-1/2 rounded-full bg-primary">
                   <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" />
@@ -366,7 +399,13 @@ function MenuView({ onNavigate, onClose }: { onNavigate: (v: DrawerView) => void
                 <MenuLabel text={item.label} current />
               </button>
             ) : (
-              <button type="button" onClick={() => onNavigate(item.view)} className={`${menuItemClass} text-cream`}>
+              <button
+                type="button"
+                onClick={() => onNavigate(item.view)}
+                onPointerEnter={() => menuNote(i)}
+                onFocus={() => menuNote(i)}
+                className={`${menuItemClass} text-cream`}
+              >
                 <MenuLabel text={item.label} />
                 <ArrowUpRight
                   aria-hidden="true"

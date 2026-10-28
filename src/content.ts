@@ -86,6 +86,33 @@ export const hero = {
 };
 
 /**
+ * The welcome gate and intro show (Intro.tsx), played once per visit. Greetings cycle in the gate; the visitor chooses
+ * to enter with or without sound (the sound is synthesized in src/lib/sound.ts).
+ */
+export const intro = {
+  greetings: [
+    { text: "Ẹ káàbọ̀", language: "Yoruba", lang: "yo" },
+    { text: "Nnọọ", language: "Igbo", lang: "ig" },
+    { text: "Barka da zuwa", language: "Hausa", lang: "ha" },
+    { text: "Una welcome", language: "Naija Pidgin", lang: "pcm" },
+    { text: "Welcome", language: "English", lang: "en" },
+  ],
+  kicker: "JHNB · Design with rhetoric, culture, and code",
+  enterWithSound: "ENTER WITH SOUND",
+  enterQuietly: "ENTER QUIETLY",
+  note: "Talking drum, shekere, and agidigbo, all played in code. Headphones welcome.",
+  /** Shown word by word as the intro's drum plays */
+  words: ["JUST", "HOLD", "NO", "BOUNDS"],
+  /** Small hint on the landing page, gone after the first tap */
+  playHint: "Tap anywhere to play the talking drum",
+  soundOn: "SOUND ON",
+  soundOff: "SOUND OFF",
+  skip: "SKIP",
+  /** For screen readers: what the welcome dialog is */
+  title: "Welcome to the portfolio of John B. Oladeji (JHNB)",
+};
+
+/**
  * Full-length studio portraits (backgrounds kept, feathered into the panel) at the menu drawer's right edge;
  * they slide right → left in turn.
  * Made from public/hero/1791941257668.jpg.jpeg and public/hero/file_0000000039b4820c872ad8c174095ff1.png.
