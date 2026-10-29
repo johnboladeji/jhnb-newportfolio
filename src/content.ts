@@ -86,27 +86,33 @@ export const hero = {
 };
 
 /**
- * The welcome (Intro.tsx), once per visit. In about two seconds it says who John is, in the site's own colours:
- * the J. mark, a Yoruba welcome, the name, "designs with rhetoric, culture, and code" (the hero's three words), and the
- * three roles. Then the visitor enters with sound or quietly (it enters by itself, quietly, after a few seconds).
- * The sound is synthesized in src/lib/sound.ts.
+ * The welcome (Intro.tsx), once per visit: a shut studio door in a terracotta stone wall. Across the door a sign types
+ * a generic welcome, strikes it through, and rewrites it for the reader: in Yoruba first, then the visitor's world,
+ * landing on "Ẹ káàbọ̀. Welcome." The handle turns, the doors swing open, and you walk into the studio (the hero).
  */
 export const intro = {
-  greeting: "Ẹ káàbọ̀",
-  greetingLang: "yo",
-  greetingMeaning: "Welcome",
-  /** Between the name and the hero's three words: "John B. Oladeji designs with rhetoric · culture · code" */
-  lead: "designs with",
-  enterWithSound: "ENTER WITH SOUND",
-  enterQuietly: "Enter quietly",
-  /** Followed by the seconds left, e.g. "Entering in 4" */
-  autoEnter: "Entering in",
+  /** The first draft, typed, then struck through */
+  draft: "Welcome to my portfolio.",
+  /** The rewrites, one after another; the last one stays */
+  greetings: [
+    { text: "Ẹ káàbọ̀.", lang: "yo" },
+    { text: "Bienvenido.", lang: "es" },
+    { text: "Bienvenue.", lang: "fr" },
+    { text: "ようこそ。", lang: "ja" },
+    { text: "Ẹ káàbọ̀. Welcome.", lang: "yo" },
+  ],
+  sub: "Let’s begin where you are.",
+  /** Carved into the lintel above the door */
+  sign: "JHNB · STUDIO",
+  skip: "Skip intro",
+  /** On the handle, for pointer and screen-reader users who want in now */
+  openNow: "Open the door",
   /** Small hint on the landing page, gone after the first tap */
   playHint: "Tap anywhere to play the talking drum",
   soundOn: "SOUND ON",
   soundOff: "SOUND OFF",
-  /** For screen readers: what the welcome dialog is */
-  title: "Welcome to the portfolio of John B. Oladeji (JHNB)",
+  /** For screen readers: the whole welcome at once */
+  title: "Welcome to the studio of John B. Oladeji (JHNB). Ẹ káàbọ̀. Let’s begin where you are.",
 };
 
 /**

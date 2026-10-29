@@ -340,3 +340,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .aso-band, .menu-nudge, .drum-hint-icon, .sound-bars.is-on i { animation: none; }
 }
+
+/* Studio-door lanterns: the light breathes like a flame */
+.lantern-glow { animation: lantern 2.6s ease-in-out infinite alternate; }
+@keyframes lantern { 0% { opacity: 0.75; transform: translate(-50%, -50%) scale(0.94); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .lantern-glow { animation: none; } }
