@@ -772,6 +772,93 @@ function StatusChip({ s }: { s: WritingSample["status"] }) {
   );
 }
 
+/**
+ * "Watch a sentence change its mind": a slider that applies the tracked changes one at a time. Deletions are
+ * struck, insertions highlighted; the last stop drops the struck words and leaves the clean copy.
+ */
+function TrackChanges() {
+  const T = writing.trackChanges;
+  const id = useId();
+  const changes = T.pieces.filter((p) => p.kind !== "keep");
+  const max = changes.length + 1;
+  const [step, setStep] = useState(0);
+  const clean = step === max;
+
+  let c = 0;
+  const shown = T.pieces.map((p) => {
+    const applied = p.kind !== "keep" && step >= ++c;
+    const visible = p.kind === "keep" || (p.kind === "del" ? !(applied && clean) : applied);
+    return { ...p, applied, visible };
+  });
+  // No stray space before the closing quote
+  const last = shown.map((p) => p.visible && p.kind !== "keep").lastIndexOf(true);
+
+  const current = changes[step - 1];
+  const valueText =
+    step === 0 ? T.draftLabel : clean ? T.finalLabel : `Change ${step} of ${changes.length}: ${current.kind === "del" ? "deleted" : "added"} “${current.text.trim()}”`;
+
+  return (
+    <section aria-labelledby={`${id}-h`} className="mt-12">
+      <div className="flex items-center justify-between border-b border-cream/10 pb-3 font-mono text-[11px] tracking-[0.25em]">
+        <span className="text-amber">TRACK CHANGES</span>
+        <span className="text-cream/55">DRAG THE SLIDER</span>
+      </div>
+      <h3 id={`${id}-h`} className="mt-6 font-sans text-3xl font-bold text-cream">
+        <RiseWords text={T.title} />
+      </h3>
+      <p className="mt-2 max-w-[60ch] font-serif text-lg italic text-cream/75">{T.lead}</p>
+      <Card className="mt-6 p-5 sm:p-7">
+        <p className="min-h-[5.5em] font-sans text-[1.35rem] font-semibold leading-snug tracking-tight text-cream sm:text-[1.7rem]">
+          {shown.map((p, i) => {
+            const text = i === last ? p.text.trimEnd() : p.text;
+            if (p.kind === "keep") return <span key={i}>{text}</span>;
+            if (p.kind === "del")
+              return (
+                <del
+                  key={i}
+                  hidden={!p.visible}
+                  className={`transition-opacity duration-300 ${
+                    p.applied ? "line-through decoration-primary-soft decoration-[0.1em] opacity-50" : "no-underline"
+                  }`}
+                >
+                  {text}
+                </del>
+              );
+            return (
+              <ins
+                key={i}
+                hidden={!p.visible}
+                className={`font-serif font-normal italic no-underline text-tertiary ${clean ? "" : "rounded-[3px] bg-primary/40 box-decoration-clone px-0.5"}`}
+              >
+                {text}
+              </ins>
+            );
+          })}
+        </p>
+        <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
+          <label htmlFor={`${id}-range`} className="font-mono text-[10px] tracking-[0.18em] text-cream/65">
+            {T.label.toUpperCase()}
+          </label>
+          <input
+            id={`${id}-range`}
+            type="range"
+            min={0}
+            max={max}
+            step={1}
+            value={step}
+            aria-valuetext={valueText}
+            onChange={(e) => setStep(Number(e.target.value))}
+            className="h-7 min-w-[12rem] flex-1 cursor-pointer accent-primary"
+          />
+          <span aria-hidden="true" className="w-full font-mono text-[10px] tracking-[0.18em] text-amber sm:w-auto">
+            {step === 0 ? T.draftLabel.toUpperCase() : clean ? T.finalLabel.toUpperCase() : `${step} / ${changes.length}`}
+          </span>
+        </div>
+      </Card>
+    </section>
+  );
+}
+
 function Overview({ onOpen }: { onOpen: (id: string) => void }) {
   const reduce = useReducedMotion();
   return (
@@ -804,6 +891,8 @@ function Overview({ onOpen }: { onOpen: (id: string) => void }) {
           </aside>
         </Reveal>
       </div>
+
+      <TrackChanges />
 
       <div className="mt-12 flex items-center justify-between border-b border-cream/10 pb-3 font-mono text-[11px] tracking-[0.25em]">
         <span className="text-amber">THE SAMPLES</span>

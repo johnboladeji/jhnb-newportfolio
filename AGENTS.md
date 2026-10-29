@@ -103,6 +103,8 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
     the motion, writes a looping cursive ink trail (how far you've read), and splashes + spins at each quarter.
     Shown only when the pane is ≥ 520px wide (ReadingShell then reserves `pr-24`); hidden under reduced motion.
   - `ReadingShell.tsx` — shared shell for the Writing pages: pinned header (outlined title, optional struck draft, typed headline), tab row / full-screen side list, reading pane with progress; `PaneContext` is the pane's scroll root.
+  - `ContentDesign.tsx` Overview also holds “Watch a sentence change its mind” (`TrackChanges`): a slider applying tracked
+    changes one by one (`writing.trackChanges`).
   - `Articles.tsx` — Writing ▸ Articles on `ReadingShell`: overview with code-drawn covers, article pages with interactive explainers, links to Medium (`articles` in content.ts).
   - `ContentDesign.tsx` — Writing ▸ Content Design: pinned header + tabs + reading pane (About's structure); samples are typed blocks (`WritingBlock`) in `writing` in content.ts; screenshots in `public/writing/`.
   - `Reveal.tsx` — shared `Reveal` (fade-rise) and `RiseWords` (masked word rise) helpers.
@@ -114,6 +116,8 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
     (`nx-ink`, `nx-indigo`, `nx-plum`, `nx-lime`, `nx-lilac`, `nx-mist`; DM Sans + Fira Code), only inside the study.
   - `CarfStudy.tsx` — CARF research case study and list cover (content in `carfStudy`): the researched twin of Caira,
     on StudyKit, in the site palette with Newsreader italics.
+  - `CarfReader.tsx` — chapter 06 of the CARF study: a light, rule-based CARF reader (paste copy or pick a sample; matched
+    phrases are highlighted and numbered against notes). Rules and copy in `carfStudy.reader`.
   - `ResearchTeaching.tsx` — About Me → Experience: the Research & Teaching group above the industry timeline (`researchTeaching`).
   - `TokenStudy.tsx` — TokenForge's rich case study and list cover (content in `tokenStudy`, from the team's Behance
     case study and the live app). TokenForge's tokens (`tf-ink`, `tf-panel`, `tf-violet`, `tf-grey`, `tf-lav`; Inter), only inside the study.
@@ -123,6 +127,7 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
     (`StudyChapter`), `LitWords` (words light up on scroll, via `useScrollThrough`, which reads any scroll container directly; use it rather than framer `useScroll` for nested scrollers such as the Writing reading pane), `useStudyProgress`. Each study passes its own `tone`.
   - `SkillCapsules.tsx` — physics skill capsules under the Let's Work form (`skills`; uses matter-js).
   - `AboutSection.tsx` — About Me shell: pinned title + typed headline (`TypeLoop.tsx`), Overview/Experience segments (tabs, or side by side in full screen).
+  - `CityDemo.tsx` — top of About Me → Overview: “Try again” read in Chicago or Lagos (toggle), with the Lagos rewrite and a note (`about.cityDemo`).
   - `AboutDeck.tsx` — Overview: sideways page deck. `ExperienceList.tsx` — Experience timeline (`experience` in content.ts).
 
 ## Design system (current) — JHNB brand palette

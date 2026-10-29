@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { BookOpen, Briefcase } from "lucide-react";
 import { about } from "../content";
 import AboutDeck from "./AboutDeck";
+import CityDemo from "./CityDemo";
 import ExperienceList from "./ExperienceList";
 import ResearchTeaching from "./ResearchTeaching";
 import TypeLoop from "./TypeLoop";
@@ -40,7 +41,13 @@ export default function AboutSection({ full, onLetsWork, onOpenCase }: { full: b
     { key: "experience", label: "Experience", Icon: Briefcase },
   ];
 
-  const overview = <AboutDeck onLetsWork={onLetsWork} />;
+  // The two-cities card first: the shortest proof of the argument, before the longer story
+  const overview = (
+    <>
+      <CityDemo />
+      <AboutDeck onLetsWork={onLetsWork} />
+    </>
+  );
   // Research & Teaching first (the scholar before the designer), then the industry timeline
   const experienceList = (
     <>

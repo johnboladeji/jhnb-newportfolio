@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode, type RefObject } from "rea
 import { AnimatePresence, animate, motion, useInView, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, Circle, Loader } from "lucide-react";
 import { carfStudy as C } from "../content";
+import CarfReader from "./CarfReader";
 import RollText from "./RollText";
 import { Reveal, RiseWords } from "./Reveal";
 import { LitWords, StudyBar, StudyChapter, pad, useStudyProgress, type StudyTone } from "./StudyKit";
@@ -24,7 +25,7 @@ const CARF_TONE: StudyTone = {
   progress: "bg-[linear-gradient(90deg,#983a28,#ffd0a1)]",
   title: "font-serif italic font-normal",
 };
-const CHAPTERS = ["The question", "The argument", "The corpus", "Method", "The framework", "Research questions", "Where it stands", "Related work"];
+const CHAPTERS = ["The question", "The argument", "The corpus", "Method", "The framework", "Try it", "Research questions", "Where it stands", "Related work"];
 
 function Chapter(props: { n: number; title?: string; onEnter: (n: number) => void; children: ReactNode }) {
   return <StudyChapter id="carf" chapters={CHAPTERS} tone={CARF_TONE} {...props} />;
@@ -526,13 +527,17 @@ export default function CarfStudy({ scrollRef, onLetsWork }: { scrollRef?: RefOb
       <Chapter n={5} title="Three dimensions, five practices" onEnter={setChapter}>
         <Framework />
       </Chapter>
-      <Chapter n={6} title="What the study asks" onEnter={setChapter}>
+      <Chapter n={6} title={C.reader.title} onEnter={setChapter}>
+        <p className="mb-6 max-w-[60ch] text-[16px] leading-relaxed text-cream/80">{C.reader.lead}</p>
+        <CarfReader />
+      </Chapter>
+      <Chapter n={7} title="What the study asks" onEnter={setChapter}>
         <Questions />
       </Chapter>
-      <Chapter n={7} title="In progress, by design" onEnter={setChapter}>
+      <Chapter n={8} title="In progress, by design" onEnter={setChapter}>
         <Status />
       </Chapter>
-      <Chapter n={8} title="Related work" onEnter={setChapter}>
+      <Chapter n={9} title="Related work" onEnter={setChapter}>
         <Related />
       </Chapter>
 

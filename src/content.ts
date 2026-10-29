@@ -379,6 +379,28 @@ export const writing = {
     "I’m finishing an M.A. in English at New Mexico Highlands University in December 2026. My thesis is about UX writing in Nigerian and American fintech, and how the words on a screen carry cultural meaning. I also teach first-year writing and work in the university’s Writing Center, so most of my week goes to helping people say what they mean to a particular reader. And I build in Figma, React Native, and Next.js, so I know what happens to a string after it leaves the doc.",
     "Below are three case studies and two shorter pieces. Two come from products I’m building, Caira and NexusCore, and the Caira copy is now live in the app. The rest are concept projects I set for myself. I’ve kept my first draft in each one, because the changes are the interesting part.",
   ],
+  /**
+   * Overview → "Watch a sentence change its mind": a slider applies these tracked changes one by one.
+   * `keep` stays, `del` is struck then removed, `ins` is highlighted then kept. Spaces belong to the piece before them.
+   */
+  trackChanges: {
+    title: "Watch a sentence change its mind",
+    lead: "I keep my first drafts, because the changes are the interesting part.",
+    label: "Drag to watch the draft get revised",
+    draftLabel: "First draft",
+    finalLabel: "Clean copy",
+    pieces: [
+      { kind: "keep", text: "“" },
+      { kind: "del", text: "Oops! " },
+      { kind: "del", text: "Transfer failed. " },
+      { kind: "ins", text: "Your transfer didn’t finish. " },
+      { kind: "del", text: "Error 51. " },
+      { kind: "del", text: "Please try again. " },
+      { kind: "ins", text: "Check your balance before you send again. " },
+      { kind: "ins", text: "If money left your account, we’ll return it and tell you when." },
+      { kind: "keep", text: "”" },
+    ] as { kind: "keep" | "del" | "ins"; text: string }[],
+  },
   glance: [
     { n: 3, label: "Case studies" },
     { n: 2, label: "Quick samples" },
@@ -694,6 +716,17 @@ export const writing = {
 export const about = {
   /** Sticky headline under the "About Me" title, typed continuously */
   headline: "Design is rhetoric you can touch. The interface makes an argument about who belongs.",
+  /** Overview → the card above the page deck: one button, read in two cities (CityDemo.tsx) */
+  cityDemo: {
+    kicker: "Two cities read the same button. Pick one.",
+    button: "Try again",
+    rewriteLabel: "My rewrite for Lagos",
+    rewrite: "Your transfer didn’t finish. Check your balance before you send again.",
+    cities: [
+      { city: "Chicago", note: "In Chicago, a failed transfer usually means no money moved. Trying again is safe, so this is good advice." },
+      { city: "Lagos", note: "In Lagos, the money can leave your account even when the screen says “failed.” Trying again can send it twice. Same words, real cost." },
+    ],
+  },
   /**
    * The story, broken into pages that slide sideways and stack over each other.
    * `kicker` is the small label, `title` the page heading, `body` its paragraphs.
@@ -1399,6 +1432,38 @@ export const carfStudy = {
     { title: "The Rhetoric of Fintech: How Digital Platforms Shape Public Perception of Financial Services and Trust in Accounting Systems", where: "Manuscript in preparation" },
   ],
   relatedNote: "Related work on digital rhetoric and identity, not CARF itself.",
+  /**
+   * A light, rule-based version of the framework (CarfReader.tsx): phrases that match a rule are highlighted with
+   * its note. The full method reads far more than keywords; `limits` says so.
+   */
+  reader: {
+    title: "Read the assumptions inside the words",
+    lead: "Try a light version. Paste a line of interface copy, or pick a sample, and see what it takes for granted.",
+    inputLabel: "Paste interface copy, or pick a sample",
+    button: "Show me the assumptions",
+    samples: [
+      "Oops! Transfer failed. Please try again.",
+      "Enter your first name, last name, and ZIP code to verify instantly.",
+      "Payment declined. Error 51. Contact your bank.",
+      "Add a credit card to start your free trial in seconds. Only $1.",
+    ],
+    rules: [
+      { match: /try again|retry/gi, label: "Assumes a failed attempt is free", note: "Where reversals are slow, a retry can charge someone twice." },
+      { match: /oops|uh[- ]oh/gi, label: "Jokes about a failure", note: "The moment may involve someone’s money; a joke reads as careless." },
+      { match: /error\s*\d+|code\s*\d+/gi, label: "Shows a code the reader can’t act on", note: "System codes help engineers, not the person waiting for their money." },
+      { match: /instant(ly)?|in seconds|real[- ]time/gi, label: "Assumes fast, stable connectivity", note: "Many readers are on slow or shared data, or wait for bank settlement." },
+      { match: /zip code/gi, label: "Assumes a US-style address", note: "Many addresses have no postal code or use landmarks." },
+      { match: /\bssn\b|social security/gi, label: "Assumes a US identity document", note: "Readers outside the US verify identity in other ways." },
+      { match: /credit card|debit card/gi, label: "Assumes card access", note: "Many people pay by bank transfer, mobile money, or cash." },
+      { match: /first name|last name/gi, label: "Assumes a two-part Western name", note: "Name order and structure differ across cultures." },
+      { match: /contact your bank/gi, label: "Assumes the bank is reachable", note: "It hands the problem back to someone who may have no easy way to reach a bank." },
+      { match: /\$\s?\d|\busd\b|dollars?/gi, label: "Assumes one currency", note: "A global reader may think in naira, pesos, or yen." },
+      { match: /declined|failed/gi, label: "Names the failure without the next step", note: "Say what happened to the money and what to do now." },
+    ] as { match: RegExp; label: string; note: string }[],
+    empty: "Paste a line of interface copy, or pick a sample, to see what it assumes.",
+    none: "No common assumptions found in this light version. A full CARF reading also looks at tone, imagery, and who the copy leaves out.",
+    limits: "A keyword sketch of the method, not the method. The full framework reads context, register, and power, which no list of patterns can.",
+  },
   closing: "A writing sample from this project is available on request.",
 };
 
