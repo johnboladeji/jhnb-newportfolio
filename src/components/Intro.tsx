@@ -3,12 +3,14 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { intro } from "../content";
 import { playWelcome } from "../lib/sound";
 import SoundToggle from "./SoundToggle";
+import ParticleBackground from "./ParticleBackground";
+import SafeBoundary from "./SafeBoundary";
 
 /**
  * The welcome, once per visit (sessionStorage `jhnb-intro`): on the dark base colour, the first draft "Welcome to my
  * portfolio." types itself and is struck through, the way John revises interface copy; the rewrite arrives in Yoruba
  * first, then Spanish, French, and Japanese, and settles on "Ẹ káàbọ̀. Welcome." with "Let's begin where you are."
- * (about 3.5 s, from the owner's v2 draft). Then the whole thing fades away onto the landing page.
+ * (about 3.5 s, from the owner's v2 draft), over the hero's own particle background. Then the whole thing fades away onto the landing page.
  *
  * Skip or Escape leaves at once. The welcome sound (agogo and talking drum) plays as it fades, if sound is on.
  * Reduced motion: the final words show at once, then a fade.
@@ -120,10 +122,12 @@ export default function Intro({ onDone }: { onDone: () => void }) {
           exit={reduce ? { opacity: 0 } : { opacity: 0, filter: "blur(6px)", scale: 1.03 }}
           transition={{ duration: reduce ? 0.4 : 0.7, ease: [0.65, 0, 0.35, 1] }}
         >
-          {/* A warm glow behind the words */}
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_50%,rgba(152,58,40,0.22),transparent_70%)]" />
+          {/* The hero's own background: the particle field and energy lines */}
+          <SafeBoundary>
+            <ParticleBackground />
+          </SafeBoundary>
 
-          <div aria-hidden="true" className="relative w-full max-w-[56rem]">
+          <div aria-hidden="true" className="relative z-10 w-full max-w-[56rem]">
             <p className="relative inline-block min-h-[1.1em] font-sans text-[clamp(2rem,6vw,4.6rem)] font-bold leading-[1.05] tracking-tight text-cream">
               {typed}
               {!struck && <span className="ml-[0.04em] inline-block h-[0.9em] w-[0.06em] translate-y-[0.1em] animate-pulse bg-tertiary" />}
@@ -141,7 +145,7 @@ export default function Intro({ onDone }: { onDone: () => void }) {
           </div>
 
           {/* Sound (it plays as the welcome fades) and Skip */}
-          <div className="absolute inset-x-0 bottom-[max(1.25rem,env(safe-area-inset-bottom))] flex items-center justify-between px-5 sm:px-8">
+          <div className="absolute inset-x-0 z-10 bottom-[max(1.25rem,env(safe-area-inset-bottom))] flex items-center justify-between px-5 sm:px-8">
             <SoundToggle />
             <button
               ref={skipRef}

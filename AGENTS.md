@@ -67,7 +67,7 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
   saying "Ẹ káàbọ̀"), `tapDrum`, `openFlourish`, `menuNote` (bell), `pageTurn`, `chime`; `hush()` silences.
 - `src/components/`
   - `Intro.tsx` — the welcome, once per visit (sessionStorage `jhnb-intro`), z-90, brand palette only (`BRAND`), text only
-    (no door or scene): on the dark base colour with a warm glow, the first draft "Welcome to my portfolio." types
+    (no door or scene): over the hero's own background (a `ParticleBackground` inside the overlay, no gradient), the first draft "Welcome to my portfolio." types
     itself, is struck through, and is rewritten: Ẹ káàbọ̀ → Bienvenido → Bienvenue → ようこそ → "Ẹ káàbọ̀. Welcome.",
     then "Let's begin where you are." (≈3.5 s; adopted from the owner's v2 HTML draft). Then it fades (blur + slight
     scale) onto the landing page, playing the welcome sound if sound is on. Skip or Escape leaves at once; the footer
