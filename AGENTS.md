@@ -66,16 +66,12 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
   (`jhnb-sound` in localStorage); every call is a no-op while off. `playWelcome()` (≈2 s: one bar of bell, the drum
   saying "Ẹ káàbọ̀"), `tapDrum`, `openFlourish`, `menuNote` (bell), `pageTurn`, `chime`; `hush()` silences.
 - `src/components/`
-  - `Intro.tsx` — the welcome, once per visit (sessionStorage `jhnb-intro`), z-90, brand palette only (`BRAND`): the shut
-    double door of John's studio, carved like a Yoruba palace door (oniko circles, diamond, zigzag reliefs, brass studs
-    and pull bars), set in a terracotta stone wall (an SVG stone tile, `WALL`) under warm light, with a "JHNB · STUDIO"
-    lintel and two breathing lanterns (`.lantern-glow`). A sign on the door types the first draft "Welcome to my
-    portfolio.", strikes it through, and rewrites it: Ẹ káàbọ̀ → Bienvenido → Bienvenue → ようこそ → "Ẹ káàbọ̀. Welcome.",
-    then "Let's begin where you are." (≈3.5 s; adopted from the owner's v2 HTML draft). The brass lever turns (`latch`
-    sound), the doors swing open on their hinges, and because the doorway is a real hole in the wall (CSS mask, sized by
-    `--dw`/`--dh`/`--dt`), the actual hero shows through and the scene scales up through the doorway. Clicking the door or
-    handle opens it now; Skip or Escape leaves; the footer `SoundToggle` sits on the scene (welcome sound plays on opening
-    if sound is on). Reduced motion: final words at once, then a fade. Copy: `intro` in content.ts.
+  - `Intro.tsx` — the welcome, once per visit (sessionStorage `jhnb-intro`), z-90, brand palette only (`BRAND`), text only
+    (no door or scene): on the dark base colour with a warm glow, the first draft "Welcome to my portfolio." types
+    itself, is struck through, and is rewritten: Ẹ káàbọ̀ → Bienvenido → Bienvenue → ようこそ → "Ẹ káàbọ̀. Welcome.",
+    then "Let's begin where you are." (≈3.5 s; adopted from the owner's v2 HTML draft). Then it fades (blur + slight
+    scale) onto the landing page, playing the welcome sound if sound is on. Skip or Escape leaves at once; the footer
+    `SoundToggle` sits on it. Reduced motion: final words at once, then a fade. Copy: `intro` in content.ts.
   - `DrumPad.tsx` — taps on open space play the talking drum (pitched by height) and throw rings and shekere beads in the
     brand colours (`.drum-burst`); skips links, buttons, fields, dialogs, and anything marked `data-no-drum` (the h1, the bio).
     Fires `jhnb:drum` (hides the hint). Clicking the h1 turns the rotating word on a drum roll.

@@ -294,26 +294,6 @@ export function pageTurn() {
   drum(MID, LOW, E, 0.6, 0.35);
 }
 
-/** The studio door's latch: a metal click and a soft wooden knock. */
-export function latch(at = 0) {
-  if (!ready()) return;
-  const c = ctx!;
-  const t = now() + at;
-  const click = c.createBufferSource();
-  click.buffer = noise;
-  const bp = c.createBiquadFilter();
-  bp.type = "bandpass";
-  bp.frequency.value = 3200;
-  bp.Q.value = 6;
-  const g = c.createGain();
-  g.gain.setValueAtTime(0.5, t);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
-  click.connect(bp).connect(g).connect(master!);
-  click.start(t, Math.random() * 0.5);
-  click.stop(t + 0.06);
-  drum(95, 80, 0.04 + at, 0.5, 0.25);
-}
-
 /** Turning sound on: the two bells, low then high. */
 export function chime() {
   bell(false, 0, 0.6);

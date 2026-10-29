@@ -86,9 +86,8 @@ export const hero = {
 };
 
 /**
- * The welcome (Intro.tsx), once per visit: a shut studio door in a terracotta stone wall. Across the door a sign types
- * a generic welcome, strikes it through, and rewrites it for the reader: in Yoruba first, then the visitor's world,
- * landing on "Ẹ káàbọ̀. Welcome." The handle turns, the doors swing open, and you walk into the studio (the hero).
+ * The welcome (Intro.tsx), once per visit: a generic welcome types itself, is struck through, and is rewritten for the
+ * reader (in Yoruba first, then the visitor's world), landing on "Ẹ káàbọ̀. Welcome."; then it fades onto the hero.
  */
 export const intro = {
   /** The first draft, typed, then struck through */
@@ -102,11 +101,7 @@ export const intro = {
     { text: "Ẹ káàbọ̀. Welcome.", lang: "yo" },
   ],
   sub: "Let’s begin where you are.",
-  /** Carved into the lintel above the door */
-  sign: "JHNB · STUDIO",
   skip: "Skip intro",
-  /** On the handle, for pointer and screen-reader users who want in now */
-  openNow: "Open the door",
   /** Small hint on the landing page, gone after the first tap */
   playHint: "Tap anywhere to play the talking drum",
   soundOn: "SOUND ON",
