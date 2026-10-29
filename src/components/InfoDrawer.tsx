@@ -162,7 +162,8 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
             role="dialog"
             aria-modal="true"
             aria-labelledby="drawer-title"
-            className={`fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-cream/5 ${view === "projects" ? "bg-base" : "bg-secondary"} transition-[max-width,background-color] duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] sm:max-w-xl md:max-w-2xl`}
+            data-full={isFull ? "true" : "false"}
+            className={`group/drawer fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-cream/5 ${view === "projects" ? "bg-base" : "bg-secondary"} transition-[max-width,background-color] duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] sm:max-w-xl md:max-w-2xl`}
             style={isFull ? { maxWidth: "100vw" } : undefined}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -225,7 +226,10 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
               <div
                 className={
                   pinned
-                    ? "flex h-[calc(100dvh-var(--drawer-head,5rem))] flex-col px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6 sm:px-10"
+                    ? `flex h-[calc(100dvh-var(--drawer-head,5rem))] flex-col px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6 sm:px-10 ${
+                        // Full screen: the same inset from the edges as the Projects showcase (Projects lays out its own)
+                        isFull && view !== "projects" ? "lg:px-[max(2.5rem,7vw)] lg:pt-10" : ""
+                      }`
                     : `px-6 pb-[max(3rem,env(safe-area-inset-bottom))] pt-8 sm:px-10 ${isFull ? "mx-auto max-w-5xl" : ""}`
                 }
               >
@@ -234,7 +238,7 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
                 {view !== "about" && view !== "projects" && view !== "contentDesign" && view !== "articles" && view !== "resume" && (
                   <h2
                     id="drawer-title"
-                    className={view === "menu" ? "sr-only" : "mb-8 font-display text-5xl uppercase text-cream sm:text-6xl"}
+                    className={view === "menu" ? "sr-only" : "mb-8 font-display text-5xl uppercase text-cream sm:text-6xl group-data-[full=true]/drawer:lg:text-7xl"}
                   >
                     {view === "caseStudy" ? (projects.find((p) => p.slug === caseSlug)?.name ?? TITLES.caseStudy) : TITLES[view]}
                   </h2>

@@ -95,6 +95,8 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
     Sound (when on): `openFlourish` as it opens, `pageTurn` between panels, `menuNote(i)` on hovering or focusing a menu
     item. A woven `.aso-band` runs along the panel's top edge and sweeps in under each menu label on hover or focus.
     The Header's menu button pulses in the brand colours (`.menu-nudge`) after 9 seconds without interaction.
+    In full screen every page shares the Projects structure: content inset `max(2.5rem, 7vw)` from the edges, titles up to
+    `text-7xl` (`group-data-[full=true]/drawer`), headlines left-aligned under the title (max-w 56rem).
     The Writing pages (Content Design, Articles) and Projects open full screen by default, however they're reached (menu, link, or a
     shared `#/writing/...` address); the toggle still shrinks them. Other panels open at drawer width.
   - `DrawerPortraits.tsx` — studio portraits blended into the drawer's right edge, sliding right → left (`drawerImages`).
@@ -120,7 +122,7 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
     strands (2D canvas, batched by colour into a few strokes per frame, ≤1.5× DPR, time-based easing) trace each
     project's real logo or name (`MARKS`, traced once per visit into `SHAPES` via marching squares) and never rest:
     light pulses run along each outline, the field surges every 3.5–6.5 s, and the pointer parts the strands and makes
-    them flare (`Stir`). The "All work" grid (`WorksList`) follows below. Labels in `worksShowcase`.
+    them flare (`Stir`). The slideshow fades into the "All work" grid (`WorksList`) below, which shares its inset. Labels in `worksShowcase`.
     While a full-screen panel is open, InfoDrawer sets `html[data-covered="1"]` and ParticleBackground / WarpPortrait skip
     rendering.
   - `Works.tsx` — Selected Works list, generated project covers, case-study view (`projects` in content.ts).

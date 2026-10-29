@@ -822,6 +822,9 @@ export default function WorksShowcase({ title, onOpen, columns }: { title: strin
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(21,6,0,0.92),rgba(21,6,0,0.55)_40%,transparent_60%)] @max-3xl:bg-[linear-gradient(180deg,transparent_0%,rgba(21,6,0,0.6)_28%,rgba(21,6,0,0.85))]" />
         </div>
 
+        {/* The slideshow fades into the grid below, so the two read as one page */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[35%] bg-[linear-gradient(180deg,transparent,rgba(21,6,0,0.75)_60%,#150600)]" />
+
         {/* Top line: the page title and the counter */}
         <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 pt-5 sm:px-10 @3xl:pl-[calc(2.5rem+6cqw)]">
           <h2 id="drawer-title" className="font-mono text-xs tracking-[0.3em] text-cream/70">
@@ -923,7 +926,7 @@ export default function WorksShowcase({ title, onOpen, columns }: { title: strin
       </section>
 
       {/* Everything, with covers */}
-      <div className="relative -mx-6 bg-base px-6 pb-10 pt-12 sm:-mx-10 sm:px-10">
+      <div className="relative -mx-6 bg-base bg-[radial-gradient(60%_160px_at_70%_0,rgba(152,58,40,0.16),transparent)] px-6 pb-10 pt-12 sm:-mx-10 sm:px-10 @3xl:px-[calc(2.5rem+6cqw)]">
         <div className="flex items-center justify-between border-b border-cream/10 pb-3 font-mono text-xs tracking-[0.25em]">
           <span className="flex items-center gap-2 text-primary-soft">
             <LayoutGrid size={14} aria-hidden="true" />

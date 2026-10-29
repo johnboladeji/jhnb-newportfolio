@@ -92,13 +92,13 @@ export default function ResumeSection({ full, onOpenCase, onLetsWork }: { full: 
   return (
     <section aria-labelledby="drawer-title" className="flex h-full min-h-0 flex-col">
       <header className="shrink-0">
-        <h2 id="drawer-title" className="text-stroke font-display text-5xl uppercase leading-none sm:text-6xl">
+        <h2 id="drawer-title" className="text-stroke font-display text-5xl uppercase leading-none sm:text-6xl group-data-[full=true]/drawer:lg:text-7xl">
           Resume
         </h2>
         <TypeLoop
           text={resume.headline}
           className={`mt-3 font-sans font-bold leading-snug tracking-tight text-primary-soft ${
-            full ? "mx-auto max-w-[52rem] text-center text-2xl sm:text-3xl lg:text-[2.6rem] lg:leading-[1.15]" : "max-w-[38rem] text-[1.4rem] sm:text-[1.75rem]"
+            full ? "max-w-[56rem] text-2xl sm:text-3xl lg:text-[2.6rem] lg:leading-[1.15]" : "max-w-[38rem] text-[1.4rem] sm:text-[1.75rem]"
           }`}
         />
       </header>

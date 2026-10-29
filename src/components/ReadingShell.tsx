@@ -131,11 +131,11 @@ export default function ReadingShell({
     <section aria-labelledby="drawer-title" className="flex h-full min-h-0 flex-col">
       {/* Pinned header, like About Me and Selected Works */}
       <header className="shrink-0">
-        <h2 id="drawer-title" className="text-stroke font-display text-5xl uppercase leading-none sm:text-6xl">
+        <h2 id="drawer-title" className="text-stroke font-display text-5xl uppercase leading-none sm:text-6xl group-data-[full=true]/drawer:lg:text-7xl">
           {title}
         </h2>
         {draft && (
-          <p aria-hidden="true" className={`mt-3 font-sans text-[16px] font-medium text-cream/45 sm:text-lg ${full ? "text-center" : ""}`}>
+          <p aria-hidden="true" className={`mt-3 font-sans text-[16px] font-medium text-cream/45 sm:text-lg`}>
             <span className="relative inline-block">
               {draft}
               <motion.span
@@ -150,7 +150,7 @@ export default function ReadingShell({
         <TypeLoop
           text={headline}
           className={`${draft ? "mt-1" : "mt-3"} font-sans font-bold leading-snug tracking-tight text-primary-soft ${
-            full ? "mx-auto max-w-[52rem] text-center text-2xl sm:text-3xl lg:text-[2.6rem] lg:leading-[1.15]" : "max-w-[38rem] text-[1.4rem] sm:text-[1.75rem]"
+            full ? "max-w-[56rem] text-2xl sm:text-3xl lg:text-[2.6rem] lg:leading-[1.15]" : "max-w-[38rem] text-[1.4rem] sm:text-[1.75rem]"
           }`}
         />
       </header>
