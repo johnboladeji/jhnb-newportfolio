@@ -48,6 +48,9 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
 
   // Full-screen reading mode for content views (not the menu); resets whenever the drawer closes
   const [full, setFull] = useState(false);
+  // Projects: the bar floats over the stage, and fills in once the showcase scrolls on to the grid below
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => setScrolled(false), [view]);
   useEffect(() => {
     if (!open) setFull(false);
   }, [open]);
@@ -165,6 +168,7 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
             data-full={isFull ? "true" : "false"}
             className={`group/drawer fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-cream/5 ${view === "projects" ? "bg-base" : "bg-secondary"} transition-[max-width,background-color] duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] sm:max-w-xl md:max-w-2xl`}
             style={isFull ? { maxWidth: "100vw" } : undefined}
+            onScrollCapture={(e) => setScrolled((e.target as HTMLElement).scrollTop > 40)}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -177,7 +181,11 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
             <span aria-hidden="true" className="aso-band pointer-events-none absolute inset-x-0 top-0 z-10 h-1" />
           {/* Top bar: no fill (the portrait shows through it). It sits outside the scroller, so content scrolls
               below it rather than under it. On Projects it floats over the showcase, whose stage reaches the top edge. */}
-          <div ref={headRef} className={`${view === "projects" ? "absolute inset-x-0 top-0" : "relative border-b border-cream/5"} z-30 flex shrink-0 items-center justify-between px-6 py-5 sm:px-10 pt-[max(1.25rem,env(safe-area-inset-top))]`}>
+          <div ref={headRef} className={`${
+            view === "projects"
+              ? `absolute inset-x-0 top-0 transition-colors duration-300 ${scrolled ? "bg-base/95 backdrop-blur-sm" : ""}`
+              : "relative border-b border-cream/5"
+          } z-30 flex shrink-0 items-center justify-between px-6 py-5 sm:px-10 pt-[max(1.25rem,env(safe-area-inset-top))]`}>
               {view === "menu" ? (
                 <span className="flex items-center gap-2 font-mono text-xs tracking-[0.2em] text-cream/70">
                   <Menu size={16} aria-hidden="true" />

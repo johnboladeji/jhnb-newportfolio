@@ -264,9 +264,10 @@ function sceneTargets(scene: number, shape: Shape | undefined, W: number, H: num
       const asp = shape.aspect;
       const bw = wide ? Math.min(W * 0.33, H * 0.5 * asp) : Math.min(W * 0.62, H * 0.08 * asp);
       const bh = bw / asp;
-      // On phones the copy fills the view, so the mark sits in the open band above the kicker
+      // On phones the copy fills the view, so the mark sits in the open band above the kicker, clear of the
+      // drawer's floating bar and the title line
       const cx = wide ? W * 0.785 : W * 0.5;
-      const cy = wide ? H * 0.5 : 60 + bh / 2;
+      const cy = wide ? H * 0.5 : Math.max(160, H * 0.19) + bh / 2;
       const paths = shape.paths;
       // Every outline gets one strand that runs all the way round it, so letters and marks close up legibly;
       // the rest double up along the longer outlines for glow

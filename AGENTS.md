@@ -107,7 +107,8 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
   - `ContentDesign.tsx` — Writing ▸ Content Design: pinned header + tabs + reading pane (About's structure); samples are typed blocks (`WritingBlock`) in `writing` in content.ts; screenshots in `public/writing/`.
   - `Reveal.tsx` — shared `Reveal` (fade-rise) and `RiseWords` (masked word rise) helpers.
   - `WorksShowcase.tsx` — the Projects page (opens full screen by default; the whole drawer is the dark base colour, 100vh,
-    portraits hidden; the drawer's top bar floats over the stage, which reaches the top edge, offset by `--drawer-head`). A horizontal slideshow after williamrajwan.com's structure, with John's own content: slide 0 is
+    portraits hidden; the drawer's top bar floats over the stage, which reaches the top edge, offset by `--drawer-head`, and fills in once the showcase scrolls to the grid; on phones the
+    mark sits in the band between the title line and the copy). A horizontal slideshow after williamrajwan.com's structure, with John's own content: slide 0 is
     the intro (`worksHeadline` one sentence per line, the last in the accent gradient, a Begin cue); slides 1–6 are the
     projects (numbered kicker, the name large in its `SIGNATURE` colour with a glow, Coming soon / Live badges, role +
     years, summary, tags, `.cta-glow` View project and `.cta-glow-soft` Visit live). Each slide holds (`DWELL`: 5.5 s
