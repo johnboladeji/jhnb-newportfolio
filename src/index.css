@@ -345,3 +345,8 @@ body {
 .lantern-glow { animation: lantern 2.6s ease-in-out infinite alternate; }
 @keyframes lantern { 0% { opacity: 0.75; transform: translate(-50%, -50%) scale(0.94); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); } }
 @media (prefers-reduced-motion: reduce) { .lantern-glow { animation: none; } }
+
+/* Projects showcase: the scroll cue's light runs along its line */
+.scroll-cue { animation: scroll-cue 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+@keyframes scroll-cue { from { transform: translateX(-100%); } to { transform: translateX(200%); } }
+@media (prefers-reduced-motion: reduce) { .scroll-cue { animation: none; } }

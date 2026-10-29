@@ -1,18 +1,18 @@
 import { lazy, Suspense, useEffect, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowUpRight, ChevronDown, LayoutGrid, Maximize2, Menu, Minimize2, X } from "lucide-react";
-import { contact, menu, projects, worksHeadline } from "../content";
+import { ArrowLeft, ArrowUpRight, ChevronDown, Maximize2, Menu, Minimize2, X } from "lucide-react";
+import { contact, menu, projects } from "../content";
 import RollText from "./RollText";
 import { menuNote, openFlourish, pageTurn } from "../lib/sound";
 import DrawerPortraits from "./DrawerPortraits";
 import AboutSection from "./AboutSection";
-import TypeLoop from "./TypeLoop";
 import ContentDesignSection from "./ContentDesign";
 import ArticlesSection from "./Articles";
 import ResumeSection from "./ResumeSection";
 // Physics capsules (matter-js) load only when Let's Work opens, keeping the engine out of the first page load
 const SkillCapsules = lazy(() => import("./SkillCapsules"));
-import { CaseStudy, WorksList } from "./Works";
+import { CaseStudy } from "./Works";
+import WorksShowcase from "./WorksShowcase";
 
 export type DrawerView = "menu" | "projects" | "caseStudy" | "about" | "contentDesign" | "articles" | "resume" | "contact";
 
@@ -53,7 +53,8 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
   }, [open]);
   // The Writing pages are made for reading, so they open full screen however they're reached (menu, link, or a shared
   // #/writing/... address); the toggle still shrinks them back
-  const writingView = view === "contentDesign" || view === "articles";
+  // Projects too: its showcase is built for the full view
+  const writingView = view === "contentDesign" || view === "articles" || view === "projects";
 
   // Sound (when it's on): a drum pickup as the drawer opens, a soft two-note answer on each move between panels
   const lastView = useRef<string | null>(null);
@@ -219,22 +220,7 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
                 }
               >
                 {/* About renders its own pinned title + typing headline */}
-                {/* Projects matches About Me: outlined title + coral, continuously-typed headline */}
-                {view === "projects" && (
-                  <header className="shrink-0">
-                    <h2 id="drawer-title" className="text-stroke font-display text-5xl uppercase leading-none sm:text-6xl">
-                      {TITLES.projects}
-                    </h2>
-                    <TypeLoop
-                      text={worksHeadline}
-                      className={`mt-3 font-sans font-bold leading-snug tracking-tight text-primary-soft ${
-                        isFull
-                          ? "mx-auto max-w-[52rem] text-center text-2xl sm:text-3xl lg:text-[2.6rem] lg:leading-[1.15]"
-                          : "max-w-[38rem] text-[1.4rem] sm:text-[1.75rem]"
-                      }`}
-                    />
-                  </header>
-                )}
+                {/* Projects renders its own showcase (WorksShowcase), title included */}
                 {view !== "about" && view !== "projects" && view !== "contentDesign" && view !== "articles" && view !== "resume" && (
                   <h2
                     id="drawer-title"
@@ -255,19 +241,7 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
                   >
                     {view === "menu" && <MenuView onNavigate={onNavigate} onClose={onClose} />}
                     {view === "projects" && (
-                      <>
-                        {/* Same rule + label row as About's tab bar */}
-                        <div className="mt-5 flex shrink-0 items-center justify-between border-b border-cream/10 pb-3 font-mono text-xs tracking-[0.25em]">
-                          <span className="flex items-center gap-2 text-primary-soft">
-                            <LayoutGrid size={14} aria-hidden="true" />
-                            ALL WORK
-                          </span>
-                          <span className="text-cream/60">{String(projects.length).padStart(2, "0")} PROJECTS</span>
-                        </div>
-                        <div className="fx-scroll mt-5 min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6 pr-3">
-                          <WorksList onOpen={openCase} columns={isFull && wide ? 2 : 1} />
-                        </div>
-                      </>
+                      <WorksShowcase title={TITLES.projects} onOpen={openCase} columns={isFull && wide ? 2 : 1} />
                     )}
                     {view === "caseStudy" && (
                       <CaseStudy slug={caseSlug} onOpen={onOpenCase} onLetsWork={() => onNavigate("contact")} scrollRef={scrollRef} />

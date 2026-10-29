@@ -95,7 +95,7 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
     Sound (when on): `openFlourish` as it opens, `pageTurn` between panels, `menuNote(i)` on hovering or focusing a menu
     item. A woven `.aso-band` runs along the panel's top edge and sweeps in under each menu label on hover or focus.
     The Header's menu button pulses in the brand colours (`.menu-nudge`) after 9 seconds without interaction.
-    The Writing pages (Content Design, Articles) open full screen by default, however they're reached (menu, link, or a
+    The Writing pages (Content Design, Articles) and Projects open full screen by default, however they're reached (menu, link, or a
     shared `#/writing/...` address); the toggle still shrinks them. Other panels open at drawer width.
   - `DrawerPortraits.tsx` — studio portraits blended into the drawer's right edge, sliding right → left (`drawerImages`).
   - `TravellingPen.tsx` — the Writing pages' travelling fountain pen, drawn in code and never still: it flies in with a
@@ -108,6 +108,16 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
   - `Articles.tsx` — Writing ▸ Articles on `ReadingShell`: overview with code-drawn covers, article pages with interactive explainers, links to Medium (`articles` in content.ts).
   - `ContentDesign.tsx` — Writing ▸ Content Design: pinned header + tabs + reading pane (About's structure); samples are typed blocks (`WritingBlock`) in `writing` in content.ts; screenshots in `public/writing/`.
   - `Reveal.tsx` — shared `Reveal` (fade-rise) and `RiseWords` (masked word rise) helpers.
+  - `WorksShowcase.tsx` — the Projects page (opens full screen by default), its hero after williamrajwan.com's structure
+    with John's own content: section 00 is the intro (mono "00 · SELECTED WORKS" kicker that is the `drawer-title`, the
+    `worksHeadline` set one sentence per line, the last in the accent gradient, a scroll cue; copy inset `6cqw`/`8cqw` from the edge); sections 01–06 give each project the full
+    view (numbered kicker, name in its signature colour from `SIGNATURE`, Coming soon / Live badges, role + years row,
+    summary, tag pills, View project, Visit live). Behind them, a sticky stage (a translucent gradient from the drawer's brown, portraits showing through, into the deep base) with star dust and luminous strands
+    (2D canvas, additive blending): a fountain for the intro, and for each project the strands rise from below and trace
+    that project's icon (lucide icons rendered invisibly and sampled with `getPointAtLength`) in its own colours. A dot
+    rail (click to jump), a "01 / 06 · CAIRA" counter, and a 0.9 s loading count on the first open per visit
+    (`jhnb-works-loaded`); the "All work" grid (`WorksList`) follows below. Labels in `worksShowcase` in content.ts.
+    Reduced motion: no drift, shapes jump into place, no loading count.
   - `Works.tsx` — Selected Works list, generated project covers, case-study view (`projects` in content.ts).
   - `CairaStudy.tsx` — Caira's rich case study and list cover (content in `cairaStudy` in content.ts, images in
     `public/work/caira/`). Uses Caira's own tokens (`night`, `terra`, `ochre`, `sage`, `paper`; Fraunces + Figtree)

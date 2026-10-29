@@ -164,6 +164,21 @@ export interface Project {
   outcome?: string;
 }
 
+/** Projects page showcase (WorksShowcase.tsx): interface labels only; every project's words come from `projects` */
+export const worksShowcase = {
+  intro: "INTRO",
+  project: "PROJECT",
+  scroll: "SCROLL",
+  loading: "LOADING",
+  viewProject: "VIEW PROJECT",
+  comingSoon: "COMING SOON",
+  live: "LIVE",
+  visitLive: "VISIT LIVE",
+  allWork: "ALL WORK",
+  projectsCount: "PROJECTS",
+  railLabel: "Projects",
+};
+
 /** Projects page: headline typed under the "Selected Works" title (same effect as About Me) */
 export const worksHeadline = "Architecting ideas. Building experiences. Delivering impact.";
 
