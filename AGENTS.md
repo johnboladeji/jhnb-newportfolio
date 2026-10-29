@@ -119,7 +119,9 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
     fills (`.slide-progress`, whose `animationend` advances); then the next slides in sideways. Autoplay pauses with the
     pointer on the copy, focus inside, the Pause button (`aria-pressed`), or the showcase scrolled away; arrows, dots,
     swipe, and ←/→ move it; `aria-roledescription` carousel/slide; no autoplay under reduced motion. Behind it, luminous
-    strands (2D canvas, batched by colour into a few strokes per frame, ≤1.5× DPR, time-based easing) trace each
+    strands (2D canvas, batched by colour into a few strokes per frame, time-based easing; for speed: drawn at 30 fps,
+    0.8× density on large screens / ≤1.25× on small, the glow on a ⅓-size canvas stretched up and refreshed every other
+    frame, 64 strands × 38 points (44 on phones), marks traced one per idle slot; about 10 ms a frame, 4× less than before) trace each
     project's real logo or name (`MARKS`, traced once per visit into `SHAPES` via marching squares) and never rest:
     light pulses run along each outline, the field surges every 3.5–6.5 s, and the pointer parts the strands and makes
     them flare (`Stir`). The slideshow fades into the "All work" grid (`WorksList`) below, which shares its inset. Labels in `worksShowcase`.

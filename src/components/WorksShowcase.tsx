@@ -55,7 +55,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 const hex = (c: string) => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
 
 // ---- Strands ------------------------------------------------------------------------------------------------------
-const POINTS = 44;
+const POINTS = 38;
 const TAIL = 10; // points spent flowing in before tracing the mark
 
 /** A small seeded random, so every strand keeps its character from scene to scene */
@@ -382,6 +382,11 @@ function Strands({ scene, shapes, reduce, stir }: { scene: number; shapes: (Shap
     const cols = Array.from({ length: SLOTS }, () => [255, 208, 161]);
     let flashAt = -10;
     let nextFlash = 2.5;
+    // The glow is drawn on a canvas a third the size and stretched up: soft light looks the same, at a ninth of the
+    // pixels. Only the crisp strands are drawn at full size.
+    const GLOW = 1 / 3;
+    const glow = document.createElement("canvas");
+    const gctx = glow.getContext("2d")!;
 
     const build = () => {
       const key = `${sceneRef.current}:${W}x${H}:${shapesRef.current.filter(Boolean).length}`;
@@ -393,13 +398,17 @@ function Strands({ scene, shapes, reduce, stir }: { scene: number; shapes: (Shap
 
     const resize = () => {
       const r = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       W = r.width;
       H = r.height;
+      // Soft light needs few pixels: large screens draw at 0.8× and let the browser scale up; small ones up to 1.25×
+      const dpr = W >= 1100 ? 0.8 : Math.min(window.devicePixelRatio || 1, 1.25);
       canvas.width = Math.round(W * dpr);
       canvas.height = Math.round(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const next = W < 720 ? 48 : 80;
+      glow.width = Math.max(1, Math.round(W * GLOW));
+      glow.height = Math.max(1, Math.round(H * GLOW));
+      gctx.setTransform(GLOW, 0, 0, GLOW, 0, 0);
+      const next = W < 720 ? 44 : 64;
       if (next !== count) {
         count = next;
         pos = Array.from({ length: count }, () => {
@@ -424,7 +433,17 @@ function Strands({ scene, shapes, reduce, stir }: { scene: number; shapes: (Shap
       path.lineTo(p[(to - 1) * 2], p[(to - 1) * 2 + 1]);
     };
 
+    let frame = 0;
+    let lastDraw = 0;
     const draw = (time: number) => {
+      // The strands drift slowly, so 30 frames a second look as smooth as 60 at half the work (the slides, zoom, and
+      // buttons around them still run at the display's full rate)
+      if (!reduce && visible && time - lastDraw < 31) {
+        raf = requestAnimationFrame(draw);
+        return;
+      }
+      lastDraw = time;
+      frame++;
       build();
       const t = time / 1000;
       const dt = last ? Math.min(0.1, Math.max(0, t - last)) : 1 / 60;
@@ -494,17 +513,34 @@ function Strands({ scene, shapes, reduce, stir }: { scene: number; shapes: (Shap
         }
       }
 
+      // The glow, small and soft, refreshed every other frame (it changes slowly)
+      const glowNow = reduce || frame % 2 === 1;
+      if (glowNow) gctx.clearRect(0, 0, W, H);
+      gctx.globalCompositeOperation = "lighter";
+      gctx.lineCap = "round";
+      gctx.lineJoin = "round";
+      const rgbs = cols.map((c) => `${c[0] | 0},${c[1] | 0},${c[2] | 0}`);
+      for (let j = 0; glowNow && j < SLOTS; j++) {
+        gctx.lineWidth = 7;
+        gctx.strokeStyle = `rgba(${rgbs[j]},${0.06 * surge})`;
+        gctx.stroke(soft[j]);
+        gctx.strokeStyle = `rgba(${rgbs[j]},${0.14 * surge})`;
+        gctx.stroke(core[j]);
+      }
+      if (!reduce && glowNow) {
+        gctx.lineWidth = 10;
+        gctx.strokeStyle = `rgba(255,208,161,${0.22 * surge})`;
+        gctx.stroke(comets);
+      }
+
       ctx.clearRect(0, 0, W, H);
       ctx.globalCompositeOperation = "lighter";
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(glow, 0, 0, W, H);
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       for (let j = 0; j < SLOTS; j++) {
-        const rgb = `${cols[j][0] | 0},${cols[j][1] | 0},${cols[j][2] | 0}`;
-        ctx.lineWidth = 6;
-        ctx.strokeStyle = `rgba(${rgb},${0.035 * surge})`;
-        ctx.stroke(soft[j]);
-        ctx.strokeStyle = `rgba(${rgb},${0.07 * surge})`;
-        ctx.stroke(core[j]);
+        const rgb = rgbs[j];
         ctx.lineWidth = 1.1;
         ctx.strokeStyle = `rgba(${rgb},${Math.min(1, 0.13 * surge)})`;
         ctx.stroke(soft[j]);
@@ -513,9 +549,6 @@ function Strands({ scene, shapes, reduce, stir }: { scene: number; shapes: (Shap
         ctx.stroke(core[j]);
       }
       if (!reduce) {
-        ctx.lineWidth = 8;
-        ctx.strokeStyle = `rgba(255,208,161,${0.12 * surge})`;
-        ctx.stroke(comets);
         ctx.lineWidth = 2.2;
         ctx.strokeStyle = `rgba(255,240,222,${Math.min(1, 0.85 * surge)})`;
         ctx.stroke(comets);
@@ -709,12 +742,17 @@ export default function WorksShowcase({ title, onOpen, columns }: { title: strin
   // Trace each project's mark once per visit (kept for later opens), the active one first
   useEffect(() => {
     let live = true;
-    const order = projects.map((_, i) => i);
-    order.forEach((i) =>
+    // One mark at a time, yielding to the browser between them, so opening Projects never stalls on tracing
+    const idle = (fn: () => void) =>
+      typeof window.requestIdleCallback === "function" ? window.requestIdleCallback(fn, { timeout: 300 }) : setTimeout(fn, 16);
+    const next = (i: number) => {
+      if (!live || i >= projects.length) return;
       loadShape(i).then((s) => {
         if (live && s) setShapes((prev) => (prev[i] === s ? prev : Object.assign([...prev], { [i]: s })));
-      }),
-    );
+        idle(() => next(i + 1));
+      });
+    };
+    idle(() => next(0));
     return () => {
       live = false;
     };
@@ -856,7 +894,7 @@ export default function WorksShowcase({ title, onOpen, columns }: { title: strin
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: reduce ? 0.3 : 0.85, ease: [0.76, 0, 0.24, 1] }}
+              transition={{ duration: reduce ? 0.25 : 0.6, ease: [0.76, 0, 0.24, 1] }}
             >
               <div
                 className="slide-zoom-soft origin-left"
