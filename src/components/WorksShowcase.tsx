@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState, type ComponentType } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, ArrowUpRight, BookOpen, Cpu, GraduationCap, HeartHandshake, Languages, LayoutGrid, Truck, type LucideProps } from "lucide-react";
+import { ArrowRight, ArrowUpRight, LayoutGrid } from "lucide-react";
 import { projects, worksHeadline, worksShowcase as L, type Project } from "../content";
 import { hasCaseStudy, WorksList } from "./Works";
 
@@ -11,8 +11,9 @@ import { hasCaseStudy, WorksList } from "./Works";
  *     in the accent gradient), and a scroll cue. Behind it, a fountain of luminous strands pours down and splays out.
  *   - Sections 01–06 give each project the whole view: numbered kicker, the name in the project's own signature colour,
  *     status badges, role and years on one ruled row, the summary, tag pills, and View project.
- *   - As each project scrolls in, the strands flow in from the left and trace that project's mark (its icon), drawn in
- *     its own colours, like the reference's company logos drawn in light.
+ *   - As each project scrolls in, the strands rise from below and trace that project's real logo (Caira, TokenForge) or its
+ *     brand name in its own typeface, in its own colours, like the reference's company logos drawn in light. The marks
+ *     are drawn on a hidden canvas and traced into outlines (marching squares); every outline gets its own strand.
  *   - A dot rail on the right (click to jump), a "01 / 06 · CAIRA" counter, and a short loading count on first open.
  *   - Below the showcase, the full "All work" grid with covers.
  *
@@ -20,14 +21,21 @@ import { hasCaseStudy, WorksList } from "./Works";
  * the showcase is on screen. Reduced motion: no drift, shapes jump into place, no loading count.
  */
 
-type Icon = ComponentType<LucideProps>;
-const ICONS: Record<Project["icon"], Icon> = {
-  "heart-handshake": HeartHandshake,
-  cpu: Cpu,
-  truck: Truck,
-  languages: Languages,
-  "book-open": BookOpen,
-  "graduation-cap": GraduationCap,
+/**
+ * What the strands draw for each project: its real logo where the site has one (Caira's heart-to-infinity mark and
+ * wordmark; TokenForge's pennant F and wordmark), otherwise its brand name set in its own typeface.
+ */
+type Mark =
+  | { kind: "image"; src: string }
+  | { kind: "text"; text: string; font: string; family: string }
+  | { kind: "token"; text: string };
+const MARKS: Record<string, Mark> = {
+  caira: { kind: "image", src: "/work/caira/logo-light.webp" },
+  nexuscore: { kind: "text", text: "NexusCore", font: "700 150px", family: "DM Sans" },
+  tokenforge: { kind: "token", text: "TokenForge" },
+  carf: { kind: "text", text: "CARF", font: "400 170px", family: "Anton" },
+  mova: { kind: "text", text: "MOVA", font: "400 170px", family: "Anton" },
+  unelo: { kind: "text", text: "Unelo", font: "700 160px", family: "Space Grotesk" },
 };
 
 /** Each project's signature colours (from its own brand where it has one); the first is the name's colour. */
@@ -46,38 +54,171 @@ const pad = (n: number) => String(n).padStart(2, "0");
 const hex = (c: string) => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
 
 // ---- Strands ------------------------------------------------------------------------------------------------------
-const POINTS = 44;
-const TAIL = 12; // points spent flowing in from the edge before tracing the mark
+const POINTS = 56;
+const TAIL = 12; // points spent flowing in from below before tracing the mark
 
 /** A small seeded random, so every strand keeps its character from scene to scene */
-const seeded = (seed: number) => () => {
-  seed = (seed * 16807) % 2147483647;
-  return seed / 2147483647;
+const seeded = (seed: number) => {
+  const next = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  // The first few draws of this generator are tiny for small seeds; skip them so every strand is truly random
+  for (let i = 0; i < 4; i++) next();
+  return next;
 };
 
+/** One outline of a mark, in 0–1 coordinates of the mark's box */
 interface Subpath {
   pts: [number, number][];
   closed: boolean;
   len: number;
 }
+interface Shape {
+  paths: Subpath[];
+  /** width / height of the mark */
+  aspect: number;
+}
 
-/** Sample every drawable element of a rendered 24×24 icon into point lists. */
-function sampleIcon(svg: SVGSVGElement): Subpath[] {
-  const out: Subpath[] = [];
-  svg.querySelectorAll<SVGGeometryElement>("path, circle, rect, line, polyline, ellipse").forEach((el) => {
-    const len = el.getTotalLength();
-    if (!len) return;
-    const n = Math.max(10, Math.round(len * 5));
-    const pts: [number, number][] = [];
-    for (let k = 0; k <= n; k++) {
-      const p = el.getPointAtLength((k / n) * len);
-      pts.push([p.x, p.y]);
+/** Draw a mark onto a canvas: the logo image, the TokenForge pennant F and wordmark, or the brand name. */
+async function drawMark(mark: Mark): Promise<HTMLCanvasElement> {
+  const c = document.createElement("canvas");
+  const ctx = c.getContext("2d")!;
+  const H = 200;
+  if (mark.kind === "image") {
+    const img = new Image();
+    img.src = mark.src;
+    await img.decode();
+    const w = Math.round((img.naturalWidth / img.naturalHeight) * (H - 24));
+    c.width = w + 24;
+    c.height = H;
+    ctx.drawImage(img, 12, 12, w, H - 24);
+    return c;
+  }
+  const family = mark.kind === "token" ? "Inter" : mark.family;
+  const font = mark.kind === "token" ? "700 120px" : mark.font;
+  await document.fonts.load(`${font} "${family}"`, mark.text).catch(() => undefined);
+  ctx.font = `${font} "${family}", sans-serif`;
+  const tw = ctx.measureText(mark.text).width;
+  const markW = mark.kind === "token" ? 124 : 0; // the pennant F (68×120 at 1.15 scale) plus a gap
+  c.width = Math.ceil(tw + markW + 32);
+  c.height = H;
+  ctx.fillStyle = "#fff";
+  if (mark.kind === "token") {
+    ctx.save();
+    ctx.translate(14, 30);
+    ctx.scale(1.15, 1.15);
+    ctx.fill(new Path2D("M0 0 H64 V27 H28 V120 H0 Z"));
+    ctx.fill(new Path2D("M28 46 L67 76 L28 100 Z"));
+    ctx.restore();
+  }
+  ctx.font = `${font} "${family}", sans-serif`;
+  ctx.textBaseline = "middle";
+  ctx.fillText(mark.text, 16 + markW, H / 2 + 4);
+  return c;
+}
+
+/** Trace the filled areas of a canvas into closed outlines (marching squares), smoothed and evenly resampled. */
+function traceOutlines(c: HTMLCanvasElement): Shape {
+  const w = c.width;
+  const h = c.height;
+  const data = c.getContext("2d")!.getImageData(0, 0, w, h).data;
+  const on = (x: number, y: number) => (x < 0 || y < 0 || x >= w || y >= h ? 0 : data[(y * w + x) * 4 + 3] > 110 ? 1 : 0);
+  // Edge segments of every cell on the boundary, keyed by endpoint for chaining
+  const segs: number[][] = [];
+  for (let y = -1; y < h; y++) {
+    for (let x = -1; x < w; x++) {
+      const k = on(x, y) * 8 + on(x + 1, y) * 4 + on(x + 1, y + 1) * 2 + on(x, y + 1);
+      if (k === 0 || k === 15) continue;
+      const T = [x + 0.5, y];
+      const R = [x + 1, y + 0.5];
+      const B = [x + 0.5, y + 1];
+      const Lf = [x, y + 0.5];
+      const add = (a: number[], b: number[]) => segs.push([a[0], a[1], b[0], b[1]]);
+      if (k === 1 || k === 14) add(Lf, B);
+      else if (k === 2 || k === 13) add(B, R);
+      else if (k === 3 || k === 12) add(Lf, R);
+      else if (k === 4 || k === 11) add(T, R);
+      else if (k === 6 || k === 9) add(T, B);
+      else if (k === 7 || k === 8) add(Lf, T);
+      else if (k === 5) {
+        add(Lf, T);
+        add(B, R);
+      } else if (k === 10) {
+        add(T, R);
+        add(Lf, B);
+      }
     }
-    const tag = el.tagName.toLowerCase();
-    const closed = tag === "circle" || tag === "rect" || tag === "ellipse" || /z\s*$/i.test(el.getAttribute("d") ?? "");
-    out.push({ pts, closed, len });
+  }
+  const key = (x: number, y: number) => `${x * 2},${y * 2}`;
+  const at = new Map<string, number[]>();
+  segs.forEach((s, i) => {
+    for (const k of [key(s[0], s[1]), key(s[2], s[3])]) {
+      const list = at.get(k);
+      if (list) list.push(i);
+      else at.set(k, [i]);
+    }
   });
-  return out;
+  const used = new Uint8Array(segs.length);
+  const paths: Subpath[] = [];
+  for (let i = 0; i < segs.length; i++) {
+    if (used[i]) continue;
+    used[i] = 1;
+    const loop: [number, number][] = [[segs[i][0], segs[i][1]]];
+    let cur: [number, number] = [segs[i][2], segs[i][3]];
+    for (let guard = 0; guard < 100000; guard++) {
+      loop.push(cur);
+      const next = (at.get(key(cur[0], cur[1])) ?? []).find((j) => !used[j]);
+      if (next === undefined) break;
+      used[next] = 1;
+      const s = segs[next];
+      cur = s[0] === cur[0] && s[1] === cur[1] ? [s[2], s[3]] : [s[0], s[1]];
+    }
+    if (loop.length < 24) continue; // specks
+    // Smooth the pixel staircase, then resample evenly (about one point per 3 px of outline)
+    let pts = loop;
+    for (let pass = 0; pass < 3; pass++) {
+      pts = pts.map((p, k) => {
+        const a = pts[(k - 1 + pts.length) % pts.length];
+        const b = pts[(k + 1) % pts.length];
+        return [(a[0] + p[0] * 2 + b[0]) / 4, (a[1] + p[1] * 2 + b[1]) / 4];
+      });
+    }
+    let len = 0;
+    const cum = [0];
+    for (let k = 1; k <= pts.length; k++) {
+      const a = pts[k - 1];
+      const b = pts[k % pts.length];
+      len += Math.hypot(b[0] - a[0], b[1] - a[1]);
+      cum.push(len);
+    }
+    const n = Math.max(16, Math.round(len / 3));
+    const even: [number, number][] = [];
+    let j = 0;
+    for (let k = 0; k <= n; k++) {
+      const d = (k / n) * len;
+      while (j < cum.length - 2 && cum[j + 1] < d) j++;
+      const a = pts[j % pts.length];
+      const b = pts[(j + 1) % pts.length];
+      const t = (d - cum[j]) / Math.max(1e-6, cum[j + 1] - cum[j]);
+      even.push([(a[0] + (b[0] - a[0]) * t) / w, (a[1] + (b[1] - a[1]) * t) / h]);
+    }
+    paths.push({ pts: even, closed: true, len });
+  }
+  // Crop the box to the ink, so the mark centres on its own shape
+  let minX = 1,
+    minY = 1,
+    maxX = 0,
+    maxY = 0;
+  paths.forEach((p) =>
+    p.pts.forEach(([x, y]) => {
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }),
+  );
+  const bw = Math.max(1e-6, maxX - minX);
+  const bh = Math.max(1e-6, maxY - minY);
+  paths.forEach((p) => (p.pts = p.pts.map(([x, y]) => [(x - minX) / bw, (y - minY) / bh])));
+  return { paths, aspect: (bw * w) / (bh * h) };
 }
 
 const at = (sp: Subpath, f: number): [number, number] => {
@@ -93,13 +234,13 @@ const at = (sp: Subpath, f: number): [number, number] => {
 };
 
 /** Targets for every strand in one scene, in canvas pixels: [x0, y0, x1, y1, …] per strand. */
-function sceneTargets(scene: number, icon: Subpath[] | undefined, W: number, H: number, count: number): Float32Array[] {
+function sceneTargets(scene: number, shape: Shape | undefined, W: number, H: number, count: number): Float32Array[] {
   const wide = W >= 720;
   const out: Float32Array[] = [];
   for (let s = 0; s < count; s++) {
     const r = seeded(1000 + s * 97);
     const arr = new Float32Array(POINTS * 2);
-    if (scene === 0 || !icon || icon.length === 0) {
+    if (scene === 0 || !shape || shape.paths.length === 0) {
       // The fountain: a column pours from the top, then splays out to both sides
       const u = s / (count - 1);
       const side = u < 0.5 ? -1 : 1;
@@ -118,26 +259,40 @@ function sceneTargets(scene: number, icon: Subpath[] | undefined, W: number, H: 
         arr[k * 2 + 1] = m * m * m * P[0][1] + 3 * m * m * t * P[1][1] + 3 * m * t * t * P[2][1] + t * t * t * P[3][1];
       }
     } else {
-      // Trace a stretch of the project's mark, flowing in from the left edge
-      const S = wide ? Math.min(W * 0.34, H * 0.62) : Math.min(W * 0.66, H * 0.3);
-      const cx = wide ? W * 0.75 : W * 0.5;
-      const cy = wide ? H * 0.5 : H * 0.8;
-      // Weighted toward longer outlines, but softly, so small details (a chip's pins, a truck's wheels) get strands too
-      const weight = (p: Subpath) => Math.pow(p.len, 0.55);
-      const total = icon.reduce((a, b) => a + weight(b), 0);
-      let pick = r() * total;
-      let sp = icon[0];
-      for (const p of icon) {
-        if ((pick -= weight(p)) <= 0) {
-          sp = p;
-          break;
+      // Trace the mark: its box sits right of the copy (below it on phones), sized to its aspect
+      const asp = shape.aspect;
+      const bw = wide ? Math.min(W * 0.33, H * 0.5 * asp) : Math.min(W * 0.8, H * 0.12 * asp);
+      const bh = bw / asp;
+      // On phones the copy fills the view, so the mark sits in the open band above the kicker
+      const cx = wide ? W * 0.785 : W * 0.5;
+      const cy = wide ? H * 0.5 : 18 + bh / 2;
+      const paths = shape.paths;
+      // Every outline gets one strand that runs all the way round it, so letters and marks close up legibly;
+      // the rest double up along the longer outlines for glow
+      let sp: Subpath;
+      let span: number;
+      let jitter: number;
+      if (s < paths.length) {
+        sp = paths[s];
+        span = 1.02;
+        jitter = 0;
+      } else {
+        const weight = (p: Subpath) => Math.pow(p.len, 0.2);
+        const total = paths.reduce((a, b) => a + weight(b), 0);
+        let pick = r() * total;
+        sp = paths[0];
+        for (const p of paths) {
+          if ((pick -= weight(p)) <= 0) {
+            sp = p;
+            break;
+          }
         }
+        span = 0.55 + r() * 0.5;
+        jitter = (r() - 0.5) * bh * 0.05;
       }
-      const span = sp.closed ? 0.45 + r() * 0.5 : 0.7 + r() * 0.3;
-      const start = sp.closed ? r() : r() * (1 - span);
-      const jitter = (r() - 0.5) * S * 0.12;
-      const map = (p: [number, number]): [number, number] => [cx + (p[0] / 24 - 0.5) * S, cy + (p[1] / 24 - 0.5) * S];
-      // Offset along the outline's normal, so the strands bundle into a glowing band
+      const start = r();
+      const map = (p: [number, number]): [number, number] => [cx + (p[0] - 0.5) * bw, cy + (p[1] - 0.5) * bh];
+      // Offset along the outline's normal, so the doubled strands bundle into a glowing band
       const pt = (f: number): [number, number] => {
         const a = map(at(sp, f));
         const b = map(at(sp, f + 0.01));
@@ -147,10 +302,12 @@ function sceneTargets(scene: number, icon: Subpath[] | undefined, W: number, H: 
         return [a[0] - (dy / d) * jitter, a[1] + (dx / d) * jitter];
       };
       const B = pt(start);
-      // Tails rise from below the view (on wide screens from under the right half, clear of the copy)
-      const A: [number, number] = wide ? [W * (0.42 + r() * 0.58), H + 60] : [W * r(), H + 60];
-      // ...and approach each point of the mark from outside it, so the inside of the mark stays clear
-      const C: [number, number] = [B[0] + (B[0] - cx) * (0.7 + r() * 0.5), Math.max(B[1], cy) + S * (0.45 + r() * 0.3)];
+      // Tails rise from below the view (on wide screens from under the right half, clear of the copy)...
+      const A: [number, number] = wide ? [W * (0.45 + r() * 0.55), H + 60] : [W * r(), -60];
+      // ...and approach each point of the mark from below it, so the inside of the mark stays clear
+      const C: [number, number] = wide
+        ? [B[0] + (B[0] - cx) * 0.4 + (r() - 0.5) * bw * 0.2, Math.max(B[1], cy) + bh * (0.9 + r() * 0.8)]
+        : [B[0] + (B[0] - cx) * 0.4, Math.min(B[1], cy) - bh * (0.9 + r() * 0.8)];
       for (let k = 0; k < TAIL; k++) {
         const t = k / TAIL;
         const m = 1 - t;
@@ -169,12 +326,12 @@ function sceneTargets(scene: number, icon: Subpath[] | undefined, W: number, H: 
 }
 
 /** The strands themselves: they ease toward the active scene's targets, drift gently, and glow. */
-function Strands({ scene, icons, reduce }: { scene: number; icons: (Subpath[] | undefined)[]; reduce: boolean }) {
+function Strands({ scene, shapes, reduce }: { scene: number; shapes: (Shape | undefined)[]; reduce: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef(scene);
   sceneRef.current = scene;
-  const iconsRef = useRef(icons);
-  iconsRef.current = icons;
+  const shapesRef = useRef(shapes);
+  shapesRef.current = shapes;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -189,12 +346,13 @@ function Strands({ scene, icons, reduce }: { scene: number; icons: (Subpath[] | 
     let builtFor = "";
     let raf = 0;
     let visible = true;
+    let last = 0;
 
     const build = () => {
-      const key = `${sceneRef.current}:${W}x${H}:${iconsRef.current.filter(Boolean).length}`;
+      const key = `${sceneRef.current}:${W}x${H}:${shapesRef.current.filter(Boolean).length}`;
       if (key === builtFor) return;
       builtFor = key;
-      targets = sceneTargets(sceneRef.current, iconsRef.current[sceneRef.current - 1], W, H, count);
+      targets = sceneTargets(sceneRef.current, shapesRef.current[sceneRef.current - 1], W, H, count);
     };
 
     const resize = () => {
@@ -205,7 +363,7 @@ function Strands({ scene, icons, reduce }: { scene: number; icons: (Subpath[] | 
       canvas.width = Math.round(W * dpr);
       canvas.height = Math.round(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const next = W < 720 ? 46 : 84;
+      const next = W < 720 ? 64 : 110;
       if (next !== count) {
         count = next;
         // Start collapsed at the top centre, so the first scene pours in
@@ -228,15 +386,20 @@ function Strands({ scene, icons, reduce }: { scene: number; icons: (Subpath[] | 
       build();
       const pal = palette(sceneRef.current).map(hex);
       ctx.clearRect(0, 0, W, H);
+      // The strands that trace each outline once are drawn crisp and bright; the rest are a soft glow around them
+      const crisp = sceneRef.current > 0 ? shapesRef.current[sceneRef.current - 1]?.paths.length ?? 0 : count;
       ctx.globalCompositeOperation = "lighter";
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       const t = time / 1000;
+      // Time-based easing, so the marks assemble in about a second whatever the frame rate
+      const dt = last ? Math.min(0.1, Math.max(0, t - last)) : 1 / 60;
+      last = t;
       for (let s = 0; s < count; s++) {
         const p = pos[s];
         const g = targets[s];
         // Each strand travels at its own pace, so a scene change reads as a flow, not a jump
-        const k = reduce ? 1 : 0.025 + 0.05 * ((s * 7) % 11) / 11;
+        const k = reduce ? 1 : 1 - Math.exp(-dt * (1.6 + 3.2 * (((s * 7) % 11) / 11)));
         const amp = reduce ? 0 : 2.2 + (s % 5);
         for (let i = 0; i < POINTS; i++) {
           const wob = Math.sin(t * 1.1 + i * 0.32 + s * 0.7) * amp;
@@ -245,7 +408,7 @@ function Strands({ scene, icons, reduce }: { scene: number; icons: (Subpath[] | 
         }
         const c = cols[s];
         const want = pal[s % pal.length];
-        for (let j = 0; j < 3; j++) c[j] += (want[j] - c[j]) * (reduce ? 1 : 0.04);
+        for (let j = 0; j < 3; j++) c[j] += (want[j] - c[j]) * (reduce ? 1 : 1 - Math.exp(-dt * 2.5));
         ctx.beginPath();
         ctx.moveTo(p[0], p[1]);
         for (let i = 1; i < POINTS - 1; i++) {
@@ -255,10 +418,10 @@ function Strands({ scene, icons, reduce }: { scene: number; icons: (Subpath[] | 
         }
         ctx.lineTo(p[(POINTS - 1) * 2], p[(POINTS - 1) * 2 + 1]);
         const rgb = `${c[0] | 0},${c[1] | 0},${c[2] | 0}`;
-        ctx.strokeStyle = `rgba(${rgb},0.08)`;
+        ctx.strokeStyle = `rgba(${rgb},${s < crisp ? 0.08 : 0.04})`;
         ctx.lineWidth = 6;
         ctx.stroke();
-        ctx.strokeStyle = `rgba(${rgb},0.5)`;
+        ctx.strokeStyle = `rgba(${rgb},${s < crisp ? 0.85 : 0.13})`;
         ctx.lineWidth = s % 6 === 0 ? 1.8 : 1.1;
         ctx.stroke();
       }
@@ -322,7 +485,7 @@ function ProjectSection({ p, i, onOpen, active }: { p: Project; i: number; onOpe
     <section
       aria-labelledby={`work-${p.slug}`}
       data-scene={i + 1}
-      className="relative flex min-h-[var(--vh)] snap-start flex-col justify-center py-14 pr-8 sm:pr-14"
+      className="relative flex min-h-[var(--vh)] snap-start flex-col justify-center pb-14 pr-8 pt-32 sm:pr-14 @3xl:pt-14"
     >
       <div className="relative max-w-[34rem] @3xl:ml-[6cqw] @3xl:max-w-[36rem] @6xl:ml-[8cqw]">
         <motion.div {...rise(0)}>
@@ -398,16 +561,31 @@ function ProjectSection({ p, i, onOpen, active }: { p: Project; i: number; onOpe
 export default function WorksShowcase({ title, onOpen, columns }: { title: string; onOpen: (slug: string) => void; columns: 1 | 2 }) {
   const reduce = !!useReducedMotion();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const iconHost = useRef<HTMLDivElement>(null);
   const [scene, setScene] = useState(0);
-  const [icons, setIcons] = useState<(Subpath[] | undefined)[]>([]);
+  const [shapes, setShapes] = useState<(Shape | undefined)[]>([]);
   const [vh, setVh] = useState(600);
 
-  // Sample each project's icon once (rendered invisibly below)
+  // Trace each project's logo or name once, as soon as its image or font is ready
   useEffect(() => {
-    const host = iconHost.current;
-    if (!host) return;
-    setIcons([...host.querySelectorAll("svg")].map((svg) => sampleIcon(svg as SVGSVGElement)));
+    let live = true;
+    projects.forEach((p, i) => {
+      const mark = MARKS[p.slug];
+      if (!mark) return;
+      drawMark(mark)
+        .then((c) => traceOutlines(c))
+        .then((shape) => {
+          if (!live) return;
+          setShapes((prev) => {
+            const next = [...prev];
+            next[i] = shape;
+            return next;
+          });
+        })
+        .catch(() => undefined);
+    });
+    return () => {
+      live = false;
+    };
   }, []);
 
   // Each showcase section is exactly one scroller-height tall
@@ -486,31 +664,20 @@ export default function WorksShowcase({ title, onOpen, columns }: { title: strin
       className="@container fx-scroll relative -mx-6 min-h-0 flex-1 snap-y snap-proximity overflow-y-auto overscroll-contain px-6 sm:-mx-10 sm:px-10"
       style={{ "--vh": `${vh}px` } as React.CSSProperties}
     >
-      {/* Icons, rendered invisibly so their outlines can be sampled */}
-      <div ref={iconHost} aria-hidden="true" className="pointer-events-none absolute h-0 w-0 overflow-hidden opacity-0">
-        {projects.map((p) => {
-          const I = ICONS[p.icon];
-          return <I key={p.slug} size={24} />;
-        })}
-      </div>
 
       <div className="relative">
         {/* The stage stays put while the sections scroll over it: deep base colour, star dust, and the strands */}
         <div
           aria-hidden="true"
-          className="pointer-events-none sticky top-0 -mx-6 h-[var(--vh)] overflow-hidden sm:-mx-10"
-          style={{
-            marginBottom: "calc(-1 * var(--vh))",
-            // The drawer's own brown (and John's portraits on it) on the left, deepening to the base colour where the light plays
-            background: "linear-gradient(105deg, rgba(78,29,9,0.3) 0%, rgba(52,18,5,0.55) 40%, rgba(21,6,0,0.82) 100%)",
-          }}
+          className="pointer-events-none sticky top-0 -mx-6 h-[var(--vh)] overflow-hidden bg-base sm:-mx-10"
+          style={{ marginBottom: "calc(-1 * var(--vh))" }}
         >
           <div className="absolute inset-0 bg-[radial-gradient(1px_1px_at_12%_22%,rgba(241,230,206,0.5),transparent),radial-gradient(1px_1px_at_68%_14%,rgba(255,208,161,0.45),transparent),radial-gradient(1.5px_1.5px_at_84%_62%,rgba(241,230,206,0.4),transparent),radial-gradient(1px_1px_at_32%_78%,rgba(240,147,122,0.5),transparent),radial-gradient(1px_1px_at_52%_42%,rgba(241,230,206,0.35),transparent),radial-gradient(1px_1px_at_92%_88%,rgba(255,208,161,0.4),transparent),radial-gradient(60%_50%_at_70%_40%,rgba(152,58,40,0.22),transparent)] [background-size:340px_300px,420px_380px,380px_420px,300px_340px,460px_300px,400px_360px,100%_100%]" />
-          <div className="absolute inset-0 @max-3xl:opacity-60">
-            <Strands scene={scene} icons={icons} reduce={reduce} />
+          <div className="absolute inset-0">
+            <Strands scene={scene} shapes={shapes} reduce={reduce} />
           </div>
           {/* Keep the copy legible over the light */}
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(46,16,5,0.8),rgba(46,16,5,0.45)_42%,transparent_62%)] @max-3xl:bg-[linear-gradient(180deg,rgba(46,16,5,0.75),rgba(46,16,5,0.3)_55%,transparent)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(21,6,0,0.94),rgba(21,6,0,0.6)_42%,transparent_62%)] @max-3xl:bg-[linear-gradient(180deg,rgba(21,6,0,0.82),rgba(21,6,0,0.35)_55%,transparent)]" />
         </div>
 
         {/* Above the sections: the dot rail, the counter, and the loading count */}
@@ -536,7 +703,7 @@ export default function WorksShowcase({ title, onOpen, columns }: { title: strin
           </nav>
 
           {/* Counter */}
-          <div aria-hidden="true" className="absolute bottom-5 right-5 text-right font-mono text-[11px] tracking-[0.2em] sm:right-8">
+          <div aria-hidden="true" className="absolute bottom-5 right-5 hidden text-right font-mono text-[11px] tracking-[0.2em] sm:right-8 @3xl:block">
             <span className="text-primary-soft">{pad(scene)}</span>
             <span className="text-cream/50"> / {pad(projects.length)}</span>
             <AnimatePresence mode="wait">
@@ -618,7 +785,7 @@ export default function WorksShowcase({ title, onOpen, columns }: { title: strin
       </div>
 
       {/* Everything, with covers */}
-      <div className="relative z-30 -mx-6 bg-secondary px-6 pb-10 pt-12 sm:-mx-10 sm:px-10">
+      <div className="relative z-30 -mx-6 bg-base px-6 pb-10 pt-12 sm:-mx-10 sm:px-10">
         <div className="flex items-center justify-between border-b border-cream/10 pb-3 font-mono text-xs tracking-[0.25em]">
           <span className="flex items-center gap-2 text-primary-soft">
             <LayoutGrid size={14} aria-hidden="true" />

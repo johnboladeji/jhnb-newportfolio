@@ -153,7 +153,7 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
             role="dialog"
             aria-modal="true"
             aria-labelledby="drawer-title"
-            className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-cream/5 bg-secondary transition-[max-width] duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] sm:max-w-xl md:max-w-2xl"
+            className={`fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-cream/5 ${view === "projects" ? "bg-base" : "bg-secondary"} transition-[max-width,background-color] duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] sm:max-w-xl md:max-w-2xl`}
             style={isFull ? { maxWidth: "100vw" } : undefined}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -161,7 +161,8 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
             transition={{ type: "spring", stiffness: 260, damping: 32 }}
           >
             {/* Portraits sit behind everything at the panel's right edge; full strength on the menu, dimmed elsewhere */}
-            <DrawerPortraits dim={view !== "menu"} />
+            {/* Projects has its own full-height dark stage, so the portraits step aside there */}
+            {view !== "projects" && <DrawerPortraits dim={view !== "menu"} />}
             {/* A woven Aso-oke band along the top edge of every panel */}
             <span aria-hidden="true" className="aso-band pointer-events-none absolute inset-x-0 top-0 z-10 h-1" />
           {/* Top bar: no fill (the portrait shows through it). It sits outside the scroller, so content scrolls
