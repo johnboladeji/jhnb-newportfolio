@@ -207,6 +207,11 @@ export default function ParticleBackground() {
     const target = new THREE.Color();
 
     const tick = () => {
+      // A full-screen panel covers the page: skip the work (and the GPU) until it's uncovered
+      if (document.documentElement.dataset.covered === "1") {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       pointer.lerp(pointerTarget, POINTER_EASE);
 
       // Particles: repulsion + swirl, spring back to origin, colour flare toward the accent

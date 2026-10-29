@@ -350,3 +350,24 @@ body {
 .scroll-cue { animation: scroll-cue 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
 @keyframes scroll-cue { from { transform: translateX(-100%); } to { transform: translateX(200%); } }
 @media (prefers-reduced-motion: reduce) { .scroll-cue { animation: none; } }
+
+/* Projects slideshow: each slide holds while the stage and the copy slowly zoom in; the active dot fills with the hold */
+.slide-zoom { animation: slide-zoom linear both; transform-origin: 72% 50%; }
+@keyframes slide-zoom { from { transform: scale(1); } to { transform: scale(1.07); } }
+.slide-zoom-soft { animation: slide-zoom-soft linear both; }
+@keyframes slide-zoom-soft { from { transform: scale(1); } to { transform: scale(1.035); } }
+.slide-progress { width: 0; animation: slide-progress linear forwards; }
+@keyframes slide-progress { to { width: 100%; } }
+
+/* Glowing calls to action: a slow halo in the project's colour (--glow) */
+.cta-glow { box-shadow: 0 0 0 0 var(--glow, #f0937a); animation: cta-glow 2.4s ease-in-out infinite; }
+@keyframes cta-glow {
+  0%, 100% { box-shadow: 0 0 14px 0 color-mix(in srgb, var(--glow, #f0937a) 45%, transparent), 0 0 0 0 color-mix(in srgb, var(--glow, #f0937a) 40%, transparent); }
+  50% { box-shadow: 0 0 34px 4px color-mix(in srgb, var(--glow, #f0937a) 60%, transparent), 0 0 0 7px color-mix(in srgb, var(--glow, #f0937a) 0%, transparent); }
+}
+.cta-glow-soft { animation: cta-glow-soft 2.4s ease-in-out 1.2s infinite; }
+@keyframes cta-glow-soft { 0%, 100% { box-shadow: 0 0 0 0 rgb(255 208 161 / 0); } 50% { box-shadow: 0 0 22px 2px rgb(255 208 161 / 0.35); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .slide-zoom, .slide-zoom-soft, .cta-glow, .cta-glow-soft { animation: none; }
+}

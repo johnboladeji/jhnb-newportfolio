@@ -108,19 +108,21 @@ original is in the git-ignored `private/` folder. Always strip phone numbers and
   - `Articles.tsx` — Writing ▸ Articles on `ReadingShell`: overview with code-drawn covers, article pages with interactive explainers, links to Medium (`articles` in content.ts).
   - `ContentDesign.tsx` — Writing ▸ Content Design: pinned header + tabs + reading pane (About's structure); samples are typed blocks (`WritingBlock`) in `writing` in content.ts; screenshots in `public/writing/`.
   - `Reveal.tsx` — shared `Reveal` (fade-rise) and `RiseWords` (masked word rise) helpers.
-  - `WorksShowcase.tsx` — the Projects page (opens full screen by default), its hero after williamrajwan.com's structure
-    with John's own content: section 00 is the intro (mono "00 · SELECTED WORKS" kicker that is the `drawer-title`, the
-    `worksHeadline` set one sentence per line, the last in the accent gradient, a scroll cue; copy inset `6cqw`/`8cqw`);
-    sections 01–06 give each project the full view (numbered kicker, name in its signature colour from `SIGNATURE`,
-    Coming soon / Live badges, role + years row, summary, tag pills, View project, Visit live). On Projects the whole
-    drawer is the dark base colour, 100vh, and the portraits are hidden (InfoDrawer); a sticky stage adds star dust and
-    luminous strands (2D canvas, additive blending, time-based easing): a fountain for the intro, and for each project
-    the strands trace its real logo or brand name (`MARKS`: Caira's logo image, TokenForge's pennant F + wordmark, the
-    others' names in their own typefaces). Each mark is drawn on a hidden canvas and traced into outlines (marching
-    squares, `traceOutlines`); every outline gets one crisp strand, the rest add a soft glow. Wide: the mark sits right
-    of the copy, strands rising from below; phones: under the top bar, strands falling from above (sections get `pt-32`).
-    A dot rail, a "01 / 06 · CAIRA" counter (wide only), a 0.9 s loading count on first open (`jhnb-works-loaded`); the
-    "All work" grid (`WorksList`) follows. Labels in `worksShowcase`. Reduced motion: shapes jump into place, no count.
+  - `WorksShowcase.tsx` — the Projects page (opens full screen by default; the whole drawer is the dark base colour, 100vh,
+    portraits hidden). A horizontal slideshow after williamrajwan.com's structure, with John's own content: slide 0 is
+    the intro (`worksHeadline` one sentence per line, the last in the accent gradient, a Begin cue); slides 1–6 are the
+    projects (numbered kicker, the name large in its `SIGNATURE` colour with a glow, Coming soon / Live badges, role +
+    years, summary, tags, `.cta-glow` View project and `.cta-glow-soft` Visit live). Each slide holds (`DWELL`: 5.5 s
+    intro, 8 s projects) while the stage and copy slowly zoom (`.slide-zoom`, `.slide-zoom-soft`), and the active dot
+    fills (`.slide-progress`, whose `animationend` advances); then the next slides in sideways. Autoplay pauses with the
+    pointer on the copy, focus inside, the Pause button (`aria-pressed`), or the showcase scrolled away; arrows, dots,
+    swipe, and ←/→ move it; `aria-roledescription` carousel/slide; no autoplay under reduced motion. Behind it, luminous
+    strands (2D canvas, batched by colour into a few strokes per frame, ≤1.5× DPR, time-based easing) trace each
+    project's real logo or name (`MARKS`, traced once per visit into `SHAPES` via marching squares) and never rest:
+    light pulses run along each outline, the field surges every 3.5–6.5 s, and the pointer parts the strands and makes
+    them flare (`Stir`). The "All work" grid (`WorksList`) follows below. Labels in `worksShowcase`.
+    While a full-screen panel is open, InfoDrawer sets `html[data-covered="1"]` and ParticleBackground / WarpPortrait skip
+    rendering.
   - `Works.tsx` — Selected Works list, generated project covers, case-study view (`projects` in content.ts).
   - `CairaStudy.tsx` — Caira's rich case study and list cover (content in `cairaStudy` in content.ts, images in
     `public/work/caira/`). Uses Caira's own tokens (`night`, `terra`, `ochre`, `sage`, `paper`; Fraunces + Figtree)

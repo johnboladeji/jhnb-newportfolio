@@ -222,7 +222,11 @@ export default function WarpPortrait({ src, rig, alt, onError, className = "" }:
     let prev = performance.now();
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
-      if (document.hidden) return;
+      // Hidden tab, or a full-screen panel over the hero: nothing to draw
+      if (document.hidden || document.documentElement.dataset.covered === "1") {
+        prev = now;
+        return;
+      }
       const dt = Math.min(0.05, (now - prev) / 1000);
       prev = now;
 

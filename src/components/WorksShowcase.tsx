@@ -1,24 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, ArrowUpRight, LayoutGrid } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, LayoutGrid, Pause, Play } from "lucide-react";
 import { projects, worksHeadline, worksShowcase as L, type Project } from "../content";
 import { hasCaseStudy, WorksList } from "./Works";
 
 /**
  * The Projects page's hero, after williamrajwan.com's structure (the content is all John's, from `projects`):
  *
- *   - Section 00 is the intro: a numbered mono kicker with the page title, the headline in two lines (the last sentence
- *     in the accent gradient), and a scroll cue. Behind it, a fountain of luminous strands pours down and splays out.
- *   - Sections 01–06 give each project the whole view: numbered kicker, the name in the project's own signature colour,
- *     status badges, role and years on one ruled row, the summary, tag pills, and View project.
- *   - As each project scrolls in, the strands rise from below and trace that project's real logo (Caira, TokenForge) or its
- *     brand name in its own typeface, in its own colours, like the reference's company logos drawn in light. The marks
- *     are drawn on a hidden canvas and traced into outlines (marching squares); every outline gets its own strand.
- *   - A dot rail on the right (click to jump), a "01 / 06 · CAIRA" counter, and a short loading count on first open.
- *   - Below the showcase, the full "All work" grid with covers.
+ *   - A horizontal slideshow, one slide per view: the intro (the headline, one sentence per line, the last in the accent
+ *     gradient), then each project (numbered kicker, the name large in its signature colour, badges, role and years,
+ *     summary, tags, glowing View project / Visit live buttons). Each slide holds while it slowly zooms in, then the next
+ *     slides in sideways. It pauses while the pointer is on the copy, while focus is inside, when the visitor presses
+ *     pause, and when it is scrolled away; arrows, dots (with the hold's progress), swipe, and the arrow keys move it.
+ *   - Behind it, luminous strands trace each project's real logo or brand name (`MARKS`), and never sit still: light
+ *     pulses run along every outline, the field surges every few seconds, and the pointer parts the strands and makes
+ *     them flare.
+ *   - Below, the full "All work" grid with covers.
  *
- * The strands are a 2D canvas (additive blending, two passes per strand for the glow); the drawing loop only runs while
- * the showcase is on screen. Reduced motion: no drift, shapes jump into place, no loading count.
+ * Performance: the strands are batched into a few strokes per frame (by colour), drawn at up to 1.5× density, only
+ * while on screen; the traced marks are cached for the visit; and the landing page's WebGL pauses while this full-screen
+ * panel covers it (InfoDrawer sets `data-covered`). Reduced motion: no autoplay, no drift or zoom, shapes in place.
  */
 
 /**
@@ -54,8 +55,8 @@ const pad = (n: number) => String(n).padStart(2, "0");
 const hex = (c: string) => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
 
 // ---- Strands ------------------------------------------------------------------------------------------------------
-const POINTS = 56;
-const TAIL = 12; // points spent flowing in from below before tracing the mark
+const POINTS = 44;
+const TAIL = 10; // points spent flowing in before tracing the mark
 
 /** A small seeded random, so every strand keeps its character from scene to scene */
 const seeded = (seed: number) => {
@@ -261,11 +262,11 @@ function sceneTargets(scene: number, shape: Shape | undefined, W: number, H: num
     } else {
       // Trace the mark: its box sits right of the copy (below it on phones), sized to its aspect
       const asp = shape.aspect;
-      const bw = wide ? Math.min(W * 0.33, H * 0.5 * asp) : Math.min(W * 0.8, H * 0.12 * asp);
+      const bw = wide ? Math.min(W * 0.33, H * 0.5 * asp) : Math.min(W * 0.62, H * 0.08 * asp);
       const bh = bw / asp;
       // On phones the copy fills the view, so the mark sits in the open band above the kicker
       const cx = wide ? W * 0.785 : W * 0.5;
-      const cy = wide ? H * 0.5 : 18 + bh / 2;
+      const cy = wide ? H * 0.5 : 60 + bh / 2;
       const paths = shape.paths;
       // Every outline gets one strand that runs all the way round it, so letters and marks close up legibly;
       // the rest double up along the longer outlines for glow
@@ -325,8 +326,40 @@ function sceneTargets(scene: number, shape: Shape | undefined, W: number, H: num
   return out;
 }
 
-/** The strands themselves: they ease toward the active scene's targets, drift gently, and glow. */
-function Strands({ scene, shapes, reduce }: { scene: number; shapes: (Shape | undefined)[]; reduce: boolean }) {
+// ---- Shapes, traced once per visit and kept for every later open ----------------------------------------------------
+const SHAPES: (Shape | undefined)[] = [];
+const pending = new Map<number, Promise<Shape | undefined>>();
+function loadShape(i: number): Promise<Shape | undefined> {
+  if (SHAPES[i]) return Promise.resolve(SHAPES[i]);
+  const existing = pending.get(i);
+  if (existing) return existing;
+  const mark = MARKS[projects[i].slug];
+  const job = mark
+    ? drawMark(mark)
+        .then(traceOutlines)
+        .then((s) => (SHAPES[i] = s))
+        .catch(() => undefined)
+    : Promise.resolve(undefined);
+  pending.set(i, job);
+  return job;
+}
+
+/** Where the pointer is over the stage, and how stirred up the strands are (rises with movement, decays). */
+interface Stir {
+  x: number;
+  y: number;
+  over: boolean;
+  energy: number;
+}
+
+const SLOTS = 5; // colour buckets: strands are batched by colour, so a frame is a handful of strokes, not hundreds
+
+/**
+ * The strands: they ease toward the active scene's targets, drift, and never sit still. Light pulses race along every
+ * outline; the whole field surges in brightness every few seconds; the pointer pushes strands aside and makes them
+ * flare. Drawn in a few batched strokes per frame, at up to 1.5× pixel density, and only while on screen.
+ */
+function Strands({ scene, shapes, reduce, stir }: { scene: number; shapes: (Shape | undefined)[]; reduce: boolean; stir: React.MutableRefObject<Stir> }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef(scene);
   sceneRef.current = scene;
@@ -341,32 +374,34 @@ function Strands({ scene, shapes, reduce }: { scene: number; shapes: (Shape | un
     let H = 0;
     let count = 0;
     let pos: Float32Array[] = [];
-    let cols: number[][] = [];
     let targets: Float32Array[] = [];
     let builtFor = "";
     let raf = 0;
     let visible = true;
     let last = 0;
+    const cols = Array.from({ length: SLOTS }, () => [255, 208, 161]);
+    let flashAt = -10;
+    let nextFlash = 2.5;
 
     const build = () => {
       const key = `${sceneRef.current}:${W}x${H}:${shapesRef.current.filter(Boolean).length}`;
       if (key === builtFor) return;
       builtFor = key;
       targets = sceneTargets(sceneRef.current, shapesRef.current[sceneRef.current - 1], W, H, count);
+      flashAt = last; // a new scene arrives with a flare
     };
 
     const resize = () => {
       const r = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       W = r.width;
       H = r.height;
       canvas.width = Math.round(W * dpr);
       canvas.height = Math.round(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const next = W < 720 ? 64 : 110;
+      const next = W < 720 ? 48 : 80;
       if (next !== count) {
         count = next;
-        // Start collapsed at the top centre, so the first scene pours in
         pos = Array.from({ length: count }, () => {
           const a = new Float32Array(POINTS * 2);
           for (let k = 0; k < POINTS; k++) {
@@ -375,55 +410,115 @@ function Strands({ scene, shapes, reduce }: { scene: number; shapes: (Shape | un
           }
           return a;
         });
-        cols = Array.from({ length: count }, () => [255, 208, 161]);
       }
       builtFor = "";
       build();
       if (reduce) pos = targets.map((t) => Float32Array.from(t));
     };
 
+    const trace = (path: Path2D, p: Float32Array, from: number, to: number) => {
+      path.moveTo(p[from * 2], p[from * 2 + 1]);
+      for (let i = from + 1; i < to - 1; i++) {
+        path.quadraticCurveTo(p[i * 2], p[i * 2 + 1], (p[i * 2] + p[i * 2 + 2]) / 2, (p[i * 2 + 1] + p[i * 2 + 3]) / 2);
+      }
+      path.lineTo(p[(to - 1) * 2], p[(to - 1) * 2 + 1]);
+    };
+
     const draw = (time: number) => {
       build();
-      const pal = palette(sceneRef.current).map(hex);
-      ctx.clearRect(0, 0, W, H);
-      // The strands that trace each outline once are drawn crisp and bright; the rest are a soft glow around them
-      const crisp = sceneRef.current > 0 ? shapesRef.current[sceneRef.current - 1]?.paths.length ?? 0 : count;
-      ctx.globalCompositeOperation = "lighter";
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
       const t = time / 1000;
-      // Time-based easing, so the marks assemble in about a second whatever the frame rate
       const dt = last ? Math.min(0.1, Math.max(0, t - last)) : 1 / 60;
       last = t;
+      const pal = palette(sceneRef.current).map(hex);
+      const st = stir.current;
+      st.energy *= Math.exp(-dt * 1.6);
+
+      // Breathing, intermittent surges, and the pointer's stir, together set the brightness
+      if (!reduce && t > nextFlash) {
+        flashAt = t;
+        nextFlash = t + 3.5 + Math.random() * 3;
+      }
+      const flash = reduce ? 0 : Math.exp(-(t - flashAt) * 2.4);
+      const surge = reduce ? 1 : 0.86 + 0.14 * Math.sin(t * 0.9) + flash * 0.6 + Math.min(0.8, st.energy) * 0.5;
+
+      for (let j = 0; j < SLOTS; j++) {
+        const want = pal[j % pal.length];
+        for (let c = 0; c < 3; c++) cols[j][c] += (want[c] - cols[j][c]) * (reduce ? 1 : 1 - Math.exp(-dt * 2.5));
+      }
+
+      const crisp = sceneRef.current > 0 ? shapesRef.current[sceneRef.current - 1]?.paths.length ?? 0 : count;
+      const core = Array.from({ length: SLOTS }, () => new Path2D());
+      const soft = Array.from({ length: SLOTS }, () => new Path2D());
+      const comets = new Path2D();
+      const R = W < 720 ? 90 : 150;
+      const R2 = R * R;
+
       for (let s = 0; s < count; s++) {
         const p = pos[s];
         const g = targets[s];
-        // Each strand travels at its own pace, so a scene change reads as a flow, not a jump
         const k = reduce ? 1 : 1 - Math.exp(-dt * (1.6 + 3.2 * (((s * 7) % 11) / 11)));
-        const amp = reduce ? 0 : 2.2 + (s % 5);
+        const amp = reduce ? 0 : 2 + (s % 5) * (1 + st.energy);
         for (let i = 0; i < POINTS; i++) {
-          const wob = Math.sin(t * 1.1 + i * 0.32 + s * 0.7) * amp;
-          p[i * 2] += (g[i * 2] + wob * 0.6 - p[i * 2]) * k;
-          p[i * 2 + 1] += (g[i * 2 + 1] + wob - p[i * 2 + 1]) * k;
+          let gx = g[i * 2];
+          let gy = g[i * 2 + 1];
+          if (!reduce) {
+            const wob = Math.sin(t * 1.1 + i * 0.32 + s * 0.7) * amp;
+            gx += wob * 0.6;
+            gy += wob;
+            // The pointer parts the strands as it passes
+            if (st.over) {
+              const dx = gx - st.x;
+              const dy = gy - st.y;
+              const d2 = dx * dx + dy * dy;
+              if (d2 < R2) {
+                const d = Math.sqrt(d2) || 1;
+                const f = (1 - d / R) * (34 + st.energy * 30);
+                gx += (dx / d) * f;
+                gy += (dy / d) * f;
+              }
+            }
+          }
+          p[i * 2] += (gx - p[i * 2]) * k;
+          p[i * 2 + 1] += (gy - p[i * 2 + 1]) * k;
         }
-        const c = cols[s];
-        const want = pal[s % pal.length];
-        for (let j = 0; j < 3; j++) c[j] += (want[j] - c[j]) * (reduce ? 1 : 1 - Math.exp(-dt * 2.5));
-        ctx.beginPath();
-        ctx.moveTo(p[0], p[1]);
-        for (let i = 1; i < POINTS - 1; i++) {
-          const mx = (p[i * 2] + p[i * 2 + 2]) / 2;
-          const my = (p[i * 2 + 1] + p[i * 2 + 3]) / 2;
-          ctx.quadraticCurveTo(p[i * 2], p[i * 2 + 1], mx, my);
+        trace(s < crisp ? core[s % SLOTS] : soft[s % SLOTS], p, 0, POINTS);
+        // A pulse of light runs along each traced outline (and along the fountain's strands)
+        if (!reduce && s < crisp) {
+          const u = (t * (0.16 + (s % 4) * 0.03) + s * 0.137) % 1.4;
+          if (u < 1) {
+            const span = POINTS - TAIL;
+            const head = TAIL + Math.floor(u * span);
+            const from = Math.max(TAIL, head - 6);
+            if (head - from >= 3) trace(comets, p, from, head);
+          }
         }
-        ctx.lineTo(p[(POINTS - 1) * 2], p[(POINTS - 1) * 2 + 1]);
-        const rgb = `${c[0] | 0},${c[1] | 0},${c[2] | 0}`;
-        ctx.strokeStyle = `rgba(${rgb},${s < crisp ? 0.08 : 0.04})`;
+      }
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalCompositeOperation = "lighter";
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      for (let j = 0; j < SLOTS; j++) {
+        const rgb = `${cols[j][0] | 0},${cols[j][1] | 0},${cols[j][2] | 0}`;
         ctx.lineWidth = 6;
-        ctx.stroke();
-        ctx.strokeStyle = `rgba(${rgb},${s < crisp ? 0.85 : 0.13})`;
-        ctx.lineWidth = s % 6 === 0 ? 1.8 : 1.1;
-        ctx.stroke();
+        ctx.strokeStyle = `rgba(${rgb},${0.035 * surge})`;
+        ctx.stroke(soft[j]);
+        ctx.strokeStyle = `rgba(${rgb},${0.07 * surge})`;
+        ctx.stroke(core[j]);
+        ctx.lineWidth = 1.1;
+        ctx.strokeStyle = `rgba(${rgb},${Math.min(1, 0.13 * surge)})`;
+        ctx.stroke(soft[j]);
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = `rgba(${rgb},${Math.min(1, 0.8 * surge)})`;
+        ctx.stroke(core[j]);
+      }
+      if (!reduce) {
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = `rgba(255,208,161,${0.12 * surge})`;
+        ctx.stroke(comets);
+        ctx.lineWidth = 2.2;
+        ctx.strokeStyle = `rgba(255,240,222,${Math.min(1, 0.85 * surge)})`;
+        ctx.stroke(comets);
       }
       ctx.globalCompositeOperation = "source-over";
       if (!reduce && visible) raf = requestAnimationFrame(draw);
@@ -441,7 +536,7 @@ function Strands({ scene, shapes, reduce }: { scene: number; shapes: (Shape | un
       if (visible && !was && !reduce) raf = requestAnimationFrame(draw);
     });
     io.observe(canvas);
-    const redraw = () => draw(0);
+    const redraw = () => draw(performance.now());
     canvas.addEventListener("redraw", redraw);
     if (reduce) draw(0);
     else raf = requestAnimationFrame(draw);
@@ -451,144 +546,181 @@ function Strands({ scene, shapes, reduce }: { scene: number; shapes: (Shape | un
       io.disconnect();
       canvas.removeEventListener("redraw", redraw);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduce]);
 
-  // Under reduced motion, redraw once on each scene change
+  // Under reduced motion, redraw once on each scene or shape change
   useEffect(() => {
     if (reduce) canvasRef.current?.dispatchEvent(new Event("redraw"));
-  }, [scene, reduce]);
+  }, [scene, shapes, reduce]);
 
   return <canvas ref={canvasRef} aria-hidden="true" className="absolute inset-0 h-full w-full" />;
 }
 
-// ---- Sections -----------------------------------------------------------------------------------------------------
+// ---- Slides -------------------------------------------------------------------------------------------------------
 
 function Kicker({ n, label }: { n: number; label: string }) {
   return (
-    <p className="font-mono text-[11px] tracking-[0.25em] text-cream/60">
+    <p className="font-mono text-xs tracking-[0.28em] text-cream/65">
       <span className="text-tertiary">{pad(n)}</span>
       <span className="ml-3">{label}</span>
     </p>
   );
 }
 
-function ProjectSection({ p, i, onOpen, active }: { p: Project; i: number; onOpen: (slug: string) => void; active: boolean }) {
-  const reduce = useReducedMotion();
-  const ready = hasCaseStudy(p.slug);
-  const colour = (SIGNATURE[p.slug] ?? INTRO_PALETTE)[0];
-  const rise = (d: number) => ({
-    initial: reduce ? false : { opacity: 0, y: 26 },
-    animate: active || reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 },
-    transition: { delay: active ? d : 0, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
-  });
+const rise = (reduce: boolean, d: number) => ({
+  initial: reduce ? false : { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { delay: d, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
+});
+
+function IntroSlide({ lines, onNext }: { lines: string[]; onNext: () => void }) {
+  const reduce = !!useReducedMotion();
   return (
-    <section
-      aria-labelledby={`work-${p.slug}`}
-      data-scene={i + 1}
-      className="relative flex min-h-[var(--vh)] snap-start flex-col justify-center pb-14 pr-8 pt-32 sm:pr-14 @3xl:pt-14"
-    >
-      <div className="relative max-w-[34rem] @3xl:ml-[6cqw] @3xl:max-w-[36rem] @6xl:ml-[8cqw]">
-        <motion.div {...rise(0)}>
-          <Kicker n={i + 1} label={L.project} />
-        </motion.div>
-        <motion.h3
-          {...rise(0.06)}
-          id={`work-${p.slug}`}
-          className="mt-3 font-sans text-[clamp(2.6rem,8cqw,4.75rem)] font-bold leading-[1.02] tracking-tight [text-shadow:0_4px_30px_rgba(21,6,0,0.9)]"
-          style={{ color: colour }}
-        >
-          {p.name}
-        </motion.h3>
-        <motion.p {...rise(0.1)} className="mt-2 font-serif text-lg italic text-cream/85 sm:text-xl">
-          {p.type}
-        </motion.p>
-        <motion.div {...rise(0.14)} className="mt-4 flex flex-wrap gap-2">
-          {!ready && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber/60 bg-amber/15 px-3 py-1 font-mono text-[10px] tracking-[0.2em] text-amber">
-              <span aria-hidden="true" className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
-              {L.comingSoon}
-            </span>
-          )}
-          {p.url && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-tertiary/40 bg-tertiary/10 px-3 py-1 font-mono text-[10px] tracking-[0.2em] text-tertiary">
-              <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-tertiary shadow-[0_0_8px_#ffd0a1]" />
-              {L.live}
-            </span>
-          )}
-        </motion.div>
-        <motion.div {...rise(0.18)} className="mt-5 flex items-baseline justify-between gap-4 border-b border-cream/15 pb-3">
-          <span className="font-mono text-xs uppercase tracking-[0.14em] text-cream">{p.role}</span>
-          {p.year && <span className="shrink-0 font-mono text-[11px] tracking-[0.18em]" style={{ color: colour }}>{p.year.toUpperCase()}</span>}
-        </motion.div>
-        <motion.p {...rise(0.22)} className="mt-4 text-[15px] leading-relaxed text-cream/85 [text-shadow:0_1px_12px_rgba(21,6,0,0.95)] sm:text-[16px]">
-          {p.summary}
-        </motion.p>
-        <motion.ul {...rise(0.26)} className="mt-5 flex flex-wrap gap-2">
-          {p.tags.map((t) => (
-            <li key={t} className="rounded-full border border-cream/15 bg-base/50 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-cream/80 backdrop-blur-sm">
-              {t}
-            </li>
-          ))}
-        </motion.ul>
-        <motion.div {...rise(0.3)} className="mt-7 flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={() => onOpen(p.slug)}
-            data-magnetic="0.2"
-            className="fx-spotlight group inline-flex items-center gap-2 rounded-full border border-cream/30 bg-base/40 px-5 py-2.5 font-mono text-[11px] tracking-[0.18em] text-cream backdrop-blur-sm transition-colors hover:border-tertiary hover:bg-tertiary hover:text-base"
-          >
-            {L.viewProject}
-            <ArrowRight size={13} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
-          </button>
-          {p.url && (
-            <a
-              href={p.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-mono text-[11px] tracking-[0.18em] text-tertiary underline decoration-tertiary/30 underline-offset-4 hover:decoration-tertiary"
-            >
-              {L.visitLive}
-              <ArrowUpRight size={13} aria-hidden="true" />
-              <span className="sr-only">(opens in a new tab)</span>
-            </a>
-          )}
-        </motion.div>
-      </div>
-    </section>
+    <div className="max-w-[min(46rem,58cqw)] @max-3xl:max-w-none">
+      <motion.div {...rise(reduce, 0)}>
+        <Kicker n={0} label={L.intro} />
+      </motion.div>
+      <p className="mt-5 font-sans text-[clamp(2.4rem,7cqw,5.6rem)] font-bold leading-[1.02] tracking-tight [text-shadow:0_4px_30px_rgba(21,6,0,0.6)]">
+        {lines.map((line, i) => (
+          <motion.span key={line} className="block whitespace-nowrap @max-md:whitespace-normal" {...rise(reduce, 0.12 + i * 0.14)}>
+            {i === lines.length - 1 ? (
+              <span className="inline-block bg-[linear-gradient(90deg,#f0937a,#ffd0a1_60%,#f2a65a)] bg-clip-text pb-[0.06em] text-transparent [text-shadow:none]">{line}</span>
+            ) : (
+              <span className="text-cream">{line}</span>
+            )}
+          </motion.span>
+        ))}
+      </p>
+      <motion.button
+        {...rise(reduce, 0.6)}
+        type="button"
+        onClick={onNext}
+        className="group mt-10 inline-flex items-center gap-4 font-mono text-xs tracking-[0.3em] text-cream/75 hover:text-tertiary"
+      >
+        <span aria-hidden="true" className="relative block h-px w-16 overflow-hidden bg-cream/20">
+          <span className="scroll-cue absolute inset-y-0 left-0 w-1/2 bg-primary-soft" />
+        </span>
+        {L.begin}
+        <ArrowRight size={14} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
+      </motion.button>
+    </div>
   );
 }
+
+function ProjectSlide({ p, i, onOpen }: { p: Project; i: number; onOpen: (slug: string) => void }) {
+  const reduce = !!useReducedMotion();
+  const ready = hasCaseStudy(p.slug);
+  const colour = (SIGNATURE[p.slug] ?? INTRO_PALETTE)[0];
+  return (
+    <div className="max-w-[min(44rem,52cqw)] @max-3xl:max-w-none">
+      <motion.div {...rise(reduce, 0)}>
+        <Kicker n={i + 1} label={L.project} />
+      </motion.div>
+      <motion.h3
+        {...rise(reduce, 0.06)}
+        id={`work-${p.slug}`}
+        className="mt-2 font-sans text-[clamp(2.4rem,9cqw,7rem)] font-bold leading-[0.98] tracking-tight @3xl:mt-3"
+        style={{ color: colour, textShadow: `0 0 42px ${colour}55, 0 4px 30px rgba(21,6,0,0.9)` }}
+      >
+        {p.name}
+      </motion.h3>
+      <motion.p {...rise(reduce, 0.1)} className="mt-2 font-serif text-base italic text-cream/90 @3xl:mt-3 @3xl:text-2xl">
+        {p.type}
+      </motion.p>
+      <motion.div {...rise(reduce, 0.14)} className="mt-3 flex flex-wrap gap-2 @3xl:mt-5">
+        {!ready && (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber/60 bg-amber/15 px-3.5 py-1.5 font-mono text-[11px] tracking-[0.2em] text-amber">
+            <span aria-hidden="true" className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
+            {L.comingSoon}
+          </span>
+        )}
+        {p.url && (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-tertiary/40 bg-tertiary/10 px-3.5 py-1.5 font-mono text-[11px] tracking-[0.2em] text-tertiary">
+            <span aria-hidden="true" className="h-1.5 w-1.5 animate-pulse rounded-full bg-tertiary shadow-[0_0_8px_#ffd0a1]" />
+            {L.live}
+          </span>
+        )}
+      </motion.div>
+      <motion.div {...rise(reduce, 0.18)} className="mt-4 flex items-baseline justify-between gap-4 border-b border-cream/15 pb-2 @3xl:mt-6 @3xl:pb-3">
+        <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-cream @3xl:text-[13px]">{p.role}</span>
+        {p.year && (
+          <span className="shrink-0 font-mono text-xs tracking-[0.18em]" style={{ color: colour }}>
+            {p.year.toUpperCase()}
+          </span>
+        )}
+      </motion.div>
+      <motion.p {...rise(reduce, 0.22)} className="mt-3 text-[15px] leading-relaxed text-cream/90 [text-shadow:0_1px_12px_rgba(21,6,0,0.95)] @3xl:mt-5 @3xl:text-xl">
+        {p.summary}
+      </motion.p>
+      <motion.ul {...rise(reduce, 0.26)} className="mt-4 flex flex-wrap gap-1.5 @3xl:mt-6 @3xl:gap-2">
+        {p.tags.map((t) => (
+          <li key={t} className="rounded-full border border-cream/15 bg-base/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-cream/85 backdrop-blur-sm @3xl:px-3.5 @3xl:py-1.5 @3xl:text-[11px] @3xl:tracking-[0.14em]">
+            {t}
+          </li>
+        ))}
+      </motion.ul>
+      <motion.div {...rise(reduce, 0.3)} className="mt-5 flex flex-wrap items-center gap-3 @3xl:mt-8 @3xl:gap-4">
+        <button
+          type="button"
+          onClick={() => onOpen(p.slug)}
+          data-magnetic="0.2"
+          className="cta-glow fx-spotlight group inline-flex items-center gap-2 rounded-full bg-cream px-5 py-3 font-mono text-[11px] font-medium tracking-[0.16em] text-base transition-colors hover:bg-tertiary @3xl:gap-2.5 @3xl:px-7 @3xl:py-3.5 @3xl:text-[13px] @3xl:tracking-[0.2em]"
+          style={{ "--glow": colour } as React.CSSProperties}
+        >
+          {L.viewProject}
+          <ArrowRight size={15} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
+        </button>
+        {p.url && (
+          <a
+            href={p.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cta-glow-soft inline-flex items-center gap-1.5 rounded-full border border-tertiary/50 px-4 py-3 font-mono text-[11px] tracking-[0.16em] text-tertiary transition-colors hover:bg-tertiary hover:text-base @3xl:px-6 @3xl:py-3.5 @3xl:text-[13px] @3xl:tracking-[0.2em]"
+          >
+            {L.visitLive}
+            <ArrowUpRight size={15} aria-hidden="true" />
+            <span className="sr-only">(opens in a new tab)</span>
+          </a>
+        )}
+      </motion.div>
+    </div>
+  );
+}
+
+// ---- The showcase -------------------------------------------------------------------------------------------------
+
+const DWELL = { intro: 5.5, project: 8 }; // seconds each slide holds (and slowly zooms) before the next slides in
 
 export default function WorksShowcase({ title, onOpen, columns }: { title: string; onOpen: (slug: string) => void; columns: 1 | 2 }) {
   const reduce = !!useReducedMotion();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [scene, setScene] = useState(0);
-  const [shapes, setShapes] = useState<(Shape | undefined)[]>([]);
+  const heroRef = useRef<HTMLElement>(null);
+  const [[index, dir], setSlide] = useState<[number, number]>([0, 1]);
+  const [shapes, setShapes] = useState<(Shape | undefined)[]>(() => [...SHAPES]);
   const [vh, setVh] = useState(600);
+  const [userPaused, setUserPaused] = useState(false);
+  const [hovering, setHovering] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [onScreen, setOnScreen] = useState(true);
+  const stir = useRef<Stir>({ x: 0, y: 0, over: false, energy: 0 });
+  const total = projects.length + 1;
 
-  // Trace each project's logo or name once, as soon as its image or font is ready
+  // Trace each project's mark once per visit (kept for later opens), the active one first
   useEffect(() => {
     let live = true;
-    projects.forEach((p, i) => {
-      const mark = MARKS[p.slug];
-      if (!mark) return;
-      drawMark(mark)
-        .then((c) => traceOutlines(c))
-        .then((shape) => {
-          if (!live) return;
-          setShapes((prev) => {
-            const next = [...prev];
-            next[i] = shape;
-            return next;
-          });
-        })
-        .catch(() => undefined);
-    });
+    const order = projects.map((_, i) => i);
+    order.forEach((i) =>
+      loadShape(i).then((s) => {
+        if (live && s) setShapes((prev) => (prev[i] === s ? prev : Object.assign([...prev], { [i]: s })));
+      }),
+    );
     return () => {
       live = false;
     };
   }, []);
 
-  // Each showcase section is exactly one scroller-height tall
+  // The showcase is exactly one scroller-height tall
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -598,194 +730,200 @@ export default function WorksShowcase({ title, onOpen, columns }: { title: strin
     return () => ro.disconnect();
   }, []);
 
-  // The section nearest the middle of the view is the active scene
+  // Autoplay stops while the showcase is scrolled away
   useEffect(() => {
+    const el = heroRef.current;
     const root = scrollRef.current;
-    if (!root) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) setScene(Number((e.target as HTMLElement).dataset.scene));
-        });
-      },
-      { root, rootMargin: "-45% 0px -45% 0px" },
-    );
-    root.querySelectorAll("[data-scene]").forEach((s) => io.observe(s));
+    if (!el || !root) return;
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.intersectionRatio > 0.6), { root, threshold: [0, 0.6, 1] });
+    io.observe(el);
     return () => io.disconnect();
   }, []);
 
-  // A short loading count, the first time the page opens in a visit
-  const [loading, setLoading] = useState(() => {
-    if (reduce) return -1;
-    try {
-      return sessionStorage.getItem("jhnb-works-loaded") ? -1 : 0;
-    } catch {
-      return -1;
-    }
-  });
-  useEffect(() => {
-    if (loading < 0) return;
-    const start = performance.now();
-    let raf = 0;
-    const tick = () => {
-      const n = Math.min(100, Math.round(((performance.now() - start) / 900) * 100));
-      setLoading(n);
-      if (n < 100) raf = requestAnimationFrame(tick);
-      else
-        window.setTimeout(() => {
-          setLoading(-1);
-          try {
-            sessionStorage.setItem("jhnb-works-loaded", "1");
-          } catch {
-            /* ignore */
-          }
-        }, 250);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const go = (n: number) => setSlide(([i]) => [((n % total) + total) % total, n >= i ? 1 : -1]);
+  const step = (d: number) => setSlide(([i]) => [(i + d + total) % total, d]);
 
-  const goTo = (n: number) => {
-    const root = scrollRef.current;
-    const el = root?.querySelector<HTMLElement>(`[data-scene="${n}"]`);
-    if (root && el) root.scrollTo({ top: el.offsetTop, behavior: reduce ? "auto" : "smooth" });
+  // Autoplay runs unless the visitor paused it, is reading (pointer over the copy, or focus inside), the showcase is
+  // off screen, or motion is reduced
+  const running = !reduce && !userPaused && !hovering && !focused && onScreen;
+  const dwell = index === 0 ? DWELL.intro : DWELL.project;
+
+  // The headline, one sentence per line
+  const lines = useMemo(() => worksHeadline.split(/(?<=\.)\s+/), []);
+  const current = index > 0 ? projects[index - 1] : null;
+
+  // Pointer over the stage: strands part and flare; quick movement stirs them more
+  const lastMove = useRef({ x: 0, y: 0, t: 0 });
+  const onMove = (e: React.PointerEvent) => {
+    const r = heroRef.current?.getBoundingClientRect();
+    if (!r) return;
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    const now = performance.now();
+    const lm = lastMove.current;
+    const speed = lm.t ? Math.hypot(x - lm.x, y - lm.y) / Math.max(8, now - lm.t) : 0;
+    lastMove.current = { x, y, t: now };
+    const s = stir.current;
+    s.x = x;
+    s.y = y;
+    s.over = true;
+    s.energy = Math.min(1.6, s.energy + speed * 0.18);
   };
 
-  // The headline's last sentence takes the accent gradient, like the reference's second line
-  // The headline, one sentence per line; the last line takes the accent gradient, like the reference's second line
-  const lines = useMemo(() => worksHeadline.split(/(?<=\.)\s+/), []);
-
-  const current = scene > 0 ? projects[scene - 1] : null;
+  // Swipe between slides
+  const swipe = useRef<number | null>(null);
 
   return (
     <div
       ref={scrollRef}
-      className="@container fx-scroll relative -mx-6 min-h-0 flex-1 snap-y snap-proximity overflow-y-auto overscroll-contain px-6 sm:-mx-10 sm:px-10"
+      className="@container fx-scroll relative -mx-6 min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 sm:-mx-10 sm:px-10"
       style={{ "--vh": `${vh}px` } as React.CSSProperties}
     >
-
-      <div className="relative">
-        {/* The stage stays put while the sections scroll over it: deep base colour, star dust, and the strands */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none sticky top-0 -mx-6 h-[var(--vh)] overflow-hidden bg-base sm:-mx-10"
-          style={{ marginBottom: "calc(-1 * var(--vh))" }}
-        >
+      <section
+        ref={heroRef}
+        aria-roledescription="carousel"
+        aria-label={`${title}: ${L.carousel}`}
+        className="relative -mx-6 h-[var(--vh)] overflow-hidden bg-base sm:-mx-10"
+        onPointerMove={onMove}
+        onPointerEnter={() => (stir.current.energy = Math.min(1.6, stir.current.energy + 0.6))}
+        onPointerLeave={() => {
+          stir.current.over = false;
+          setHovering(false);
+        }}
+        onPointerDown={(e) => {
+          if ((e.target as Element).closest("a, button")) return;
+          swipe.current = e.clientX;
+        }}
+        onPointerUp={(e) => {
+          if (swipe.current === null) return;
+          const dx = e.clientX - swipe.current;
+          swipe.current = null;
+          if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+        }}
+        onFocus={() => setFocused(true)}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) setFocused(false);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowRight") step(1);
+          else if (e.key === "ArrowLeft") step(-1);
+        }}
+      >
+        {/* The stage: star dust, the strands, and a slow zoom while each slide holds */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-[radial-gradient(1px_1px_at_12%_22%,rgba(241,230,206,0.5),transparent),radial-gradient(1px_1px_at_68%_14%,rgba(255,208,161,0.45),transparent),radial-gradient(1.5px_1.5px_at_84%_62%,rgba(241,230,206,0.4),transparent),radial-gradient(1px_1px_at_32%_78%,rgba(240,147,122,0.5),transparent),radial-gradient(1px_1px_at_52%_42%,rgba(241,230,206,0.35),transparent),radial-gradient(1px_1px_at_92%_88%,rgba(255,208,161,0.4),transparent),radial-gradient(60%_50%_at_70%_40%,rgba(152,58,40,0.22),transparent)] [background-size:340px_300px,420px_380px,380px_420px,300px_340px,460px_300px,400px_360px,100%_100%]" />
-          <div className="absolute inset-0">
-            <Strands scene={scene} shapes={shapes} reduce={reduce} />
+          <div
+            key={`zoom-${index}`}
+            className="slide-zoom absolute inset-0"
+            style={{ animationDuration: `${dwell}s`, animationPlayState: running ? "running" : "paused" } as React.CSSProperties}
+          >
+            <Strands scene={index} shapes={shapes} reduce={reduce} stir={stir} />
           </div>
-          {/* Keep the copy legible over the light */}
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(21,6,0,0.94),rgba(21,6,0,0.6)_42%,transparent_62%)] @max-3xl:bg-[linear-gradient(180deg,rgba(21,6,0,0.82),rgba(21,6,0,0.35)_55%,transparent)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(21,6,0,0.92),rgba(21,6,0,0.55)_40%,transparent_60%)] @max-3xl:bg-[linear-gradient(180deg,transparent_0%,rgba(21,6,0,0.6)_28%,rgba(21,6,0,0.85))]" />
         </div>
 
-        {/* Above the sections: the dot rail, the counter, and the loading count */}
-        <div className="pointer-events-none sticky top-0 z-20 -mx-6 h-[var(--vh)] sm:-mx-10" style={{ marginBottom: "calc(-1 * var(--vh))" }}>
-          {/* Dot rail */}
-          <nav aria-label={L.railLabel} className="pointer-events-auto absolute right-3 top-1/2 flex -translate-y-1/2 flex-col gap-3 sm:right-5">
-            {[0, ...projects.map((_, i) => i + 1)].map((n) => (
-              <button
-                key={n}
-                type="button"
-                onClick={() => goTo(n)}
-                aria-label={n === 0 ? title : projects[n - 1].name}
-                aria-current={scene === n ? "true" : undefined}
-                className="group flex h-4 w-4 items-center justify-center"
-              >
-                <span
-                  className={`block rounded-full transition-all duration-300 ${
-                    scene === n ? "h-2.5 w-2.5 bg-primary-soft shadow-[0_0_10px_#f0937a]" : "h-2 w-2 border border-cream/50 group-hover:border-tertiary"
-                  }`}
-                />
-              </button>
-            ))}
-          </nav>
-
-          {/* Counter */}
-          <div aria-hidden="true" className="absolute bottom-5 right-5 hidden text-right font-mono text-[11px] tracking-[0.2em] sm:right-8 @3xl:block">
-            <span className="text-primary-soft">{pad(scene)}</span>
+        {/* Top line: the page title and the counter */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 pt-5 sm:px-10 @3xl:pl-[calc(2.5rem+6cqw)]">
+          <h2 id="drawer-title" className="font-mono text-xs tracking-[0.3em] text-cream/70">
+            {title.toUpperCase()}
+          </h2>
+          <p aria-hidden="true" className="font-mono text-xs tracking-[0.2em]">
+            <span className="text-primary-soft">{pad(index)}</span>
             <span className="text-cream/50"> / {pad(projects.length)}</span>
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={scene}
-                className="mt-1 block text-[10px] text-cream/60"
-                initial={reduce ? false : { opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.3 }}
-              >
-                {(current ? current.name : L.intro).toUpperCase()}
-              </motion.span>
-            </AnimatePresence>
-          </div>
+            <span className="ml-3 hidden text-cream/70 sm:inline">{(current ? current.name : L.intro).toUpperCase()}</span>
+          </p>
+        </div>
 
-          {/* Loading count */}
-          <AnimatePresence>
-            {loading >= 0 && (
-              <motion.div
-                className="pointer-events-auto absolute inset-0 flex flex-col items-center justify-center bg-base"
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.45 }}
+        {/* The slides, one at a time, sliding sideways; each holds and slowly zooms in */}
+        <div className="absolute inset-0 z-10" aria-live={running ? "off" : "polite"}>
+          <AnimatePresence initial={false} custom={dir}>
+            <motion.div
+              key={index}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${index + 1} / ${total}`}
+              aria-labelledby={current ? `work-${current.slug}` : undefined}
+              custom={dir}
+              className="absolute inset-0 flex flex-col justify-center px-6 pb-20 pt-28 sm:px-10 @3xl:pb-24 @3xl:pl-[calc(2.5rem+6cqw)] @3xl:pt-20"
+              variants={{
+                enter: (d: number) => (reduce ? { opacity: 0 } : { x: `${d * 100}%`, opacity: 0 }),
+                center: { x: 0, opacity: 1 },
+                exit: (d: number) => (reduce ? { opacity: 0 } : { x: `${d * -35}%`, opacity: 0, scale: 0.94 }),
+              }}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: reduce ? 0.3 : 0.85, ease: [0.76, 0, 0.24, 1] }}
+            >
+              <div
+                className="slide-zoom-soft origin-left"
+                style={{ animationDuration: `${dwell}s`, animationPlayState: running ? "running" : "paused" } as React.CSSProperties}
+                onPointerEnter={() => setHovering(true)}
+                onPointerLeave={() => setHovering(false)}
               >
-                <span className="h-px w-32 bg-cream/15">
-                  <span className="block h-full bg-primary-soft" style={{ width: `${Math.max(0, loading)}%` }} />
-                </span>
-                <span className="mt-4 font-mono text-[11px] tracking-[0.3em] text-cream/70">
-                  {L.loading} <span className="text-primary-soft">{String(Math.max(0, loading)).padStart(3, "0")}</span>
-                </span>
-              </motion.div>
-            )}
+                {current ? <ProjectSlide p={current} i={index - 1} onOpen={onOpen} /> : <IntroSlide lines={lines} onNext={() => step(1)} />}
+              </div>
+            </motion.div>
           </AnimatePresence>
         </div>
 
-        {/* 00 — Intro */}
-        <section aria-labelledby="drawer-title" data-scene={0} className="relative flex min-h-[var(--vh)] snap-start flex-col justify-center py-14 pr-8 sm:pr-14">
-          <div className="@3xl:ml-[6cqw] @6xl:ml-[8cqw]">
-            <p className="font-mono text-[11px] tracking-[0.25em] text-cream/60">
-              <span className="text-tertiary">00</span>
-              <span id="drawer-title" role="heading" aria-level={2} className="ml-3">
-                {title.toUpperCase()}
-              </span>
-            </p>
-            <p className="mt-5 font-sans text-[clamp(2.1rem,6.2cqw,4.6rem)] font-bold leading-[1.04] tracking-tight [text-shadow:0_4px_30px_rgba(21,6,0,0.6)]">
-              {lines.map((line, i) => (
-                <motion.span
-                  key={line}
-                  className="block whitespace-nowrap @max-md:whitespace-normal"
-                  initial={reduce ? false : { opacity: 0, y: "0.45em" }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 + i * 0.14, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        {/* Controls: dots and the hold's progress, previous / pause / next */}
+        <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-between gap-4 px-6 pb-5 sm:px-10 @3xl:pl-[calc(2.5rem+6cqw)]">
+          <div className="flex items-center gap-2.5">
+            {Array.from({ length: total }, (_, n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => go(n)}
+                aria-label={n === 0 ? L.intro : projects[n - 1].name}
+                aria-current={index === n ? "true" : undefined}
+                className="group relative flex h-6 items-center"
+              >
+                <span
+                  className={`block h-1.5 overflow-hidden rounded-full transition-all duration-500 ${
+                    index === n ? "w-12 bg-cream/20" : "w-1.5 bg-cream/40 group-hover:bg-tertiary"
+                  }`}
                 >
-                  {i === lines.length - 1 ? (
-                    <span className="inline-block bg-[linear-gradient(90deg,#f0937a,#ffd0a1_60%,#f2a65a)] bg-clip-text pb-[0.06em] text-transparent [text-shadow:none]">{line}</span>
-                  ) : (
-                    <span className="text-cream">{line}</span>
+                  {index === n && (
+                    <span
+                      key={`p-${index}`}
+                      className="slide-progress block h-full rounded-full bg-primary-soft"
+                      style={{ animationDuration: `${dwell}s`, animationPlayState: running ? "running" : "paused" } as React.CSSProperties}
+                      onAnimationEnd={() => {
+                        if (!reduce) step(1);
+                      }}
+                    />
                   )}
-                </motion.span>
-              ))}
-            </p>
-            <button
-              type="button"
-              onClick={() => goTo(1)}
-              className="group mt-10 inline-flex items-center gap-4 font-mono text-[11px] tracking-[0.3em] text-cream/70 hover:text-tertiary"
-            >
-              <span aria-hidden="true" className="relative block h-px w-14 overflow-hidden bg-cream/20">
-                <span className="scroll-cue absolute inset-y-0 left-0 w-1/2 bg-primary-soft" />
-              </span>
-              {L.scroll}
-            </button>
+                </span>
+              </button>
+            ))}
           </div>
-        </section>
-
-        {/* 01–06 — one project per view */}
-        {projects.map((p, i) => (
-          <ProjectSection key={p.slug} p={p} i={i} onOpen={onOpen} active={scene === i + 1} />
-        ))}
-      </div>
+          <div className="flex items-center gap-2">
+            {[
+              { label: L.previous, onClick: () => step(-1), Icon: ChevronLeft },
+              { label: userPaused ? L.play : L.pause, onClick: () => setUserPaused((v) => !v), Icon: userPaused ? Play : Pause, pressed: userPaused },
+              { label: L.next, onClick: () => step(1), Icon: ChevronRight },
+            ].map(({ label, onClick, Icon, pressed }) => (
+              <button
+                key={label}
+                type="button"
+                onClick={onClick}
+                aria-label={label}
+                aria-pressed={pressed}
+                data-magnetic="0.25"
+                className={`flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 bg-base/40 text-cream backdrop-blur-sm transition-colors hover:border-tertiary hover:bg-tertiary hover:text-base ${
+                  reduce && pressed !== undefined ? "hidden" : ""
+                }`}
+              >
+                <Icon size={16} aria-hidden="true" />
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Everything, with covers */}
-      <div className="relative z-30 -mx-6 bg-base px-6 pb-10 pt-12 sm:-mx-10 sm:px-10">
+      <div className="relative -mx-6 bg-base px-6 pb-10 pt-12 sm:-mx-10 sm:px-10">
         <div className="flex items-center justify-between border-b border-cream/10 pb-3 font-mono text-xs tracking-[0.25em]">
           <span className="flex items-center gap-2 text-primary-soft">
             <LayoutGrid size={14} aria-hidden="true" />

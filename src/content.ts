@@ -177,6 +177,12 @@ export const worksShowcase = {
   allWork: "ALL WORK",
   projectsCount: "PROJECTS",
   railLabel: "Projects",
+  begin: "BEGIN",
+  carousel: "slideshow",
+  previous: "Previous project",
+  next: "Next project",
+  pause: "Pause slideshow",
+  play: "Play slideshow",
 };
 
 /** Projects page: headline typed under the "Selected Works" title (same effect as About Me) */

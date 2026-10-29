@@ -72,6 +72,15 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
   }, [open, writingView]);
   const canExpand = view !== "menu";
   const isFull = full && canExpand;
+  // While a full-screen panel covers the landing page, its WebGL scenes pause (they read this flag each frame)
+  useEffect(() => {
+    const root = document.documentElement;
+    if (open && isFull) root.dataset.covered = "1";
+    else delete root.dataset.covered;
+    return () => {
+      delete root.dataset.covered;
+    };
+  }, [open, isFull]);
   // About and Projects share a layout: pinned header, own inner scroller, full width (no max-width) in full screen
   const pinned = view === "about" || view === "projects" || view === "contentDesign" || view === "articles" || view === "resume";
   const [wide, setWide] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
