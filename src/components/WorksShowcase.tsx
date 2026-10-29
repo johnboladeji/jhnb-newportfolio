@@ -863,8 +863,8 @@ export default function WorksShowcase({ title, onOpen, columns }: { title: strin
         {/* The slideshow fades into the grid below, so the two read as one page */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[35%] bg-[linear-gradient(180deg,transparent,rgba(21,6,0,0.75)_60%,#150600)]" />
 
-        {/* Top line: the page title and the counter */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 pt-5 sm:px-10 @3xl:pl-[calc(2.5rem+6cqw)]">
+        {/* Top line: the page title and the counter, just under the drawer's bar (which floats over the stage) */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 pt-[calc(var(--drawer-head,5rem)+0.5rem)] sm:px-10 @3xl:pl-[calc(2.5rem+6cqw)]">
           <h2 id="drawer-title" className="font-mono text-xs tracking-[0.3em] text-cream/70">
             {title.toUpperCase()}
           </h2>
@@ -885,7 +885,7 @@ export default function WorksShowcase({ title, onOpen, columns }: { title: strin
               aria-label={`${index + 1} / ${total}`}
               aria-labelledby={current ? `work-${current.slug}` : undefined}
               custom={dir}
-              className="absolute inset-0 flex flex-col justify-center px-6 pb-20 pt-28 sm:px-10 @3xl:pb-24 @3xl:pl-[calc(2.5rem+6cqw)] @3xl:pt-20"
+              className="absolute inset-0 flex flex-col justify-center px-6 pb-20 pt-[calc(var(--drawer-head,5rem)+7rem)] sm:px-10 @3xl:pb-24 @3xl:pl-[calc(2.5rem+6cqw)] @3xl:pt-[calc(var(--drawer-head,5rem)+5rem)]"
               variants={{
                 enter: (d: number) => (reduce ? { opacity: 0 } : { x: `${d * 100}%`, opacity: 0 }),
                 center: { x: 0, opacity: 1 },

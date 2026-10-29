@@ -176,8 +176,8 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
             {/* A woven Aso-oke band along the top edge of every panel */}
             <span aria-hidden="true" className="aso-band pointer-events-none absolute inset-x-0 top-0 z-10 h-1" />
           {/* Top bar: no fill (the portrait shows through it). It sits outside the scroller, so content scrolls
-              below it rather than under it. */}
-          <div ref={headRef} className="relative z-30 flex shrink-0 items-center justify-between border-b border-cream/5 px-6 py-5 sm:px-10 pt-[max(1.25rem,env(safe-area-inset-top))]">
+              below it rather than under it. On Projects it floats over the showcase, whose stage reaches the top edge. */}
+          <div ref={headRef} className={`${view === "projects" ? "absolute inset-x-0 top-0" : "relative border-b border-cream/5"} z-30 flex shrink-0 items-center justify-between px-6 py-5 sm:px-10 pt-[max(1.25rem,env(safe-area-inset-top))]`}>
               {view === "menu" ? (
                 <span className="flex items-center gap-2 font-mono text-xs tracking-[0.2em] text-cream/70">
                   <Menu size={16} aria-hidden="true" />
@@ -226,7 +226,10 @@ export default function InfoDrawer({ open, view, caseSlug, onNavigate, onOpenCas
               <div
                 className={
                   pinned
-                    ? `flex h-[calc(100dvh-var(--drawer-head,5rem))] flex-col px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6 sm:px-10 ${
+                    ? `flex flex-col px-6 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-10 ${
+                        // Projects runs from the very top (the bar floats over it); the rest fit under the bar
+                        view === "projects" ? "h-dvh" : "h-[calc(100dvh-var(--drawer-head,5rem))] pt-6"
+                      } ${
                         // Full screen: the same inset from the edges as the Projects showcase (Projects lays out its own)
                         isFull && view !== "projects" ? "lg:px-[max(2.5rem,7vw)] lg:pt-10" : ""
                       }`
